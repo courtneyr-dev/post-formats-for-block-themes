@@ -1,0 +1,55 @@
+{
+	"name": "post-formats-power-up",
+	"version": "1.0.0",
+	"description": "Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.",
+	"author": "Your Name",
+	"license": "GPL-2.0-or-later",
+	"main": "build/editor.js",
+	"scripts": {
+		"build": "wp-scripts build src/editor/index.js --output-path=build",
+		"start": "wp-scripts start src/editor/index.js --output-path=build",
+		"format": "wp-scripts format",
+		"lint:css": "wp-scripts lint-style",
+		"lint:js": "wp-scripts lint-js",
+		"packages-update": "wp-scripts packages-update",
+		"plugin-zip": "wp-scripts plugin-zip",
+		"test:e2e": "playwright test tests/e2e",
+		"test:e2e:headed": "playwright test tests/e2e --headed",
+		"test:a11y": "playwright test tests/accessibility",
+		"test:a11y:headed": "playwright test tests/accessibility --headed",
+		"test:visual": "playwright test tests/visual",
+		"test:visual:update": "playwright test tests/visual --update-snapshots",
+		"test:performance": "playwright test tests/performance",
+		"test:js": "wp-scripts test-unit-js",
+		"test:all": "composer test && npm run test:a11y && npm run test:e2e"
+	},
+	"devDependencies": {
+		"@axe-core/playwright": "^4.8.2",
+		"@playwright/test": "^1.40.1",
+		"@wordpress/scripts": "^27.0.0",
+		"axe-core": "^4.8.3",
+		"axe-playwright": "^1.2.3",
+		"dotenv": "^17.2.3",
+		"playwright": "^1.40.1"
+	},
+	"dependencies": {
+		"@wordpress/a11y": "^3.0.0",
+		"@wordpress/block-editor": "^12.0.0",
+		"@wordpress/blocks": "^12.0.0",
+		"@wordpress/components": "^25.0.0",
+		"@wordpress/compose": "^6.0.0",
+		"@wordpress/data": "^9.0.0",
+		"@wordpress/edit-post": "^7.0.0",
+		"@wordpress/element": "^5.0.0",
+		"@wordpress/hooks": "^3.0.0",
+		"@wordpress/i18n": "^4.0.0",
+		"@wordpress/plugins": "^6.0.0"
+	},
+	"keywords": [
+		"wordpress",
+		"post-formats",
+		"gutenberg",
+		"block-theme",
+		"accessibility"
+	]
+}

@@ -1,0 +1,61 @@
+# Development files
+/.git
+/.github
+/node_modules
+/vendor
+/tests
+/bin
+/.wordpress-org
+
+# Config files
+.gitignore
+.distignore
+.env
+.env.example
+.phpcs.xml.dist
+phpunit.xml
+phpunit.xml.dist
+playwright.config.js
+.travis.yml
+.eslintrc
+.eslintignore
+composer.json
+composer.lock
+package.json
+package-lock.json
+webpack.config.js
+Gruntfile.js
+gulpfile.js
+
+# Documentation (keep only readme.txt for WordPress.org)
+/docs
+README.md
+CONTRIBUTING.md
+CODE_OF_CONDUCT.md
+CHANGELOG.md
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Source files (keep compiled builds only)
+/src/
+
+# Translation source files (keep .pot, include .mo files)
+languages/*.po
+
+# Logs
+*.log
+npm-debug.log*
+
+# Backup files
+*~
+*.bak
+*.tmp
+*.temp

@@ -1,0 +1,495 @@
+/**
+ * Post Format Styles
+ *
+ * Format-specific styles using CSS custom properties from theme.json.
+ * Inspired by Twenty Thirteen's format treatments, modernized for block themes.
+ *
+ * @package PostFormatsPowerUp
+ * @since 1.0.0
+ *
+ * Design Principles:
+ * - Use REMs only (no px)
+ * - Leverage CSS custom properties from theme.json
+ * - Respect user's Site Editor customizations
+ * - Minimal opinionated styling
+ * - Maximum flexibility for themes
+ *
+ * Accessibility Note:
+ * - Never relies on color alone to convey format
+ * - Icons and visual markers are supplementary
+ * - All format indicators have text equivalents in HTML
+ * - Sufficient color contrast maintained (4.5:1 minimum)
+ */
+
+/* ============================================================================
+   Root Variables (Fallbacks)
+   ========================================================================= */
+
+:root {
+	--pfpu-spacing-small: 0.5rem;
+	--pfpu-spacing-medium: 1rem;
+	--pfpu-spacing-large: 1.5rem;
+	--pfpu-spacing-xlarge: 2rem;
+	--pfpu-border-radius-small: 0.25rem;
+	--pfpu-border-radius-medium: 0.5rem;
+	--pfpu-border-radius-large: 0.75rem;
+	--pfpu-icon-size-small: 1rem;
+	--pfpu-icon-size-medium: 1.25rem;
+	--pfpu-icon-size-large: 1.5rem;
+}
+
+/* ============================================================================
+   Format-Specific Body Classes
+   ========================================================================= */
+
+/**
+ * Hide post titles for Aside and Status formats
+ * These formats are meant to be quick notes/updates without prominent titles
+ */
+.format-aside .entry-title,
+.format-aside .wp-block-post-title,
+.format-status .entry-title,
+.format-status .wp-block-post-title {
+	clip: rect(0.0625rem, 0.0625rem, 0.0625rem, 0.0625rem);
+	clip-path: inset(50%);
+	height: 0.0625rem;
+	overflow: hidden;
+	position: absolute;
+	white-space: nowrap;
+	width: 0.0625rem;
+}
+
+/**
+ * Aside Format
+ * Short note style with soft background and rounded corners
+ * Inspired by Twenty Thirteen's callout style
+ */
+.format-aside .entry-content,
+.format-aside .wp-block-post-content {
+	background: var(--wp--preset--color--format-aside-bg, #f0f0f1);
+	border-inline-start: 0.25rem solid var(--wp--preset--color--format-aside-border, #1e1e1e);
+	border-radius: var(--pfpu-border-radius-medium);
+	padding: var(--pfpu-spacing-large);
+	margin-block: var(--pfpu-spacing-large);
+	font-style: italic;
+}
+
+.format-aside .entry-content::before,
+.format-aside .wp-block-post-content::before {
+	content: "\f125"; /* dashicons-format-aside */
+	font-family: "dashicons";
+	font-size: var(--pfpu-icon-size-large);
+	color: var(--wp--preset--color--format-aside-border, #1e1e1e);
+	opacity: 0.3;
+	display: block;
+	margin-block-end: var(--pfpu-spacing-small);
+	font-style: normal;
+}
+
+/**
+ * Status Format
+ * Twitter/Mastodon-style status update with large text
+ * Inspired by Twenty Thirteen's prominent status display
+ */
+.format-status .entry-content,
+.format-status .wp-block-post-content {
+	background: var(--wp--preset--color--format-status-bg, #f0f0f1);
+	font-size: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+	line-height: 1.4;
+	color: var(--wp--preset--color--contrast, #1e1e1e);
+	position: relative;
+	padding: var(--pfpu-spacing-large);
+	padding-inline-start: var(--pfpu-spacing-xlarge);
+	margin-block: var(--pfpu-spacing-large);
+	border-radius: var(--pfpu-border-radius-medium);
+}
+
+.format-status .entry-content::before,
+.format-status .wp-block-post-content::before {
+	content: "\f130"; /* dashicons-format-status */
+	font-family: "dashicons";
+	font-size: var(--pfpu-icon-size-large);
+	color: var(--wp--preset--color--contrast, #1e1e1e);
+	opacity: 0.3;
+	position: absolute;
+	inset-inline-start: var(--pfpu-spacing-medium);
+	inset-block-start: var(--pfpu-spacing-large);
+}
+
+/**
+ * Link Format
+ * Prominent link display with arrow indicator
+ * Inspired by Twenty Thirteen's featured link style
+ */
+.format-link .entry-content > p:first-of-type,
+.format-link .wp-block-post-content > p:first-of-type {
+	background: var(--wp--preset--color--format-link-bg, #f0f8ff);
+	padding: var(--pfpu-spacing-large);
+	border-radius: var(--pfpu-border-radius-medium);
+	border: 0.125rem solid var(--wp--preset--color--format-link-border, #0073aa);
+}
+
+.format-link .entry-content > p:first-of-type a,
+.format-link .wp-block-post-content > p:first-of-type a {
+	font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+	font-weight: 600;
+	color: var(--wp--preset--color--contrast, #1e1e1e);
+	text-decoration: underline;
+	text-decoration-color: var(--wp--preset--color--format-link-border, #0073aa);
+	text-decoration-thickness: 0.125rem;
+	text-underline-offset: 0.1875rem;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--pfpu-spacing-small);
+}
+
+.format-link .entry-content > p:first-of-type a::after,
+.format-link .wp-block-post-content > p:first-of-type a::after {
+	content: "→";
+	font-size: var(--pfpu-icon-size-large);
+	color: var(--wp--preset--color--format-link-border, #0073aa);
+}
+
+/**
+ * Quote Format
+ * Enhanced quotation styling with large opening quote
+ * Inspired by Twenty Thirteen's elegant quote presentation
+ */
+.format-quote .wp-block-quote {
+	border-inline-start-width: 0.375rem;
+	border-inline-start-color: var(--wp--preset--color--format-quote-border, #0073aa);
+	padding-inline-start: var(--pfpu-spacing-xlarge);
+	font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+	font-style: italic;
+	position: relative;
+}
+
+.format-quote .wp-block-quote::before {
+	content: "\201C"; /* Opening curly quote */
+	font-size: 4rem;
+	color: var(--wp--preset--color--format-quote-accent, #0073aa);
+	opacity: 0.2;
+	position: absolute;
+	inset-inline-start: -0.5rem;
+	inset-block-start: -1rem;
+	font-style: normal;
+	line-height: 1;
+}
+
+.format-quote .wp-block-quote cite {
+	font-style: normal;
+	font-weight: 600;
+	display: block;
+	margin-block-start: var(--pfpu-spacing-medium);
+}
+
+.format-quote .wp-block-quote cite::before {
+	content: "—";
+	margin-inline-end: var(--pfpu-spacing-small);
+}
+
+/**
+ * Gallery Format
+ * Enhanced gallery presentation with visual container
+ */
+.format-gallery .wp-block-gallery {
+	border: 0.125rem solid var(--wp--preset--color--format-gallery-border, #cccccc);
+	padding: var(--pfpu-spacing-medium);
+	border-radius: var(--pfpu-border-radius-medium);
+	background: var(--wp--preset--color--base, #f0f0f1);
+}
+
+/**
+ * Image Format
+ * Featured image emphasis with frame effect
+ * Inspired by Twenty Thirteen's image showcase
+ */
+.format-image .wp-block-post-featured-image img,
+.format-image .wp-block-image img {
+	border: 0.5rem solid var(--wp--preset--color--format-image-border, #cccccc);
+	box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.1);
+	border-radius: var(--pfpu-border-radius-small);
+}
+
+/**
+ * Video Format
+ * Video container styling with AblePlayer support
+ */
+.format-video .wp-block-video,
+.format-video .wp-block-embed,
+.format-video .able-player {
+	border: 0.125rem solid var(--wp--preset--color--base, #f0f0f1);
+	padding: var(--pfpu-spacing-medium);
+	border-radius: var(--pfpu-border-radius-medium);
+	background: var(--wp--preset--color--format-video-bg, #f0f0f1);
+}
+
+/* AblePlayer integration */
+.format-video .able-player {
+	max-width: 100%;
+}
+
+/**
+ * Audio Format
+ * Audio player styling with AblePlayer and Podlove support
+ */
+.format-audio .wp-block-audio,
+.format-audio .able-player,
+.format-audio .podlove-web-player {
+	border: 0.125rem solid var(--wp--preset--color--base, #f0f0f1);
+	padding: var(--pfpu-spacing-large);
+	border-radius: var(--pfpu-border-radius-large);
+	background: var(--wp--preset--color--format-audio-bg, #f0f0f1);
+}
+
+/* AblePlayer audio integration */
+.format-audio .able-player {
+	max-width: 100%;
+}
+
+/* Podlove Web Player integration */
+.format-audio .podlove-web-player {
+	margin-block: var(--pfpu-spacing-large);
+}
+
+/**
+ * Chat Format
+ * Conversation log styling
+ */
+.format-chat .chatlog {
+	background: var(--wp--preset--color--format-chat-bg, #f0f0f1);
+	border-radius: var(--pfpu-border-radius-large);
+	padding: var(--pfpu-spacing-large);
+}
+
+/* ============================================================================
+   Post Format Icons in Archive/Loop Views
+   ========================================================================= */
+
+/**
+ * Format indicators for post list views
+ * Adds small icons to identify formats at a glance
+ * Inspired by Twenty Thirteen's format badges
+ */
+.wp-block-post-template .format-aside .wp-block-post-title,
+.wp-block-post-template .format-status .wp-block-post-title,
+.wp-block-post-template .format-link .wp-block-post-title,
+.wp-block-post-template .format-quote .wp-block-post-title,
+.wp-block-post-template .format-gallery .wp-block-post-title,
+.wp-block-post-template .format-image .wp-block-post-title,
+.wp-block-post-template .format-video .wp-block-post-title,
+.wp-block-post-template .format-audio .wp-block-post-title,
+.wp-block-post-template .format-chat .wp-block-post-title {
+	display: flex;
+	align-items: center;
+	gap: var(--pfpu-spacing-small);
+}
+
+.wp-block-post-template .format-aside .wp-block-post-title::before,
+.wp-block-post-template .format-status .wp-block-post-title::before,
+.wp-block-post-template .format-link .wp-block-post-title::before,
+.wp-block-post-template .format-quote .wp-block-post-title::before,
+.wp-block-post-template .format-gallery .wp-block-post-title::before,
+.wp-block-post-template .format-image .wp-block-post-title::before,
+.wp-block-post-template .format-video .wp-block-post-title::before,
+.wp-block-post-template .format-audio .wp-block-post-title::before,
+.wp-block-post-template .format-chat .wp-block-post-title::before {
+	font-family: "dashicons";
+	font-size: var(--pfpu-icon-size-medium);
+	color: var(--wp--preset--color--primary, #0073aa);
+	opacity: 0.6;
+	flex-shrink: 0;
+}
+
+.wp-block-post-template .format-aside .wp-block-post-title::before {
+	content: "\f125"; /* dashicons-format-aside */
+}
+
+.wp-block-post-template .format-status .wp-block-post-title::before {
+	content: "\f130"; /* dashicons-format-status */
+}
+
+.wp-block-post-template .format-link .wp-block-post-title::before {
+	content: "\f103"; /* dashicons-admin-links */
+}
+
+.wp-block-post-template .format-quote .wp-block-post-title::before {
+	content: "\f122"; /* dashicons-format-quote */
+}
+
+.wp-block-post-template .format-gallery .wp-block-post-title::before {
+	content: "\f161"; /* dashicons-format-gallery */
+}
+
+.wp-block-post-template .format-image .wp-block-post-title::before {
+	content: "\f128"; /* dashicons-format-image */
+}
+
+.wp-block-post-template .format-video .wp-block-post-title::before {
+	content: "\f126"; /* dashicons-format-video */
+}
+
+.wp-block-post-template .format-audio .wp-block-post-title::before {
+	content: "\f127"; /* dashicons-format-audio */
+}
+
+.wp-block-post-template .format-chat .wp-block-post-title::before {
+	content: "\f125"; /* dashicons-format-chat */
+}
+
+/* ============================================================================
+   Archive/Query Loop Styling
+   ========================================================================= */
+
+/**
+ * Format-specific styling in archives
+ * Provides visual distinction in post listings
+ */
+.wp-block-post-template .format-aside,
+.wp-block-post-template .format-status {
+	background: var(--wp--preset--color--base, #f0f0f1);
+	padding: var(--pfpu-spacing-large);
+	border-radius: var(--pfpu-border-radius-medium);
+}
+
+.wp-block-post-template .format-link {
+	border-inline-start: 0.25rem solid var(--wp--preset--color--primary, #0073aa);
+	padding-inline-start: var(--pfpu-spacing-medium);
+}
+
+.wp-block-post-template .format-quote {
+	font-style: italic;
+	border-inline-start: 0.25rem solid var(--wp--preset--color--primary, #0073aa);
+	padding-inline-start: var(--pfpu-spacing-medium);
+}
+
+.wp-block-post-template .format-gallery,
+.wp-block-post-template .format-image,
+.wp-block-post-template .format-video,
+.wp-block-post-template .format-audio {
+	border: 0.0625rem solid var(--wp--preset--color--base, #f0f0f1);
+	padding: var(--pfpu-spacing-medium);
+	border-radius: var(--pfpu-border-radius-small);
+}
+
+/* ============================================================================
+   Responsive Adjustments
+   ========================================================================= */
+
+@media (max-width: 48rem) {
+	.format-aside .entry-content,
+	.format-aside .wp-block-post-content {
+		padding: var(--pfpu-spacing-medium);
+	}
+
+	.format-status .entry-content,
+	.format-status .wp-block-post-content {
+		font-size: clamp(1.125rem, 1rem + 0.5vw, 1.5rem);
+	}
+
+	.format-link .entry-content > p:first-of-type,
+	.format-link .wp-block-post-content > p:first-of-type {
+		padding: var(--pfpu-spacing-medium);
+	}
+
+	.format-quote .wp-block-quote {
+		padding-inline-start: var(--pfpu-spacing-medium);
+	}
+}
+
+/* ============================================================================
+   RTL Language Support
+   ========================================================================= */
+
+html[dir="rtl"] .format-aside .entry-content,
+html[dir="rtl"] .format-aside .wp-block-post-content {
+	border-inline-start: none;
+	border-inline-end: 0.25rem solid var(--wp--preset--color--contrast, #1e1e1e);
+}
+
+html[dir="rtl"] .format-quote .wp-block-quote {
+	border-inline-start: none;
+	border-inline-end-width: 0.375rem;
+	border-inline-end-color: var(--wp--preset--color--primary, #0073aa);
+}
+
+html[dir="rtl"] .format-link .entry-content > p:first-of-type a::after,
+html[dir="rtl"] .format-link .wp-block-post-content > p:first-of-type a::after {
+	content: "←";
+}
+
+/* ============================================================================
+   High Contrast Mode Support
+   ========================================================================= */
+
+@media (prefers-contrast: high) {
+	.format-aside .entry-content,
+	.format-aside .wp-block-post-content {
+		border-inline-start-width: 0.375rem;
+	}
+
+	.format-quote .wp-block-quote {
+		border-inline-start-width: 0.5rem;
+	}
+
+	.format-link .entry-content > p:first-of-type,
+	.format-link .wp-block-post-content > p:first-of-type {
+		border-width: 0.1875rem;
+	}
+}
+
+/* ============================================================================
+   Reduced Motion Support
+   ========================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+	* {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}
+
+/* ============================================================================
+   Print Styles
+   ========================================================================= */
+
+@media print {
+	.format-aside .entry-content::before,
+	.format-aside .wp-block-post-content::before,
+	.format-status .entry-content::before,
+	.format-status .wp-block-post-content::before,
+	.format-quote .wp-block-quote::before {
+		display: none; /* Remove icons for print */
+	}
+
+	.wp-block-post-template .format-aside .wp-block-post-title::before,
+	.wp-block-post-template .format-status .wp-block-post-title::before,
+	.wp-block-post-template .format-link .wp-block-post-title::before,
+	.wp-block-post-template .format-quote .wp-block-post-title::before,
+	.wp-block-post-template .format-gallery .wp-block-post-title::before,
+	.wp-block-post-template .format-image .wp-block-post-title::before,
+	.wp-block-post-template .format-video .wp-block-post-title::before,
+	.wp-block-post-template .format-audio .wp-block-post-title::before,
+	.wp-block-post-template .format-chat .wp-block-post-title::before {
+		display: none;
+	}
+}
+
+/* ============================================================================
+   Dark Mode Support
+   ========================================================================= */
+
+@media (prefers-color-scheme: dark) {
+	.format-aside .entry-content,
+	.format-aside .wp-block-post-content,
+	.format-audio .wp-block-audio,
+	.format-audio .able-player,
+	.format-audio .podlove-web-player,
+	.format-video .wp-block-video,
+	.format-video .able-player,
+	.format-chat .chatlog {
+		/* Respect theme's dark mode colors via custom properties */
+		background: var(--wp--preset--color--base, #1e1e1e);
+	}
+}

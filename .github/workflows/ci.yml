@@ -1,0 +1,238 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # PHP Unit & Integration Tests
+  phpunit:
+    name: PHPUnit (PHP ${{ matrix.php }} / WP ${{ matrix.wordpress }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1', '8.2']
+        wordpress: ['6.4', '6.5', 'latest']
+
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: mysqli, zip
+          coverage: xdebug
+          tools: composer, cs2pr
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Install WordPress test suite
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wordpress }}
+
+      - name: Run PHPUnit tests
+        run: composer test
+
+  # PHP Coding Standards
+  phpcs:
+    name: PHP Coding Standards
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: composer, cs2pr
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPCS
+        run: composer phpcs -- --report=checkstyle | cs2pr
+
+  # PHPStan Static Analysis
+  phpstan:
+    name: PHPStan Analysis
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: composer
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run PHPStan
+        run: composer phpstan
+
+  # Accessibility Tests
+  accessibility:
+    name: Accessibility Tests (WCAG 2.2 AA)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run accessibility tests
+        run: npm run test:a11y
+        env:
+          WP_BASE_URL: http://localhost:8888
+          WP_USERNAME: admin
+          WP_PASSWORD: password
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: accessibility-report
+          path: playwright-report/
+          retention-days: 30
+
+  # E2E Tests
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        env:
+          WP_BASE_URL: http://localhost:8888
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+  # Translation Files
+  i18n:
+    name: Translation Files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: composer
+
+      - name: Install Potomatic
+        run: composer global require gravitykit/potomatic
+
+      - name: Generate POT file
+        run: |
+          export PATH="$HOME/.composer/vendor/bin:$PATH"
+          potomatic pot
+
+      - name: Check for translation changes
+        run: |
+          git diff --exit-code languages/*.pot || (echo "::warning::Translation files need updating" && exit 0)
+
+  # Build Distribution ZIP
+  build:
+    name: Build Distribution
+    runs-on: ubuntu-latest
+    needs: [phpunit, phpcs, phpstan, accessibility]
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          tools: composer
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          composer install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Build JavaScript
+        run: npm run build
+
+      - name: Generate translations
+        run: |
+          composer global require gravitykit/potomatic
+          export PATH="$HOME/.composer/vendor/bin:$PATH"
+          potomatic build
+
+      - name: Create distribution archive
+        run: |
+          mkdir -p dist
+          rsync -av --exclude-from='.distignore' . dist/post-formats-power-up/
+          cd dist
+          zip -r post-formats-power-up.zip post-formats-power-up
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: post-formats-power-up-zip
+          path: dist/post-formats-power-up.zip

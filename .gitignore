@@ -1,0 +1,72 @@
+# WordPress
+.htaccess
+wp-config.php
+wp-content/uploads/
+wp-content/blogs.dir/
+wp-content/upgrade/
+wp-content/backup-db/
+wp-content/cache/
+wp-content/backups/
+sitemap.xml
+*.log
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm/
+.node_repl_history
+
+# Build
+/build/
+*.map
+
+# OS Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+.project
+.settings/
+.buildpath
+
+# Composer
+/vendor/
+composer.lock
+
+# Deployment
+*.zip
+.wordpress-org/
+dist/
+test-dist/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Testing
+/test-results
+/playwright-report
+/.playwright
+/coverage-report
+/tests/visual/*.spec.js-snapshots
+
+# Translation source files (keep .pot, exclude .po locally)
+languages/*.po
+languages/*.mo
+
+# Keep these
+!languages/.gitkeep
+!build/.gitkeep

@@ -1,0 +1,96 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "chatlog/conversation",
+	"version": "1.0.0",
+	"title": "Chat Log",
+	"category": "text",
+	"icon": "format-chat",
+	"description": "Display chat transcripts from Slack, Discord, Teams, Telegram, WhatsApp, or Signal with accessible, threaded formatting.",
+	"keywords": [
+		"chat",
+		"conversation",
+		"transcript",
+		"slack",
+		"discord",
+		"messaging"
+	],
+	"textdomain": "chatlog-block",
+	"attributes": {
+		"rawTranscript": {
+			"type": "string",
+			"default": ""
+		},
+		"source": {
+			"type": "string",
+			"enum": ["auto", "slack", "discord", "teams", "telegram", "whatsapp", "signal"],
+			"default": "auto"
+		},
+		"displayStyle": {
+			"type": "string",
+			"enum": ["bubbles", "irc", "transcript", "timeline"],
+			"default": "bubbles"
+		},
+		"showAvatars": {
+			"type": "boolean",
+			"default": true
+		},
+		"showTimestamps": {
+			"type": "boolean",
+			"default": true
+		},
+		"timestampFormat": {
+			"type": "string",
+			"enum": ["relative", "absolute", "time-only"],
+			"default": "time-only"
+		},
+		"collapseThreads": {
+			"type": "boolean",
+			"default": false
+		},
+		"maxVisibleMessages": {
+			"type": "number",
+			"default": 0
+		},
+		"showParticipantList": {
+			"type": "boolean",
+			"default": false
+		},
+		"highlightCurrentUser": {
+			"type": "string",
+			"default": ""
+		},
+		"deviceFrame": {
+			"type": "string",
+			"enum": ["none", "phone", "desktop", "slack-app", "discord-app"],
+			"default": "none"
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": ["left", "center", "wide", "full"],
+		"anchor": true,
+		"className": true,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"width": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css"
+}

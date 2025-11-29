@@ -1,0 +1,67 @@
+name: Deploy to WordPress.org
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy:
+    name: Deploy to WordPress.org SVN
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Composer dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      - name: Build JavaScript assets
+        run: npm run build
+
+      - name: Generate translation files
+        run: composer i18n
+
+      - name: Create distribution archive
+        run: |
+          mkdir -p dist
+          rsync -av --exclude-from='.distignore' . dist/post-formats-power-up/
+          cd dist
+          zip -r ../post-formats-power-up.zip post-formats-power-up/
+
+      - name: WordPress Plugin Deploy
+        id: deploy
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        with:
+          generate-zip: false
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: post-formats-power-up
+          VERSION: ${{ github.event.release.tag_name }}
+
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./post-formats-power-up.zip
+          asset_name: post-formats-power-up-${{ github.event.release.tag_name }}.zip
+          asset_content_type: application/zip

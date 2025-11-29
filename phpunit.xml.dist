@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	beStrictAboutTestsThatDoNotTestAnything="true"
+	beStrictAboutOutputDuringTests="true"
+	beStrictAboutChangesToGlobalState="true"
+	>
+	<testsuites>
+		<testsuite name="unit">
+			<directory suffix=".php">./tests/unit</directory>
+		</testsuite>
+		<testsuite name="integration">
+			<directory suffix=".php">./tests/integration</directory>
+		</testsuite>
+		<testsuite name="performance">
+			<directory suffix=".php">./tests/performance</directory>
+			<exclude>./tests/performance/*stress*</exclude>
+		</testsuite>
+	</testsuites>
+
+	<groups>
+		<exclude>
+			<group>slow</group>
+			<group>stress</group>
+		</exclude>
+	</groups>
+
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">./includes</directory>
+			<directory suffix=".php">./blocks</directory>
+			<file>./post-formats-power-up.php</file>
+		</include>
+		<exclude>
+			<directory>./tests</directory>
+			<directory>./vendor</directory>
+			<directory>./node_modules</directory>
+		</exclude>
+		<report>
+			<html outputDirectory="coverage-report"/>
+			<text outputFile="php://stdout" showUncoveredFiles="false"/>
+		</report>
+	</coverage>
+
+	<php>
+		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="vendor/yoast/phpunit-polyfills"/>
+	</php>
+</phpunit>

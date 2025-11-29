@@ -1,0 +1,56 @@
+{
+    "name": "Post Formats Power-Up",
+    "slug": "post-formats-power-up",
+    "domain": "post-formats-power-up",
+    "version": "1.0.0",
+    "author": "Courtney Robertson",
+    "author_uri": "https://profiles.wordpress.org/courane01/",
+    "license": "GPL v2 or later",
+    "headers": {
+        "Report-Msgid-Bugs-To": "https://github.com/courane01/post-formats-power-up/issues",
+        "Last-Translator": "Courtney Robertson",
+        "Language-Team": "Post Formats Power-Up"
+    },
+    "paths": {
+        "source": [
+            ".",
+            "includes",
+            "src",
+            "templates",
+            "patterns",
+            "blocks"
+        ],
+        "exclude": [
+            "node_modules",
+            "vendor",
+            "tests",
+            "build",
+            "dist",
+            ".git",
+            ".github"
+        ],
+        "languages": "languages"
+    },
+    "keywords": [
+        "__",
+        "_e",
+        "_x",
+        "_ex",
+        "_n",
+        "_nx",
+        "_n_noop",
+        "_nx_noop",
+        "esc_html__",
+        "esc_html_e",
+        "esc_html_x",
+        "esc_attr__",
+        "esc_attr_e",
+        "esc_attr_x"
+    ],
+    "js_keywords": [
+        "__",
+        "_n",
+        "_x",
+        "_nx"
+    ]
+}

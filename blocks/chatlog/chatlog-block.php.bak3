@@ -1,0 +1,1047 @@
+<?php
+/**
+ * Plugin Name:       Chat Log – Display Conversation Transcripts
+ * Plugin URI:        https://wordpress.org/plugins/chatlog-block/
+ * Description:       Display beautiful, accessible chat transcripts from Slack, Discord, Microsoft Teams, Telegram, WhatsApp, and Signal with threaded conversations and multiple visual styles.
+ * Version:           1.0.0
+ * Requires at least: 6.4
+ * Requires PHP:      7.4
+ * Author:            Courtney Robertson
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       chatlog-block
+ * Domain Path:       /languages
+ *
+ * @package ChatLog
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// Only define constants if not already defined (allow standalone plugin to take precedence)
+if ( ! defined( 'CHATLOG_VERSION' ) ) {
+	define( 'CHATLOG_VERSION', '1.0.0' );
+}
+if ( ! defined( 'CHATLOG_PLUGIN_DIR' ) ) {
+	define( 'CHATLOG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
+if ( ! defined( 'CHATLOG_PLUGIN_URL' ) ) {
+	define( 'CHATLOG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
+if ( ! defined( 'CHATLOG_PLUGIN_FILE' ) ) {
+	define( 'CHATLOG_PLUGIN_FILE', __FILE__ );
+}
+
+/**
+ * Load plugin text domain for translations
+ *
+ * Registers the chatlog-block text domain to enable internationalization.
+ * This function is hooked to 'plugins_loaded' to ensure translations
+ * are loaded at the appropriate time.
+ *
+ * @since 1.0.0
+ *
+ * @return void
+ */
+if ( ! function_exists( 'chatlog_load_textdomain' ) ) {
+	function chatlog_load_textdomain() {
+		load_plugin_textdomain(
+			'chatlog-block',
+			false,
+			dirname( plugin_basename( __FILE__ ) ) . '/languages'
+		);
+	}
+	add_action( 'plugins_loaded', 'chatlog_load_textdomain' );
+}
+
+/**
+ * Register the Chat Log block
+ *
+ * Registers all necessary scripts, styles, and the block type itself.
+ * This function handles:
+ * - Editor JavaScript and dependencies
+ * - Script translations
+ * - Editor and frontend stylesheets
+ * - Block registration with render callback
+ *
+ * @since 1.0.0
+ *
+ * @global string CHATLOG_VERSION Plugin version constant
+ * @global string CHATLOG_PLUGIN_URL Plugin URL constant
+ * @global string CHATLOG_PLUGIN_DIR Plugin directory constant
+ *
+ * @return void
+ */
+if ( ! function_exists( 'chatlog_register_block' ) ) {
+	function chatlog_register_block() {
+	// Register block script
+	wp_register_script(
+		'chatlog-block-editor',
+		CHATLOG_PLUGIN_URL . 'build/index.js',
+		array(
+			'wp-blocks',
+			'wp-element',
+			'wp-block-editor',
+			'wp-components',
+			'wp-i18n',
+			'wp-data',
+		),
+		CHATLOG_VERSION,
+		true
+	);
+
+	// Set script translations
+	wp_set_script_translations(
+		'chatlog-block-editor',
+		'chatlog-block',
+		CHATLOG_PLUGIN_DIR . 'languages'
+	);
+
+	// Register editor styles
+	wp_register_style(
+		'chatlog-block-editor',
+		CHATLOG_PLUGIN_URL . 'build/index.css',
+		array( 'wp-edit-blocks' ),
+		CHATLOG_VERSION
+	);
+
+	// Register frontend styles
+	wp_register_style(
+		'chatlog-block-style',
+		CHATLOG_PLUGIN_URL . 'build/style-index.css',
+		array(),
+		CHATLOG_VERSION
+	);
+
+	// Register the block
+	register_block_type(
+		CHATLOG_PLUGIN_DIR . 'build/block.json',
+		array(
+			'render_callback' => 'chatlog_render_callback',
+		)
+	);
+	}
+	add_action( 'init', 'chatlog_register_block' );
+}
+
+/**
+ * Get emoji shortcode map
+ *
+ * Returns an associative array mapping emoji shortcodes (e.g., ':smile:')
+ * to their corresponding Unicode emoji characters. This map is used by
+ * chatlog_replace_emoji() to convert shortcodes in message text.
+ *
+ * The map includes 100+ commonly used emoji across categories:
+ * - Smileys & Emotion
+ * - Hand gestures
+ * - Hearts
+ * - Common symbols
+ * - Nature
+ * - Food & Drink
+ * - Activities
+ * - Objects
+ * - Symbols
+ *
+ * @since 1.0.0
+ *
+ * @return array Associative array of shortcode => emoji pairs.
+ *               Example: array( ':smile:' => '😊', ':fire:' => '🔥' )
+ *
+ * @example
+ * $emoji_map = chatlog_get_emoji_map();
+ * echo $emoji_map[':thumbsup:']; // Outputs: 👍
+ */
+if ( ! function_exists( 'chatlog_get_emoji_map' ) ) {
+	function chatlog_get_emoji_map() {
+		return array(
+			// Smileys & Emotion
+			':smile:' => '😊',
+			':grinning:' => '😀',
+			':smiley:' => '😃',
+			':grin:' => '😄',
+			':laughing:' => '😆',
+			':sweat_smile:' => '😅',
+			':joy:' => '😂',
+			':rofl:' => '🤣',
+			':relaxed:' => '☺️',
+			':blush:' => '😊',
+			':innocent:' => '😇',
+			':wink:' => '😉',
+			':heart_eyes:' => '😍',
+			':kissing_heart:' => '😘',
+			':kissing:' => '😗',
+			':thinking:' => '🤔',
+			':neutral_face:' => '😐',
+			':expressionless:' => '😑',
+			':no_mouth:' => '😶',
+			':smirk:' => '😏',
+			':unamused:' => '😒',
+			':grimacing:' => '😬',
+			':lying_face:' => '🤥',
+			':relieved:' => '😌',
+			':pensive:' => '😔',
+			':sleepy:' => '😪',
+			':sleeping:' => '😴',
+			':mask:' => '😷',
+			':face_with_thermometer:' => '🤒',
+			':face_with_head_bandage:' => '🤕',
+			':dizzy_face:' => '😵',
+			':sunglasses:' => '😎',
+			':confused:' => '😕',
+			':worried:' => '😟',
+			':frowning:' => '🙁',
+			':cry:' => '😢',
+			':sob:' => '😭',
+			':scream:' => '😱',
+			':fearful:' => '😨',
+			':angry:' => '😠',
+			':rage:' => '😡',
+			':triumph:' => '😤',
+			':exploding_head:' => '🤯',
+			':flushed:' => '😳',
+			':disappointed:' => '😞',
+			':sweat:' => '😓',
+			':weary:' => '😩',
+			':tired_face:' => '😫',
+			':yawning_face:' => '🥱',
+			':partying_face:' => '🥳',
+			':pleading_face:' => '🥺',
+			
+			// Hand gestures
+			':thumbsup:' => '👍',
+			':thumbs_up:' => '👍',
+			':+1:' => '👍',
+			':thumbsdown:' => '👎',
+			':thumbs_down:' => '👎',
+			':-1:' => '👎',
+			':clap:' => '👏',
+			':raised_hands:' => '🙌',
+			':wave:' => '👋',
+			':ok_hand:' => '👌',
+			':point_up:' => '☝️',
+			':point_down:' => '👇',
+			':point_left:' => '👈',
+			':point_right:' => '👉',
+			':raised_hand:' => '✋',
+			':pray:' => '🙏',
+			':handshake:' => '🤝',
+			':muscle:' => '💪',
+			':fist:' => '✊',
+			':v:' => '✌️',
+			':crossed_fingers:' => '🤞',
+			':metal:' => '🤘',
+			':call_me_hand:' => '🤙',
+			
+			// Hearts
+			':heart:' => '❤️',
+			':orange_heart:' => '🧡',
+			':yellow_heart:' => '💛',
+			':green_heart:' => '💚',
+			':blue_heart:' => '💙',
+			':purple_heart:' => '💜',
+			':black_heart:' => '🖤',
+			':brown_heart:' => '🤎',
+			':white_heart:' => '🤍',
+			':broken_heart:' => '💔',
+			':two_hearts:' => '💕',
+			':sparkling_heart:' => '💖',
+			':heartpulse:' => '💗',
+			':heartbeat:' => '💓',
+			':revolving_hearts:' => '💞',
+			':cupid:' => '💘',
+			':gift_heart:' => '💝',
+			
+			// Common symbols
+			':fire:' => '🔥',
+			':star:' => '⭐',
+			':star2:' => '🌟',
+			':sparkles:' => '✨',
+			':zap:' => '⚡',
+			':boom:' => '💥',
+			':dizzy:' => '💫',
+			':100:' => '💯',
+			':sos:' => '🆘',
+			':white_check_mark:' => '✅',
+			':heavy_check_mark:' => '✔️',
+			':x:' => '❌',
+			':o:' => '⭕',
+			':wavy_dash:' => '〰️',
+			':recycle:' => '♻️',
+			
+			// Nature
+			':sun:' => '☀️',
+			':cloud:' => '☁️',
+			':umbrella:' => '☂️',
+			':snowflake:' => '❄️',
+			':snowman:' => '⛄',
+			':rainbow:' => '🌈',
+			':tree:' => '🌳',
+			':herb:' => '🌿',
+			':seedling:' => '🌱',
+			':rose:' => '🌹',
+			':tulip:' => '🌷',
+			':cherry_blossom:' => '🌸',
+			
+			// Food & Drink
+			':coffee:' => '☕',
+			':tea:' => '🍵',
+			':beer:' => '🍺',
+			':beers:' => '🍻',
+			':wine_glass:' => '🍷',
+			':pizza:' => '🍕',
+			':hamburger:' => '🍔',
+			':cake:' => '🍰',
+			':birthday:' => '🎂',
+			':apple:' => '🍎',
+			':banana:' => '🍌',
+			':strawberry:' => '🍓',
+			':watermelon:' => '🍉',
+			':bread:' => '🍞',
+			':popcorn:' => '🍿',
+			
+			// Activities
+			':soccer:' => '⚽',
+			':basketball:' => '🏀',
+			':football:' => '🏈',
+			':baseball:' => '⚾',
+			':tennis:' => '🎾',
+			':8ball:' => '🎱',
+			':trophy:' => '🏆',
+			':medal:' => '🏅',
+			':dart:' => '🎯',
+			':game_die:' => '🎲',
+			
+			// Objects
+			':phone:' => '☎️',
+			':calling:' => '📲',
+			':computer:' => '💻',
+			':keyboard:' => '⌨️',
+			':email:' => '📧',
+			':envelope:' => '✉️',
+			':pencil:' => '📝',
+			':memo:' => '📝',
+			':book:' => '📖',
+			':books:' => '📚',
+			':newspaper:' => '📰',
+			':calendar:' => '📅',
+			':clock:' => '🕐',
+			':alarm_clock:' => '⏰',
+			':hourglass:' => '⌛',
+			':watch:' => '⌚',
+			':lock:' => '🔒',
+			':unlock:' => '🔓',
+			':key:' => '🔑',
+			':mag:' => '🔍',
+			':bulb:' => '💡',
+			':camera:' => '📷',
+			':video_camera:' => '📹',
+			':movie_camera:' => '🎥',
+			':money_with_wings:' => '💸',
+			':dollar:' => '💵',
+			':chart_with_upwards_trend:' => '📈',
+			':chart_with_downwards_trend:' => '📉',
+			
+			// Symbols
+			':warning:' => '⚠️',
+			':no_entry:' => '⛔',
+			':stop_sign:' => '🛑',
+			':question:' => '❓',
+			':grey_question:' => '❔',
+			':exclamation:' => '❗',
+			':grey_exclamation:' => '❕',
+			':information_source:' => 'ℹ️',
+			':new:' => '🆕',
+			':up:' => '🆙',
+			':cool:' => '🆒',
+			':free:' => '🆓',
+			':ok:' => '🆗',
+			':vs:' => '🆚',
+			':arrow_up:' => '⬆️',
+			':arrow_down:' => '⬇️',
+			':arrow_left:' => '⬅️',
+			':arrow_right:' => '➡️',
+			':arrow_upper_right:' => '↗️',
+			':arrow_lower_right:' => '↘️',
+			':arrow_lower_left:' => '↙️',
+			':arrow_upper_left:' => '↖️',
+		);
+	}
+}
+
+/**
+ * Replace emoji shortcodes with actual emoji
+ *
+ * Converts emoji shortcodes (e.g., ':smile:', ':thumbsup:') to their
+ * corresponding Unicode emoji characters using the emoji map from
+ * chatlog_get_emoji_map(). This function is automatically called during
+ * transcript parsing to ensure emoji display correctly.
+ *
+ * @since 1.0.0
+ *
+ * @param string $text Text containing emoji shortcodes. May contain multiple
+ *                     shortcodes and other content.
+ *
+ * @return string Text with shortcodes replaced by emoji characters.
+ *
+ * @example
+ * $text = "Great work :thumbsup: :fire:";
+ * echo chatlog_replace_emoji( $text );
+ * // Outputs: "Great work 👍 🔥"
+ *
+ * @see chatlog_get_emoji_map() For the complete emoji mapping.
+ */
+if ( ! function_exists( 'chatlog_replace_emoji' ) ) {
+	function chatlog_replace_emoji( $text ) {
+		$emoji_map = chatlog_get_emoji_map();
+		
+		// Replace all shortcodes with their emoji equivalents
+		foreach ( $emoji_map as $shortcode => $emoji ) {
+			$text = str_replace( $shortcode, $emoji, $text );
+		}
+		
+		return $text;
+	}
+}
+
+/**
+ * Parse chat transcript
+ *
+ * Parses raw chat transcript text into a structured array of messages.
+ * Supports multiple platform formats including Slack, Discord, WhatsApp,
+ * Microsoft Teams, Telegram, and Signal. Can auto-detect the platform
+ * or use a specified source.
+ *
+ * The parser handles:
+ * - Multi-line messages
+ * - Threaded conversations
+ * - Emoji shortcode conversion
+ * - Various timestamp formats
+ * - Platform-specific formatting
+ *
+ * @since 1.0.0
+ *
+ * @param string $raw_transcript Raw transcript text from any supported platform.
+ *                               Can contain multiple messages with timestamps and usernames.
+ * @param string $source         Optional. Platform identifier for parsing. Accepts:
+ *                               'auto' (default), 'slack', 'discord', 'teams',
+ *                               'telegram', 'whatsapp', 'signal'.
+ *
+ * @return array|WP_Error Array of parsed message objects on success, WP_Error on failure.
+ *                        Each message object contains:
+ *                        - string 'speaker'    Username/display name
+ *                        - string 'timestamp'  Message timestamp
+ *                        - string 'body'       Message content (with emoji converted)
+ *                        - string 'type'       Message type ('message', 'system', etc.)
+ *                        - bool   'is_thread'  Optional. Whether message is in a thread
+ *
+ * @example
+ * // Parse Slack-format transcript
+ * $transcript = "Alice  10:30 AM\nHello!\nBob  10:31 AM\nHi there!";
+ * $messages = chatlog_parse_transcript( $transcript, 'slack' );
+ *
+ * if ( ! is_wp_error( $messages ) ) {
+ *     foreach ( $messages as $message ) {
+ *         echo $message['speaker'] . ': ' . $message['body'];
+ *     }
+ * }
+ *
+ * @example
+ * // Auto-detect platform
+ * $messages = chatlog_parse_transcript( $transcript, 'auto' );
+ *
+ * @see chatlog_replace_emoji() For emoji shortcode conversion.
+ */
+if ( ! function_exists( 'chatlog_parse_transcript' ) ) {
+	function chatlog_parse_transcript( $raw_transcript, $source = 'auto' ) {
+		if ( empty( $raw_transcript ) ) {
+			return new WP_Error( 'empty_transcript', __( 'No transcript provided', 'chatlog-block' ) );
+		}
+
+		$messages = array();
+		$lines = explode( "\n", $raw_transcript );
+		$current_message = null;
+		$last_username = null;
+
+		// Detect format and parse accordingly
+		foreach ( $lines as $line_index => $line ) {
+			$line = trim( $line );
+			if ( empty( $line ) ) {
+				continue;
+			}
+
+			// Skip reaction counts and reply indicators
+			if ( preg_match( '/^\d+\s*(?:repl(?:y|ies))?$/i', $line ) ) {
+				continue;
+			}
+
+			// Skip URLs
+			if ( preg_match( '/^https?:\/\//', $line ) ) {
+				continue;
+			}
+
+			// Skip "Posted using" lines
+			if ( preg_match( '/^Posted using/', $line ) ) {
+				continue;
+			}
+
+			// Skip lines that are ONLY emoji shortcodes with optional "Last reply" text
+			if ( preg_match( '/^(?::\w+(?:-\w+)*:|\+\d+)\s*(?:Last reply)?/i', $line ) && ! preg_match( '/\d{1,2}:\d{2}\s*(?:AM|PM)/i', $line ) ) {
+				continue;
+			}
+
+			// Slack format: emoji + timestamp on same line (e.g., ":flag-ie:  3:45 AM")
+			if ( preg_match( '/^:\w+(?:-\w+)*:\s+(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm)?)$/i', $line, $matches ) ) {
+				// Save previous message if exists
+				if ( $current_message !== null ) {
+					$current_message['body'] = chatlog_replace_emoji( $current_message['body'] );
+					$messages[] = $current_message;
+				}
+
+				// Use the last username we saw
+				$username = $last_username ?: 'Unknown';
+
+				$current_message = array(
+					'speaker' => trim( $username ),
+					'timestamp' => trim( $matches[1] ),
+					'body' => '',
+					'type' => 'message',
+					'is_thread' => false,
+				);
+				continue;
+			}
+
+			// Slack format with relative dates or just time
+			// Handles: "Yesterday at 3:45 PM", "3:45 PM", "3:45" (sequential messages from same user)
+			if ( preg_match( '/^(?:Yesterday|Today|Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)?\s*(?:at\s+)?(\d{1,2}:\d{2})\s*(?:AM|PM|am|pm)?$/i', $line, $matches ) ) {
+				// This is a timestamp line
+				// Save previous message if exists
+				if ( $current_message !== null ) {
+					// Replace emoji shortcodes in the message body
+					$current_message['body'] = chatlog_replace_emoji( $current_message['body'] );
+					$messages[] = $current_message;
+				}
+
+				// Use the last username we saw (allows sequential messages from same person)
+				$username = $last_username ?: 'Unknown';
+
+				$current_message = array(
+					'speaker' => trim( $username ),
+					'timestamp' => trim( $matches[1] ),
+					'body' => '',
+					'type' => 'message',
+					'is_thread' => false,
+				);
+				continue;
+			}
+
+			// Check if this line looks like a username (before timestamp)
+			// Only detect usernames when we're NOT already collecting a message body
+		// Usernames don't start with : (emoji), digits, +, or contain timestamps
+			if ( ( $current_message === null || ! empty( $current_message['body'] ) ) && strlen( $line ) < 80 &&
+			     ! preg_match( '/^[:\d\+]/', $line ) &&
+			     ! preg_match( '/\d{1,2}:\d{2}\s*(?:AM|PM)/i', $line ) &&
+			     ! preg_match( '/^https?:\/\//', $line ) ) {
+				// Could be a username - save it
+				$last_username = $line;
+				continue;
+			}
+
+			// Slack/Discord format variations (original formats):
+			// 1. "Name  HH:MM AM/PM" (2+ spaces)
+			// 2. "Name [HH:MM AM/PM]" (brackets)
+			// 3. "Name HH:MM AM/PM" (single space)
+			if ( preg_match( '/^(.+?)(?:\s{2,}|\s*\[|\s+)(\d{1,2}:\d{2}\s*(?:AM|PM|am|pm))\]?(?:\s+\(in thread\))?$/i', $line, $matches ) ) {
+				// Save previous message if exists
+				if ( $current_message !== null ) {
+					// Replace emoji shortcodes in the message body
+					$current_message['body'] = chatlog_replace_emoji( $current_message['body'] );
+					$messages[] = $current_message;
+				}
+
+				$current_message = array(
+					'speaker' => trim( $matches[1] ),
+					'timestamp' => trim( $matches[2] ),
+					'body' => '',
+					'type' => 'message',
+					'is_thread' => stripos( $line, 'in thread' ) !== false,
+				);
+				continue;
+			}
+
+			// WhatsApp format: [DD/MM/YYYY, HH:MM:SS] Name: Message
+			if ( preg_match( '/^\[([^\]]+)\]\s*([^:]+):\s*(.+)$/', $line, $matches ) ) {
+				$body = chatlog_replace_emoji( $matches[3] );
+				$messages[] = array(
+					'timestamp' => $matches[1],
+					'speaker' => trim( $matches[2] ),
+					'body' => $body,
+					'type' => 'message',
+				);
+				continue;
+			}
+
+			// If we have a current message, this line is part of its body
+			if ( $current_message !== null ) {
+				if ( ! empty( $current_message['body'] ) ) {
+					$current_message['body'] .= "\n" . $line;
+				} else {
+					$current_message['body'] = $line;
+				}
+			}
+		}
+
+		// Don't forget the last message
+		if ( $current_message !== null ) {
+			$current_message['body'] = chatlog_replace_emoji( $current_message['body'] );
+			$messages[] = $current_message;
+		}
+
+		if ( empty( $messages ) ) {
+			return new WP_Error( 'parse_failed', __( 'Could not parse transcript. Please check the format.', 'chatlog-block' ) );
+		}
+
+		return $messages;
+	}
+}
+
+/**
+ * Render parsed messages
+ *
+ * Converts an array of parsed message objects into formatted HTML output.
+ * Supports multiple display styles, avatars, timestamps, threading, and
+ * various customization options. The output is server-side rendered for
+ * performance and works without JavaScript.
+ *
+ * @since 1.0.0
+ *
+ * @param array $messages         Array of message objects from chatlog_parse_transcript().
+ *                               Each message should contain 'speaker', 'timestamp',
+ *                               'body', and 'type' keys.
+ * @param array $options         Optional. Array of rendering options. Default empty array.
+ *
+ * @type string $display_style           Display style. Accepts 'bubbles', 'irc', 'transcript',
+ *                                       'timeline'. Default 'bubbles'.
+ * @type bool   $show_avatars            Whether to display avatars. Default true.
+ * @type bool   $show_timestamps         Whether to display timestamps. Default true.
+ * @type string $timestamp_format        Timestamp format. Accepts 'time-only', 'absolute',
+ *                                       'relative'. Default 'time-only'.
+ * @type bool   $show_participant_list   Whether to show participant list. Default false.
+ * @type string $highlight_current_user  Username to highlight. Default empty string.
+ * @type string $device_frame            Device frame mockup. Accepts 'none', 'phone',
+ *                                       'desktop', 'slack-app', 'discord-app'. Default 'none'.
+ * @type string $platform                Platform identifier for styling. Default 'auto'.
+ *
+ * @return string Rendered HTML markup for the chat log.
+ *
+ * @example
+ * // Basic rendering with default options
+ * $html = chatlog_render_messages( $messages );
+ * echo $html;
+ *
+ * @example
+ * // Custom rendering options
+ * $html = chatlog_render_messages( $messages, array(
+ *     'display_style' => 'bubbles',
+ *     'show_avatars' => true,
+ *     'show_timestamps' => true,
+ *     'highlight_current_user' => 'Alice',
+ *     'device_frame' => 'phone',
+ * ) );
+ *
+ * @see chatlog_parse_transcript() For generating the messages array.
+ * @see chatlog_get_avatar_html() For avatar generation.
+ */
+if ( ! function_exists( 'chatlog_render_messages' ) ) {
+	function chatlog_render_messages( $messages, $options = array() ) {
+		$defaults = array(
+			'display_style' => 'bubbles',
+			'show_avatars' => true,
+			'show_timestamps' => true,
+			'timestamp_format' => 'time-only',
+			'show_participant_list' => false,
+			'highlight_current_user' => '',
+			'device_frame' => 'none',
+			'platform' => 'auto',
+		);
+
+		$options = wp_parse_args( $options, $defaults );
+
+		// Start device frame if needed
+		$output = '';
+		if ( $options['device_frame'] !== 'none' ) {
+			$frame_class = 'chatlog-device-frame chatlog-device-frame--' . esc_attr( $options['device_frame'] );
+			$output .= sprintf( '<div class="%s">', $frame_class );
+		}
+
+		$output .= sprintf(
+			'<div class="chatlog chatlog--%s" role="log" aria-label="%s">',
+			esc_attr( $options['display_style'] ),
+			esc_attr__( 'Chat conversation', 'chatlog-block' )
+		);
+
+		if ( $options['show_participant_list'] ) {
+			$participants = array_unique( wp_list_pluck( $messages, 'speaker' ) );
+			$output .= '<details class="chatlog-participants">';
+			$output .= sprintf(
+				'<summary>%s (%d)</summary>',
+				esc_html__( 'Participants', 'chatlog-block' ),
+				count( $participants )
+			);
+			$output .= '<ul class="chatlog-participants-list">';
+			foreach ( $participants as $participant ) {
+				$output .= sprintf(
+					'<li>%s%s</li>',
+					$options['show_avatars'] ? chatlog_get_avatar_html( $participant ) : '',
+					esc_html( $participant )
+				);
+			}
+			$output .= '</ul></details>';
+		}
+
+		$output .= '<ol class="chatlog-messages">';
+
+		foreach ( $messages as $message ) {
+			$is_highlighted = ! empty( $options['highlight_current_user'] ) &&
+							  $message['speaker'] === $options['highlight_current_user'];
+
+			$message_class = 'chatlog-message';
+			if ( $is_highlighted ) {
+				$message_class .= ' chatlog-message--highlighted';
+			}
+			if ( ! empty( $message['is_thread'] ) ) {
+				$message_class .= ' chatlog-message--thread';
+			}
+
+			$output .= sprintf( '<li class="%s">', esc_attr( $message_class ) );
+
+			$output .= '<div class="chatlog-message-header">';
+
+			if ( $options['show_avatars'] ) {
+				$output .= chatlog_get_avatar_html( $message['speaker'] );
+			}
+
+			$output .= '<div class="chatlog-meta">';
+			$output .= sprintf(
+				'<span class="chatlog-speaker">%s</span>',
+				esc_html( $message['speaker'] )
+			);
+
+			if ( $options['show_timestamps'] ) {
+				$output .= sprintf(
+					'<time class="chatlog-timestamp" datetime="%s">%s</time>',
+					esc_attr( $message['timestamp'] ),
+					esc_html( $message['timestamp'] )
+				);
+			}
+
+			if ( ! empty( $message['is_thread'] ) ) {
+				$output .= '<span class="chatlog-thread-indicator">' . esc_html__( '(in thread)', 'chatlog-block' ) . '</span>';
+			}
+
+			$output .= '</div></div>';
+
+			$output .= sprintf(
+				'<div class="chatlog-body"><p>%s</p></div>',
+				make_clickable( nl2br( esc_html( $message['body'] ) ) )
+			);
+
+			$output .= '</li>';
+		}
+
+		$output .= '</ol></div>';
+
+		// Close device frame if opened
+		if ( $options['device_frame'] !== 'none' ) {
+			$output .= '</div>';
+		}
+
+		return $output;
+	}
+}
+
+/**
+ * Get avatar HTML
+ *
+ * Generates HTML for a user avatar using initials and a deterministic color.
+ * The avatar displays the user's initials in a colored circle. Colors are
+ * assigned consistently based on the username hash, ensuring the same user
+ * always gets the same color.
+ *
+ * @since 1.0.0
+ *
+ * @param string $name User name to generate avatar for. Can be full name or username.
+ *
+ * @return string HTML markup for the avatar element with inline styles and data attributes.
+ *
+ * @example
+ * $avatar = chatlog_get_avatar_html( 'Jane Doe' );
+ * // Returns: <span class="chatlog-avatar" style="--avatar-bg: #6366f1" data-initials="JD"></span>
+ *
+ * @see chatlog_get_initials() For initial generation logic.
+ * @see chatlog_get_user_color() For color assignment algorithm.
+ */
+if ( ! function_exists( 'chatlog_get_avatar_html' ) ) {
+	function chatlog_get_avatar_html( $name ) {
+		$initials = chatlog_get_initials( $name );
+		$color = chatlog_get_user_color( $name );
+
+		return sprintf(
+			'<span class="chatlog-avatar" style="--avatar-bg: %s" data-initials="%s" aria-hidden="true"></span>',
+			esc_attr( $color ),
+			esc_attr( $initials )
+		);
+	}
+}
+
+/**
+ * Get user initials
+ *
+ * Extracts initials from a user's name for avatar display. For names with
+ * two or more words, returns the first letter of the first two words.
+ * For single-word names, returns the first two characters.
+ *
+ * @since 1.0.0
+ *
+ * @param string $name User name to extract initials from. Can contain spaces and
+ *                     multiple words.
+ *
+ * @return string Two-character uppercase initials.
+ *
+ * @example
+ * echo chatlog_get_initials( 'John Smith' );  // Outputs: "JS"
+ * echo chatlog_get_initials( 'Alice' );       // Outputs: "AL"
+ * echo chatlog_get_initials( 'Bob Lee Chen' ); // Outputs: "BL"
+ */
+if ( ! function_exists( 'chatlog_get_initials' ) ) {
+	function chatlog_get_initials( $name ) {
+		$words = explode( ' ', $name );
+		$initials = '';
+
+		if ( count( $words ) >= 2 ) {
+			$initials = strtoupper( substr( $words[0], 0, 1 ) . substr( $words[1], 0, 1 ) );
+		} else {
+			$initials = strtoupper( substr( $name, 0, 2 ) );
+		}
+
+		return $initials;
+	}
+}
+
+/**
+ * Get deterministic color for user
+ *
+ * Generates a consistent color for a user based on their name. Uses a hash
+ * of the username to select from a predefined palette of 12 colors. The same
+ * name will always produce the same color, providing visual consistency across
+ * multiple messages and sessions.
+ *
+ * The color palette is designed for:
+ * - Good contrast on light backgrounds
+ * - Accessibility (sufficient color differentiation)
+ * - Visual appeal and variety
+ *
+ * @since 1.0.0
+ *
+ * @param string $name User name to generate color for.
+ *
+ * @return string Hex color code (e.g., '#6366f1').
+ *
+ * @example
+ * $color = chatlog_get_user_color( 'Bob' );
+ * // Returns consistent color like "#6366f1"
+ *
+ * @example
+ * // Use in custom avatar implementation
+ * $name = 'Alice';
+ * $color = chatlog_get_user_color( $name );
+ * echo '<div style="background-color: ' . esc_attr( $color ) . '">...</div>';
+ */
+if ( ! function_exists( 'chatlog_get_user_color' ) ) {
+	function chatlog_get_user_color( $name ) {
+		$colors = array(
+			'#6366f1', '#8b5cf6', '#ec4899', '#f43f5e',
+			'#f97316', '#f59e0b', '#10b981', '#14b8a6',
+			'#06b6d4', '#0ea5e9', '#3b82f6', '#6366f1',
+		);
+
+		$hash = 0;
+		for ( $i = 0; $i < strlen( $name ); $i++ ) {
+			$hash = ord( $name[ $i ] ) + ( ( $hash << 5 ) - $hash );
+		}
+
+		$index = abs( $hash ) % count( $colors );
+		return $colors[ $index ];
+	}
+}
+
+/**
+ * Render callback for the Chat Log block
+ *
+ * Server-side render callback for the Chat Log Gutenberg block. This function:
+ * 1. Enqueues necessary frontend styles
+ * 2. Extracts and validates block attributes
+ * 3. Parses the raw transcript
+ * 4. Renders the formatted HTML output
+ *
+ * This callback is registered in chatlog_register_block() and is called by
+ * WordPress when rendering the block on the frontend.
+ *
+ * @since 1.0.0
+ *
+ * @param array    $attributes Block attributes from block.json.
+ * @param string   $content    Block content (unused for dynamic blocks).
+ * @param WP_Block $block      Block instance with additional context.
+ *
+ * @return string Rendered HTML output for the chat log, or error/placeholder markup.
+ *
+ * @example
+ * // This function is called automatically by WordPress.
+ * // Manual usage for testing:
+ * $html = chatlog_render_callback( array(
+ *     'rawTranscript' => $transcript,
+ *     'source' => 'slack',
+ *     'displayStyle' => 'bubbles',
+ * ), '', null );
+ *
+ * @see chatlog_parse_transcript() For transcript parsing.
+ * @see chatlog_render_messages() For HTML generation.
+ */
+function chatlog_render_callback( $attributes, $content, $block ) {
+	// Enqueue frontend styles
+	wp_enqueue_style( 'chatlog-block-style' );
+
+	// Get attributes with defaults
+	$raw_transcript = $attributes['rawTranscript'] ?? '';
+	$source = $attributes['source'] ?? 'auto';
+	$display_style = $attributes['displayStyle'] ?? 'bubbles';
+	$show_avatars = $attributes['showAvatars'] ?? true;
+	$show_timestamps = $attributes['showTimestamps'] ?? true;
+	$timestamp_format = $attributes['timestampFormat'] ?? 'time-only';
+	$collapse_threads = $attributes['collapseThreads'] ?? false;
+	$show_participant_list = $attributes['showParticipantList'] ?? false;
+	$highlight_current_user = $attributes['highlightCurrentUser'] ?? '';
+	$device_frame = $attributes['deviceFrame'] ?? 'none';
+
+	// If no transcript, return placeholder
+	if ( empty( $raw_transcript ) ) {
+		return sprintf(
+			'<div class="chatlog-placeholder">%s</div>',
+			esc_html__( 'Paste your chat transcript to get started.', 'chatlog-block' )
+		);
+	}
+
+	// Parse the transcript
+	$messages = chatlog_parse_transcript( $raw_transcript, $source );
+
+	// If parsing failed, show error
+	if ( is_wp_error( $messages ) ) {
+		return sprintf(
+			'<div class="chatlog-error"><p>%s</p><p>%s</p></div>',
+			esc_html__( 'Error parsing chat transcript:', 'chatlog-block' ),
+			esc_html( $messages->get_error_message() )
+		);
+	}
+
+	// Render the transcript
+	return chatlog_render_messages(
+		$messages,
+		array(
+			'display_style' => $display_style,
+			'show_avatars' => $show_avatars,
+			'show_timestamps' => $show_timestamps,
+			'timestamp_format' => $timestamp_format,
+			'collapse_threads' => $collapse_threads,
+			'show_participant_list' => $show_participant_list,
+			'highlight_current_user' => $highlight_current_user,
+			'device_frame' => $device_frame,
+			'platform' => $source,
+		)
+	);
+}
+
+/**
+ * Set post format to 'chat' when Chat Log block is present
+ *
+ * Automatically sets the post format to 'chat' when a Chat Log block is
+ * detected in a post. This allows themes that support the 'chat' post format
+ * to apply special styling. Only runs if the theme supports post formats and
+ * includes 'chat' in the supported formats list.
+ *
+ * Hooked to 'save_post' action with priority 20 to run after core save operations.
+ *
+ * @since 1.0.0
+ *
+ * @param int $post_id Post ID being saved.
+ *
+ * @return void Early returns if:
+ *              - Saving an autosave
+ *              - Post doesn't exist
+ *              - Post doesn't contain Chat Log block
+ *              - Theme doesn't support chat format
+ *
+ * @example
+ * // This function runs automatically on post save.
+ * // To manually set post format:
+ * if ( has_block( 'chatlog/conversation', $post_id ) ) {
+ *     chatlog_set_post_format( $post_id );
+ * }
+ */
+function chatlog_set_post_format( $post_id ) {
+	// Skip autosaves
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	// Check for chatlog block
+	$post = get_post( $post_id );
+	if ( ! $post || ! has_block( 'chatlog/conversation', $post ) ) {
+		return;
+	}
+
+	// Set chat format if theme supports it
+	if ( current_theme_supports( 'post-formats' ) ) {
+		$formats = get_theme_support( 'post-formats' );
+		if ( is_array( $formats[0] ) && in_array( 'chat', $formats[0], true ) ) {
+			set_post_format( $post_id, 'chat' );
+		}
+	}
+}
+add_action( 'save_post', 'chatlog_set_post_format', 20 );
+
+/**
+ * Add theme support for chat format if not present
+ *
+ * Ensures the 'chat' post format is available by adding theme support if not
+ * already present. This allows the Chat Log block to set the post format
+ * appropriately, even in themes that don't explicitly declare chat format support.
+ *
+ * Hooked to 'after_setup_theme' with priority 99 to run after theme setup.
+ *
+ * @since 1.0.0
+ *
+ * @global array $GLOBALS['_wp_theme_features'] WordPress theme features array.
+ *
+ * @return void Modifies theme support registration if needed.
+ *
+ * @example
+ * // This function runs automatically on theme setup.
+ * // To check if chat format is supported after this runs:
+ * if ( post_type_supports( 'post', 'post-formats' ) ) {
+ *     $formats = get_theme_support( 'post-formats' );
+ *     if ( in_array( 'chat', $formats[0], true ) ) {
+ *         echo 'Chat format is supported!';
+ *     }
+ * }
+ */
+function chatlog_add_chat_format_support() {
+	$formats = get_theme_support( 'post-formats' );
+
+	if ( false === $formats ) {
+		add_theme_support( 'post-formats', array( 'chat' ) );
+	} elseif ( is_array( $formats[0] ) && ! in_array( 'chat', $formats[0], true ) ) {
+		$formats[0][] = 'chat';
+		add_theme_support( 'post-formats', $formats[0] );
+	}
+}
+add_action( 'after_setup_theme', 'chatlog_add_chat_format_support', 99 );

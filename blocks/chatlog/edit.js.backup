@@ -1,0 +1,249 @@
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useBlockProps, InspectorControls } from '@wordpress/block-editor';
+import {
+	PanelBody,
+	TextControl,
+	ToggleControl,
+	SelectControl,
+	TextareaControl,
+	Notice,
+} from '@wordpress/components';
+import { useState, useEffect } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import './editor.scss';
+
+/**
+ * Edit component for Chat Log block
+ *
+ * Main editor interface for the Chat Log block. Provides:
+ * - Textarea for pasting chat transcripts
+ * - Platform auto-detection with confidence indicator
+ * - Inspector controls for all display customizations
+ * - Real-time preview notice
+ *
+ * The component uses React hooks for state management and effects
+ * for platform detection. All settings are stored in block attributes
+ * and persist across editor sessions.
+ *
+ * @since 1.0.0
+ *
+ * @param {Object}   props               Block props provided by WordPress
+ * @param {Object}   props.attributes    Current block attributes from block.json
+ * @param {Function} props.setAttributes Function to update block attributes
+ *
+ * @return {JSX.Element} React component with editor UI and inspector controls
+ *
+ * @example
+ * // This component is registered in index.js:
+ * registerBlockType( metadata.name, {
+ *     edit: Edit,
+ *     save: () => null,
+ * } );
+ */
+export default function Edit( { attributes, setAttributes } ) {
+	const {
+		rawTranscript,
+		source,
+		displayStyle,
+		showAvatars,
+		showTimestamps,
+		timestampFormat,
+		collapseThreads,
+		maxVisibleMessages,
+		showParticipantList,
+		highlightCurrentUser,
+		deviceFrame,
+	} = attributes;
+
+	const [ detectedPlatform, setDetectedPlatform ] = useState( null );
+	const [ confidence, setConfidence ] = useState( 0 );
+
+	const blockProps = useBlockProps( {
+		className: `chatlog-editor chatlog--${displayStyle}`,
+	} );
+
+	// Simple platform detection for preview
+	useEffect( () => {
+		if ( ! rawTranscript ) {
+			setDetectedPlatform( null );
+			return;
+		}
+
+		// Basic detection patterns
+		if ( rawTranscript.includes( '"type":"message"' ) && rawTranscript.includes( '"user":' ) ) {
+			setDetectedPlatform( 'Slack' );
+			setConfidence( 95 );
+		} else if ( rawTranscript.includes( '[' ) && rawTranscript.includes( '] ' ) && rawTranscript.includes( ':' ) ) {
+			// WhatsApp format
+			setDetectedPlatform( 'WhatsApp' );
+			setConfidence( 85 );
+		} else if ( /\d{1,2}:\d{2}\s*[AP]M/.test( rawTranscript ) ) {
+			// Discord or Teams
+			if ( rawTranscript.includes( '—' ) ) {
+				setDetectedPlatform( 'Discord' );
+				setConfidence( 80 );
+			} else {
+				setDetectedPlatform( 'Teams' );
+				setConfidence( 75 );
+			}
+		} else {
+			setDetectedPlatform( 'Unknown' );
+			setConfidence( 50 );
+		}
+	}, [ rawTranscript ] );
+
+	return (
+		<>
+			<InspectorControls>
+				<PanelBody title={ __( 'Display Settings', 'chatlog-block' ) }>
+					<SelectControl
+						label={ __( 'Platform', 'chatlog-block' ) }
+						value={ source }
+						options={ [
+							{ label: __( 'Auto-detect', 'chatlog-block' ), value: 'auto' },
+							{ label: 'Slack', value: 'slack' },
+							{ label: 'Discord', value: 'discord' },
+							{ label: 'Microsoft Teams', value: 'teams' },
+							{ label: 'Telegram', value: 'telegram' },
+							{ label: 'WhatsApp', value: 'whatsapp' },
+							{ label: 'Signal', value: 'signal' },
+						] }
+						onChange={ ( value ) => setAttributes( { source: value } ) }
+						help={ __( 'Select the messaging platform or let Chat Log auto-detect it.', 'chatlog-block' ) }
+					/>
+
+					<SelectControl
+						label={ __( 'Display Style', 'chatlog-block' ) }
+						value={ displayStyle }
+						options={ [
+							{ label: __( 'Bubbles', 'chatlog-block' ), value: 'bubbles' },
+							{ label: __( 'IRC', 'chatlog-block' ), value: 'irc' },
+							{ label: __( 'Transcript', 'chatlog-block' ), value: 'transcript' },
+							{ label: __( 'Timeline', 'chatlog-block' ), value: 'timeline' },
+						] }
+						onChange={ ( value ) => setAttributes( { displayStyle: value } ) }
+						help={ __( 'Choose how messages are displayed visually.', 'chatlog-block' ) }
+					/>
+
+					<ToggleControl
+						label={ __( 'Show Avatars', 'chatlog-block' ) }
+						checked={ showAvatars }
+						onChange={ ( value ) => setAttributes( { showAvatars: value } ) }
+						help={ __( 'Display participant avatars with Gravatar integration and initials fallback.', 'chatlog-block' ) }
+					/>
+
+					<ToggleControl
+						label={ __( 'Show Timestamps', 'chatlog-block' ) }
+						checked={ showTimestamps }
+						onChange={ ( value ) => setAttributes( { showTimestamps: value } ) }
+					/>
+
+					{ showTimestamps && (
+						<SelectControl
+							label={ __( 'Timestamp Format', 'chatlog-block' ) }
+							value={ timestampFormat }
+							options={ [
+								{ label: __( 'Time Only (10:23 AM)', 'chatlog-block' ), value: 'time-only' },
+								{ label: __( 'Absolute (Jan 15, 2025 10:23 AM)', 'chatlog-block' ), value: 'absolute' },
+								{ label: __( 'Relative (2 hours ago)', 'chatlog-block' ), value: 'relative' },
+							] }
+							onChange={ ( value ) => setAttributes( { timestampFormat: value } ) }
+						/>
+					) }
+
+					<SelectControl
+						label={ __( 'Device Frame', 'chatlog-block' ) }
+						value={ deviceFrame }
+						options={ [
+							{ label: __( 'None', 'chatlog-block' ), value: 'none' },
+							{ label: __( 'Phone', 'chatlog-block' ), value: 'phone' },
+							{ label: __( 'Desktop', 'chatlog-block' ), value: 'desktop' },
+							{ label: __( 'Slack App', 'chatlog-block' ), value: 'slack-app' },
+							{ label: __( 'Discord App', 'chatlog-block' ), value: 'discord-app' },
+						] }
+						onChange={ ( value ) => setAttributes( { deviceFrame: value } ) }
+						help={ __( 'Display the chat in a device mockup frame.', 'chatlog-block' ) }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Threading', 'chatlog-block' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Collapse Threads', 'chatlog-block' ) }
+						checked={ collapseThreads }
+						onChange={ ( value ) => setAttributes( { collapseThreads: value } ) }
+						help={ __( 'Collapse threaded replies by default. Users can expand them.', 'chatlog-block' ) }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Participants', 'chatlog-block' ) } initialOpen={ false }>
+					<ToggleControl
+						label={ __( 'Show Participant List', 'chatlog-block' ) }
+						checked={ showParticipantList }
+						onChange={ ( value ) => setAttributes( { showParticipantList: value } ) }
+						help={ __( 'Display a list of all participants at the top of the transcript.', 'chatlog-block' ) }
+					/>
+
+					<TextControl
+						label={ __( 'Highlight User', 'chatlog-block' ) }
+						value={ highlightCurrentUser }
+						onChange={ ( value ) => setAttributes( { highlightCurrentUser: value } ) }
+						help={ __( 'Enter a username to highlight (useful for "you" styling). Leave empty for no highlighting.', 'chatlog-block' ) }
+						placeholder={ __( 'e.g., Courtney Robertson', 'chatlog-block' ) }
+					/>
+				</PanelBody>
+
+				<PanelBody title={ __( 'Advanced', 'chatlog-block' ) } initialOpen={ false }>
+					<TextControl
+						label={ __( 'Maximum Visible Messages', 'chatlog-block' ) }
+						type="number"
+						value={ maxVisibleMessages }
+						onChange={ ( value ) => setAttributes( { maxVisibleMessages: parseInt( value ) || 0 } ) }
+						help={ __( 'Limit displayed messages for long transcripts. 0 = show all.', 'chatlog-block' ) }
+						min={ 0 }
+					/>
+				</PanelBody>
+			</InspectorControls>
+
+			<div { ...blockProps }>
+				{ detectedPlatform && source === 'auto' && (
+					<Notice status="info" isDismissible={ false }>
+						{ __( 'Detected:', 'chatlog-block' ) } { detectedPlatform } ({ confidence }% { __( 'confidence', 'chatlog-block' ) })
+					</Notice>
+				) }
+
+				<TextareaControl
+					label={ __( 'Paste Your Chat Transcript', 'chatlog-block' ) }
+					value={ rawTranscript }
+					onChange={ ( value ) => setAttributes( { rawTranscript: value } ) }
+					placeholder={ __(
+						'Paste your chat transcript here.\n\nSupported formats:\n• Slack (JSON or copy-paste)\n• Discord (JSON or copy-paste)\n• Microsoft Teams (copy-paste)\n• Telegram (JSON export)\n• WhatsApp (Android/iOS export)\n• Signal (Markdown export)\n\nAuto-detection will identify the platform automatically.',
+						'chatlog-block'
+					) }
+					rows={ 15 }
+					className="chatlog-transcript-input"
+					help={ __(
+						'Copy your chat messages and paste them here. Chat Log will automatically detect the platform and format.',
+						'chatlog-block'
+					) }
+				/>
+
+				{ rawTranscript && (
+					<div className="chatlog-preview-notice">
+						<Notice status="success" isDismissible={ false }>
+							{ __(
+								'Preview will appear on the frontend. The transcript will be parsed and displayed according to your settings.',
+								'chatlog-block'
+							) }
+						</Notice>
+					</div>
+				) }
+			</div>
+		</>
+	);
+}

@@ -33,6 +33,12 @@ README.md
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md
 CHANGELOG.md
+FORMAT-CUSTOMIZATION-QUICK-START.md
+QA-TEST-PLAN.md
+SITE-EDITOR-GUIDE.md
+SITE-EDITOR-IMPLEMENTATION.md
+STYLING-SUMMARY.md
+potomatic.json
 
 # OS Files
 .DS_Store
@@ -59,3 +65,11 @@ npm-debug.log*
 *.bak
 *.tmp
 *.temp
+
+# Test artifacts
+/test-results
+/test-dist
+/playwright-report
+/.playwright
+/coverage-report
+/dist

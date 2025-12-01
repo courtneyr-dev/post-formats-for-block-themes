@@ -268,11 +268,25 @@ function pfbt_add_admin_menu() {
 		__( 'Post Format Repair', 'post-formats-for-block-themes' ),
 		__( 'Post Format Repair', 'post-formats-for-block-themes' ),
 		'manage_options',
-		'pfpu-repair-tool',
+		'pfbt-repair-tool',
 		array( 'PFBT_Repair_Tool', 'render_page' )
 	);
 }
 add_action( 'admin_menu', 'pfbt_add_admin_menu' );
+
+/**
+ * Enqueue admin styles for repair tool page
+ *
+ * Properly enqueues styles using the admin_enqueue_scripts hook.
+ *
+ * @since 1.0.0
+ *
+ * @param string $hook_suffix The current admin page hook suffix.
+ */
+function pfbt_enqueue_repair_tool_styles( $hook_suffix ) {
+	PFBT_Repair_Tool::enqueue_styles( $hook_suffix );
+}
+add_action( 'admin_enqueue_scripts', 'pfbt_enqueue_repair_tool_styles' );
 
 /**
  * Register block patterns on init

@@ -25,7 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 	<?php settings_errors( 'pfbt_repair' ); ?>
 
-	<div class="pfpu-repair-summary card">
+	<div class="pfbt-repair-summary card">
 		<h2><?php esc_html_e( 'Scan Results', 'post-formats-for-block-themes' ); ?></h2>
 
 		<table class="widefat striped">
@@ -55,10 +55,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</div>
 
 	<?php if ( $scan_results['mismatch_count'] > 0 ) : ?>
-		<div class="pfpu-repair-actions" style="margin-top: 20px;">
+		<div class="pfbt-repair-actions" style="margin-top: 20px;">
 			<h2><?php esc_html_e( 'Bulk Actions', 'post-formats-for-block-themes' ); ?></h2>
 
-			<form method="post" action="" id="pfpu-bulk-repair-form">
+			<form method="post" action="" id="pfbt-bulk-repair-form">
 				<?php wp_nonce_field( 'pfbt_repair_action', 'pfbt_repair_nonce' ); ?>
 				<input type="hidden" name="pfbt_repair_action" value="apply_all" />
 
@@ -86,7 +86,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			</form>
 		</div>
 
-		<div class="pfpu-mismatches" style="margin-top: 30px;">
+		<div class="pfbt-mismatches" style="margin-top: 30px;">
 			<h2><?php esc_html_e( 'Detected Mismatches', 'post-formats-for-block-themes' ); ?></h2>
 
 			<table class="wp-list-table widefat striped table-view-list">
@@ -153,7 +153,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</div>
 	<?php endif; ?>
 
-	<div class="pfpu-help-section" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc;">
+	<div class="pfbt-help-section" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ccc;">
 		<h3><?php esc_html_e( 'How Format Detection Works', 'post-formats-for-block-themes' ); ?></h3>
 		<ul>
 			<li><?php esc_html_e( 'Gallery: First block is core/gallery', 'post-formats-for-block-themes' ); ?></li>

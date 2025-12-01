@@ -41,27 +41,34 @@ class PFBT_Repair_Tool {
 	 * Enqueue admin styles for repair tool page
 	 *
 	 * @since 1.0.0
+	 *
+	 * @param string $hook_suffix The current admin page hook suffix.
 	 */
-	public static function enqueue_styles() {
+	public static function enqueue_styles( $hook_suffix ) {
+		// Only enqueue on our repair tool page
+		if ( 'tools_page_pfbt-repair-tool' !== $hook_suffix ) {
+			return;
+		}
+
 		$custom_css = '
-			.pfpu-repair-summary.card {
+			.pfbt-repair-summary.card {
 				padding: 20px;
 				background: #fff;
 				border: 1px solid #ccd0d4;
 				box-shadow: 0 1px 1px rgba(0,0,0,.04);
 				margin-top: 20px;
 			}
-			.pfpu-repair-summary table {
+			.pfbt-repair-summary table {
 				margin-top: 15px;
 			}
-			.pfpu-repair-summary th {
+			.pfbt-repair-summary th {
 				width: 200px;
 				font-weight: 600;
 			}
-			.pfpu-mismatches table {
+			.pfbt-mismatches table {
 				margin-top: 15px;
 			}
-			.pfpu-mismatches code {
+			.pfbt-mismatches code {
 				background: #f0f0f1;
 				padding: 2px 6px;
 				border-radius: 3px;
@@ -84,9 +91,6 @@ class PFBT_Repair_Tool {
 				array( 'response' => 403 )
 			);
 		}
-
-		// Enqueue styles for this page.
-		self::enqueue_styles();
 
 		// Handle form submissions with nonce verification.
 		if ( isset( $_POST['pfbt_repair_action'] ) &&

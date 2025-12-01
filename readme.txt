@@ -1,7 +1,7 @@
 === Post Formats for Block Themes ===
 Contributors: courane01
 Donate link: https://github.com/sponsors/courtneyr-dev
-Tags: post-formats, block-theme, patterns, gutenberg, accessibility, chat-log, conversation, block-editor
+Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.8
 Tested up to: 6.8
 Requires PHP: 7.4
@@ -9,7 +9,7 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Add post format support to block themes with auto-detection, format-specific patterns, and a format switcher. Includes integrated Chat Log block for conversations.
+Bring post formats to block themes with auto-detection, format-specific patterns, and Chat Log block for displaying conversation transcripts.
 
 == Description ==
 

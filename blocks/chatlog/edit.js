@@ -76,25 +76,41 @@ export default function Edit( { attributes, setAttributes } ) {
 		}
 
 		// Basic detection patterns
+		// Check for Slack JSON export format (rarely used)
 		if ( rawTranscript.includes( '"type":"message"' ) && rawTranscript.includes( '"user":' ) ) {
 			setDetectedPlatform( 'Slack' );
 			setConfidence( 95 );
-		} else if ( rawTranscript.includes( '[' ) && rawTranscript.includes( '] ' ) && rawTranscript.includes( ':' ) ) {
-			// WhatsApp format
+		}
+		// Check for WhatsApp format: [DD/MM/YYYY, HH:MM:SS] Name: Message
+		else if ( /^\[[\d\/]+,\s*[\d:]+\]/.test( rawTranscript ) ) {
 			setDetectedPlatform( 'WhatsApp' );
-			setConfidence( 85 );
-		} else if ( /\d{1,2}:\d{2}\s*[AP]M/.test( rawTranscript ) ) {
-			// Discord or Teams
-			if ( rawTranscript.includes( '—' ) ) {
-				setDetectedPlatform( 'Discord' );
-				setConfidence( 80 );
-			} else {
-				setDetectedPlatform( 'Teams' );
-				setConfidence( 75 );
-			}
-		} else {
+			setConfidence( 90 );
+		}
+		// Check for VTT format: WEBVTT header
+		else if ( /^WEBVTT/m.test( rawTranscript ) || rawTranscript.includes( '<v ' ) ) {
+			setDetectedPlatform( 'VTT Captions' );
+			setConfidence( 95 );
+		}
+		// Check for SRT format: numeric ID followed by timecode
+		else if ( /^\d+\s*\n\d{2}:\d{2}:\d{2},\d{3}\s*-->/m.test( rawTranscript ) ) {
+			setDetectedPlatform( 'SRT Subtitles' );
+			setConfidence( 95 );
+		}
+		// Check for Discord-specific indicators
+		else if ( rawTranscript.includes( '#' ) && /\d{1,2}:\d{2}\s*[AP]M/i.test( rawTranscript ) ) {
+			setDetectedPlatform( 'Discord' );
+			setConfidence( 75 );
+		}
+		// Check for generic chat format with AM/PM times
+		// Note: Slack, Teams, Telegram, Signal all use same format - can't differentiate!
+		else if ( /\d{1,2}:\d{2}\s*[AP]M/i.test( rawTranscript ) ) {
+			setDetectedPlatform( 'Slack/Teams/Telegram/Signal' );
+			setConfidence( 60 );
+		}
+		// Unknown format
+		else {
 			setDetectedPlatform( 'Unknown' );
-			setConfidence( 50 );
+			setConfidence( 30 );
 		}
 	}, [ rawTranscript ] );
 

@@ -23,7 +23,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<?php esc_html_e( 'This tool scans your posts and identifies format mismatches based on content structure. It suggests corrections that you can apply individually or in bulk.', 'post-formats-for-block-themes' ); ?>
 	</p>
 
-	<?php settings_errors( 'pfbt_repair' ); ?>
+	<?php
+	// Display transient messages
+	$repair_message = get_transient( 'pfbt_repair_message' );
+	if ( $repair_message ) {
+		$notice_class = 'success' === $repair_message['type'] ? 'notice-success' : 'notice-error';
+		?>
+		<div class="notice <?php echo esc_attr( $notice_class ); ?> is-dismissible">
+			<p><strong><?php echo esc_html( $repair_message['message'] ); ?></strong></p>
+		</div>
+		<?php
+		delete_transient( 'pfbt_repair_message' );
+	}
+
+	settings_errors( 'pfbt_repair' );
+	?>
 
 	<div class="pfbt-repair-summary card">
 		<h2><?php esc_html_e( 'Scan Results', 'post-formats-for-block-themes' ); ?></h2>
@@ -169,3 +183,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</ul>
 	</div>
 </div>
+
+<script>
+jQuery(document).ready(function($) {
+	// Add loading state to bulk repair form
+	$('#pfbt-bulk-repair-form').on('submit', function(e) {
+		var $button = $(this).find('button[type="submit"]');
+		var $icon = $button.find('.dashicons');
+
+		// Disable button and show loading state
+		$button.prop('disabled', true);
+		$icon.removeClass('dashicons-update-alt').addClass('dashicons-update');
+		$icon.css('animation', 'rotation 2s infinite linear');
+		$button.append('<span class="spinner is-active" style="float: none; margin-left: 8px;"></span>');
+	});
+
+	// Add loading state to individual apply buttons
+	$('.pfbt-mismatches form').on('submit', function(e) {
+		var $button = $(this).find('button[type="submit"]');
+		$button.prop('disabled', true).text('<?php echo esc_js( __( 'Applying...', 'post-formats-for-block-themes' ) ); ?>');
+	});
+});
+</script>
+
+<style>
+@keyframes rotation {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(359deg); }
+}
+</style>

@@ -97,6 +97,10 @@ class PFBT_Repair_Tool {
 			isset( $_POST['pfbt_repair_nonce'] ) &&
 			wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pfbt_repair_nonce'] ) ), 'pfbt_repair_action' ) ) {
 			self::handle_repair_action();
+
+			// Redirect to prevent form resubmission (POST-Redirect-GET pattern)
+			wp_safe_redirect( add_query_arg( 'updated', 'true', wp_get_referer() ? wp_get_referer() : admin_url( 'tools.php?page=pfbt-repair-tool' ) ) );
+			exit;
 		}
 
 		// Get scan results.
@@ -284,12 +288,11 @@ class PFBT_Repair_Tool {
 			);
 		}
 
-		add_settings_error(
-			'pfbt_repair',
-			'pfbt_repair_success',
-			$message,
-			'success'
-		);
+		// Store message in transient to persist across redirect
+		set_transient( 'pfbt_repair_message', array(
+			'message' => $message,
+			'type'    => 'success',
+		), 30 );
 	}
 
 	/**
@@ -321,12 +324,11 @@ class PFBT_Repair_Tool {
 				);
 			}
 
-			add_settings_error(
-				'pfbt_repair',
-				'pfbt_repair_success',
-				$message,
-				'success'
-			);
+			// Store message in transient to persist across redirect
+			set_transient( 'pfbt_repair_message', array(
+				'message' => $message,
+				'type'    => 'success',
+			), 30 );
 		} else {
 			$message = sprintf(
 				/* translators: %d: Post ID */
@@ -334,12 +336,11 @@ class PFBT_Repair_Tool {
 				$post_id
 			);
 
-			add_settings_error(
-				'pfbt_repair',
-				'pfbt_repair_error',
-				$message,
-				'error'
-			);
+			// Store error message in transient
+			set_transient( 'pfbt_repair_message', array(
+				'message' => $message,
+				'type'    => 'error',
+			), 30 );
 		}
 	}
 

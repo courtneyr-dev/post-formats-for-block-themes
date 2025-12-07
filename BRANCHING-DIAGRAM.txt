@@ -1,0 +1,362 @@
+================================================================================
+GIT BRANCHING WORKFLOW FOR POST FORMATS FOR BLOCK THEMES
+================================================================================
+
+INITIAL STATE (Before v1.1.0 Release)
+================================================================================
+
+GitHub Repository: https://github.com/courtneyr-dev/post-formats-for-block-themes
+Current state: Only main branch exists with v1.0.0 code
+
+    main (on GitHub)
+      |
+      o--- commit f86544e (v1.0.0 - 23 commits)
+
+
+Your Local Files:
+    Contains v1.1.0 changes (not yet committed to git)
+
+
+================================================================================
+STEP 1: CREATE DEVELOP BRANCH
+================================================================================
+
+    main (origin)
+      |
+      o--- v1.0.0
+      |
+      +--- develop (new branch, identical to main at this point)
+
+
+Commands:
+    git checkout -b main origin/main
+    git checkout -b develop
+    git push -u origin develop
+
+
+================================================================================
+STEP 2: COMMIT v1.1.0 CHANGES TO DEVELOP
+================================================================================
+
+    main (origin)
+      |
+      o--- v1.0.0
+      |
+      +--- develop
+            |
+            o--- v1.1.0 changes committed
+
+
+Commands:
+    git checkout develop
+    git add .
+    git commit -m "Prepare v1.1.0 development..."
+    git push origin develop
+
+
+================================================================================
+STEP 3: CREATE RELEASE BRANCH
+================================================================================
+
+    main (origin)
+      |
+      o--- v1.0.0
+      |
+      +--- develop
+            |
+            o--- v1.1.0 changes
+            |
+            +--- release/1.1.0 (branched from develop)
+
+
+Commands:
+    git checkout -b release/1.1.0 develop
+    git push -u origin release/1.1.0
+
+
+================================================================================
+STEP 4: TEST AND FIX BUGS ON RELEASE BRANCH (if needed)
+================================================================================
+
+    main (origin)
+      |
+      o--- v1.0.0
+      |
+      +--- develop
+            |
+            o--- v1.1.0 changes
+            |
+            +--- release/1.1.0
+                  |
+                  o--- bug fix 1
+                  |
+                  o--- bug fix 2
+
+
+Commands (if bugs found):
+    git checkout release/1.1.0
+    [fix bugs]
+    git add .
+    git commit -m "Fix bug..."
+    git push origin release/1.1.0
+
+
+================================================================================
+STEP 5: MERGE TO MAIN AND TAG
+================================================================================
+
+    main (origin)
+      |
+      o--- v1.0.0
+      |
+      o--- Merge release/1.1.0  <--- v1.1.0 tag here
+      |
+      +--- develop
+            |
+            o--- v1.1.0 changes
+            |
+            +--- release/1.1.0
+                  |
+                  o--- (merged to main)
+
+
+Commands:
+    git checkout main
+    git merge --no-ff release/1.1.0 -m "Release version 1.1.0"
+    git tag -a v1.1.0 -m "Version 1.1.0..."
+    git push origin main
+    git push origin v1.1.0
+
+
+================================================================================
+STEP 6: MERGE BACK TO DEVELOP
+================================================================================
+
+    main (origin)
+      |
+      o--- v1.0.0
+      |
+      o--- v1.1.0 (tagged)
+      |
+      +--- develop
+            |
+            o--- v1.1.0 changes
+            |
+            o--- Merge release/1.1.0 back
+            |
+            +--- release/1.1.0
+                  |
+                  o--- (merged everywhere)
+
+
+Commands:
+    git checkout develop
+    git merge --no-ff release/1.1.0 -m "Merge release/1.1.0 back to develop"
+    git push origin develop
+
+
+================================================================================
+FINAL STATE (After v1.1.0 Release)
+================================================================================
+
+    main (production)
+      |
+      o--- v1.0.0
+      |
+      o--- v1.1.0 (tagged, matches WordPress.org)
+      |
+      +--- develop (ready for v1.2.0 work)
+            |
+            o--- v1.1.0 (same as main)
+            |
+            [future v1.2.0 work continues here]
+
+
+================================================================================
+FUTURE WORKFLOW: DEVELOPING v1.2.0
+================================================================================
+
+    main
+      |
+      o--- v1.1.0 (tagged)
+      |
+      +--- develop
+            |
+            o--- v1.1.0 merge
+            |
+            o--- work on new features
+            |
+            o--- more commits
+            |
+            o--- add awesome feature
+            |
+            +--- release/1.2.0 (when ready)
+                  |
+                  o--- update version numbers
+                  |
+                  o--- testing & bug fixes
+                  |
+                  [merge to main, tag v1.2.0, merge back to develop]
+
+
+Commands for v1.2.0 development:
+    git checkout develop
+    [make changes]
+    git add .
+    git commit -m "Add feature"
+    git push origin develop
+
+    [When ready to release:]
+    git checkout -b release/1.2.0 develop
+    [update versions, test]
+    git checkout main
+    git merge --no-ff release/1.2.0
+    git tag -a v1.2.0 -m "..."
+    [etc.]
+
+
+================================================================================
+HOTFIX WORKFLOW: Emergency Fix for Production
+================================================================================
+
+If critical bug found in production (main):
+
+    main
+      |
+      o--- v1.1.0 (has critical bug!)
+      |
+      +--- hotfix/1.1.1
+            |
+            o--- fix critical bug
+            |
+            o--- update version to 1.1.1
+            |
+            [merge to BOTH main and develop]
+
+
+Result:
+
+    main
+      |
+      o--- v1.1.0
+      |
+      o--- v1.1.1 (hotfix, tagged)
+      |
+      +--- develop
+            |
+            o--- v1.1.1 (hotfix merged here too)
+
+
+Commands:
+    git checkout -b hotfix/1.1.1 main
+    [fix bug, update version]
+    git add .
+    git commit -m "Fix critical bug"
+
+    git checkout main
+    git merge --no-ff hotfix/1.1.1
+    git tag -a v1.1.1 -m "Hotfix..."
+    git push origin main --tags
+
+    git checkout develop
+    git merge --no-ff hotfix/1.1.1
+    git push origin develop
+
+
+================================================================================
+BRANCH PURPOSES
+================================================================================
+
+Branch Name         Purpose                         Who Commits Here
+--------------------------------------------------------------------------------
+main                Production code                 Only via merge from
+                    (matches WordPress.org)         release/* or hotfix/*
+
+develop             Integration branch              Daily development work
+                    Next release preparation        Feature merges
+
+release/X.X.X       Release testing                 Bug fixes only
+                    Version number updates          No new features
+
+feature/name        Feature development             Feature work
+(optional)          (merged to develop)             (optional pattern)
+
+hotfix/X.X.X        Emergency production fixes      Critical bug fixes
+                    (merged to main AND develop)
+
+
+================================================================================
+KEY PRINCIPLES
+================================================================================
+
+1. NEVER commit directly to main
+   → Always merge from release/* or hotfix/*
+
+2. Daily work happens on develop
+   → Merge to main only when releasing
+
+3. Release branches are for testing and bug fixes
+   → No new features on release branches
+
+4. Use --no-ff (no fast-forward) merges
+   → Preserves branch history
+
+5. Tag every release on main
+   → Makes rollback easy (git checkout v1.1.0)
+
+6. Always merge release branches back to develop
+   → Keeps develop in sync with production
+
+7. Hotfixes go to BOTH main and develop
+   → Ensures fix is in all branches
+
+
+================================================================================
+BENEFITS
+================================================================================
+
+✅ Clean separation: production vs development
+✅ Safe testing: test on release branch without blocking work
+✅ Parallel development: work on v1.2.0 while releasing v1.1.0
+✅ Easy rollback: every version is tagged
+✅ Clear history: see exactly what was released when
+✅ Emergency fixes: hotfix branches for critical issues
+✅ Professional: standard Git Flow used by major projects
+
+
+================================================================================
+QUICK REFERENCE
+================================================================================
+
+Start new feature:
+    git checkout develop
+    [work work work]
+    git commit -m "..."
+    git push origin develop
+
+Release new version:
+    git checkout -b release/X.X.X develop
+    [test & fix bugs only]
+    git checkout main && git merge --no-ff release/X.X.X
+    git tag -a vX.X.X -m "..."
+    git push origin main --tags
+    git checkout develop && git merge --no-ff release/X.X.X
+
+Emergency hotfix:
+    git checkout -b hotfix/X.X.X main
+    [fix bug]
+    git checkout main && git merge --no-ff hotfix/X.X.X
+    git tag -a vX.X.X -m "..."
+    git checkout develop && git merge --no-ff hotfix/X.X.X
+
+
+================================================================================
+LEARN MORE
+================================================================================
+
+Detailed guide: BRANCHING-STRATEGY.md
+Release steps: RELEASE.md
+Quick start: QUICK-START-RELEASE.md
+Git Flow model: https://nvie.com/posts/a-successful-git-branching-model/
+
+================================================================================

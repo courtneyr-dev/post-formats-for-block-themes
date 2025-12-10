@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 1.1.0
+ * Version: 1.1.1
  * Requires at least: 6.8
  * Tested up to: 6.9
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '1.1.0' );
+define( 'PFBT_VERSION', '1.1.1' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -75,6 +75,52 @@ function pfbt_register_template_types_early( $template_types ) {
 	return $template_types;
 }
 add_filter( 'default_template_types', 'pfbt_register_template_types_early', 1 );
+
+/**
+ * Hide format templates from template chooser dropdown
+ *
+ * Format templates should apply automatically via template hierarchy,
+ * not appear as selectable options in the Template dropdown.
+ * This prevents them from hiding/replacing the theme's templates.
+ *
+ * @since 1.0.4
+ * @param array $query_result Array of block template objects
+ * @param array $query Block templates query parameters
+ * @param string $template_type wp_template or wp_template_part
+ * @return array Filtered array of block templates
+ */
+function pfbt_filter_format_templates_from_chooser( $query_result, $query, $template_type ) {
+	// Only filter templates (not template parts) in the post editor
+	if ( 'wp_template' !== $template_type ) {
+		return $query_result;
+	}
+
+	// Don't filter if we're in the site editor or template admin
+	if ( is_admin() && isset( $_GET['page'] ) && 'gutenberg-edit-site' === $_GET['page'] ) {
+		return $query_result;
+	}
+
+	// Filter out format templates from the chooser
+	$format_template_slugs = array(
+		'single-format-aside',
+		'single-format-gallery',
+		'single-format-link',
+		'single-format-image',
+		'single-format-quote',
+		'single-format-status',
+		'single-format-video',
+		'single-format-audio',
+		'single-format-chat',
+	);
+
+	return array_filter(
+		$query_result,
+		function( $template ) use ( $format_template_slugs ) {
+			return ! in_array( $template->slug, $format_template_slugs, true );
+		}
+	);
+}
+add_filter( 'get_block_templates', 'pfbt_filter_format_templates_from_chooser', 10, 3 );
 
 /**
  * Suppress template type warnings from WordPress core timing issue

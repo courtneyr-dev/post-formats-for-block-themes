@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -346,6 +346,12 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 1.1.1 - 2025-12-09 =
+
+**Bug Fixes**
+
+* **Fixed:** Critical issue where format templates (Chat Format, Gallery Format, etc.) were appearing in the Template dropdown and hiding/replacing theme templates. Format templates now apply automatically via template hierarchy but don't show as selectable options in the editor.
 
 = 1.1.0 - 2025-12-08 =
 

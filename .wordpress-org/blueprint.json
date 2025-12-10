@@ -1,0 +1,61 @@
+{
+  "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+  "landingPage": "/wp-admin/edit.php",
+  "preferredVersions": {
+    "php": "8.0",
+    "wp": "latest"
+  },
+  "phpExtensionBundles": [
+    "kitchen-sink"
+  ],
+  "features": {
+    "networking": true
+  },
+  "steps": [
+    {
+      "step": "login",
+      "username": "admin",
+      "password": "password"
+    },
+    {
+      "step": "installPlugin",
+      "pluginData": {
+        "resource": "wordpress.org/plugins",
+        "slug": "post-formats-for-block-themes"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "installTheme",
+      "themeData": {
+        "resource": "wordpress.org/themes",
+        "slug": "twentytwentyfive"
+      },
+      "options": {
+        "activate": true
+      }
+    },
+    {
+      "step": "importWxr",
+      "file": {
+        "resource": "url",
+        "url": "https://raw.githubusercontent.com/WPTT/theme-unit-test/master/themeunittestdata.wordpress.xml"
+      }
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/wp-load.php'; wp_cache_flush(); ?>"
+    },
+    {
+      "step": "writeFile",
+      "path": "/wordpress/create-format-posts.php",
+      "data": "<?php\nrequire '/wordpress/wp-load.php';\n\n$formats = array(\n  array('title' => 'Standard Post Example', 'content' => '<!-- wp:paragraph --><p>This is a standard blog post with no specific format assigned. It represents the default post type and can contain any type of content.</p><!-- /wp:paragraph -->', 'format' => ''),\n  array('title' => 'Quick Thought', 'content' => '<!-- wp:paragraph --><p>Just discovered an amazing new coffee shop downtown. Highly recommend checking it out!</p><!-- /wp:paragraph -->', 'format' => 'aside'),\n  array('title' => 'Photo Gallery: Summer', 'content' => '<!-- wp:paragraph --><p>A collection of my favorite moments from summer.</p><!-- /wp:paragraph -->', 'format' => 'gallery'),\n  array('title' => 'Interesting Article', 'content' => '<!-- wp:paragraph --><p><a href=\"https://wordpress.org/news/\">WordPress News</a></p><!-- /wp:paragraph -->', 'format' => 'link'),\n  array('title' => 'Golden Hour Beach', 'content' => '<!-- wp:paragraph --><p>Captured this stunning sunset during my evening walk.</p><!-- /wp:paragraph -->', 'format' => 'image'),\n  array('title' => 'Inspirational Quote', 'content' => '<!-- wp:quote --><blockquote class=\"wp-block-quote\"><p>The only way to do great work is to love what you do.</p><cite>Steve Jobs</cite></blockquote><!-- /wp:quote -->', 'format' => 'quote'),\n  array('title' => 'Status Update', 'content' => '<!-- wp:paragraph --><p>Working on an exciting new WordPress project today!</p><!-- /wp:paragraph -->', 'format' => 'status'),\n  array('title' => 'WordPress Tutorial', 'content' => '<!-- wp:paragraph --><p>Check out this comprehensive WordPress tutorial for beginners.</p><!-- /wp:paragraph -->', 'format' => 'video'),\n  array('title' => 'Podcast Episode', 'content' => '<!-- wp:paragraph --><p>In this episode, we discuss the future of WordPress.</p><!-- /wp:paragraph -->', 'format' => 'audio'),\n  array('title' => 'Team Discussion', 'content' => '<!-- wp:paragraph --><p><strong>Sarah:</strong> Are we ready for launch?</p><!-- /wp:paragraph --><!-- wp:paragraph --><p><strong>Mike:</strong> Yes! All testing is complete.</p><!-- /wp:paragraph -->', 'format' => 'chat')\n);\n\nforeach ($formats as $post_data) {\n  $post_id = wp_insert_post(array(\n    'post_title' => $post_data['title'],\n    'post_content' => $post_data['content'],\n    'post_status' => 'publish',\n    'post_type' => 'post'\n  ));\n  if ($post_id && !empty($post_data['format'])) {\n    set_post_format($post_id, $post_data['format']);\n  }\n}\n?>"
+    },
+    {
+      "step": "runPHP",
+      "code": "<?php require '/wordpress/create-format-posts.php'; ?>"
+    }
+  ]
+}

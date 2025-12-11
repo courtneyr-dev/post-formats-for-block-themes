@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.1.0
+Stable tag: 1.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -346,6 +346,41 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 1.1.2 - 2025-12-11 =
+
+**New Features**
+
+* **Added:** "Default" template option in template chooser that explicitly clears template assignment and uses default template hierarchy
+* **Added:** Comprehensive logging system for tracking template assignment and REST API behavior for easier debugging
+
+**Improvements**
+
+* **Improved:** Simplified editor UI by removing duplicate "Post Format" dropdown from sidebar - now uses WordPress's built-in format selector in Status & visibility panel
+* **Improved:** Status format character counter moved from sidebar panel to editor notice for cleaner UI
+* **Improved:** Format selection modal now clearly shows "Standard (Single Template)" option with descriptive text
+* **Improved:** "Single" template from theme now properly appears in template chooser for posts
+* **Improved:** REST API now correctly returns 'default' template value when no template is assigned, fixing display issues
+
+**Bug Fixes**
+
+* **Fixed:** Standard format posts no longer incorrectly show format templates (like "Aside Format") when no template should be assigned
+* **Fixed:** Template chooser modal now correctly displays all available templates including theme's default "Single" template
+* **Fixed:** Editor now properly reflects actual database state for template assignments instead of showing cached/stale values
+
+**Technical Changes**
+
+* **Changed:** Removed `FormatSwitcherPanel` component to eliminate duplicate UI controls
+* **Changed:** Removed `PluginDocumentSettingPanel` wrapper for cleaner sidebar
+* **Changed:** "Default" template now added to all template queries for consistent availability
+* **Changed:** Added `rest_prepare_post` filter to ensure correct template values in editor
+* **Changed:** Template assignment logic now properly handles "default" template selection
+
+= 1.1.1 - 2025-12-09 =
+
+**Bug Fixes**
+
+* **Fixed:** Critical issue where format templates (Chat Format, Gallery Format, etc.) were appearing in the Template dropdown and hiding/replacing theme templates. Format templates now apply automatically via template hierarchy but don't show as selectable options in the editor.
 
 = 1.1.0 - 2025-12-08 =
 

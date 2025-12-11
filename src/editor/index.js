@@ -18,14 +18,13 @@
  */
 
 import { registerPlugin } from '@wordpress/plugins';
-import { PluginDocumentSettingPanel } from '@wordpress/edit-post';
-import { SelectControl, Button, Modal, Card, CardBody, Notice } from '@wordpress/components';
-import { useSelect, useDispatch, subscribe } from '@wordpress/data';
+import { Button, Modal, Card, CardBody } from '@wordpress/components';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { speak } from '@wordpress/a11y';
 import { addFilter } from '@wordpress/hooks';
-import { parse, createBlock } from '@wordpress/blocks';
+import { parse } from '@wordpress/blocks';
 
 /**
  * Helper function to insert pattern for a format
@@ -82,8 +81,13 @@ const FormatSelectionModal = () => {
 	}, [isNewPost, postType, hasShown]);
 
 	const handleFormatSelect = (formatSlug) => {
-		// Set the post format
-		editPost({ format: formatSlug });
+		// Set the format AND template together to prevent race conditions
+		const templateValue = formatSlug === 'standard' ? '' : `single-format-${formatSlug}`;
+
+		editPost({
+			format: formatSlug,
+			template: templateValue
+		});
 
 		// Insert pattern if not standard
 		if (formatSlug !== 'standard' && window.pfbtData.formats[formatSlug]) {
@@ -111,8 +115,21 @@ const FormatSelectionModal = () => {
 	}
 
 	const formats = window.pfbtData.formats;
+
+	// Enhance format display with template information
+	const formatsWithTemplateInfo = Object.entries(formats).map(([slug, format]) => {
+		if (slug === 'standard') {
+			return [slug, {
+				...format,
+				name: __('Standard (Single Template)', 'post-formats-for-block-themes'),
+				description: __('Default post format using the Single template', 'post-formats-for-block-themes')
+			}];
+		}
+		return [slug, format];
+	});
+
 	// Sort: Standard first, then alphabetically
-	const sortedFormats = Object.entries(formats).sort((a, b) => {
+	const sortedFormats = formatsWithTemplateInfo.sort((a, b) => {
 		if (a[0] === 'standard') return -1;
 		if (b[0] === 'standard') return 1;
 		return a[1].name.localeCompare(b[1].name);
@@ -145,123 +162,14 @@ const FormatSelectionModal = () => {
 	);
 };
 
-/**
- * Format Switcher Panel Component
- *
- * Sidebar panel for changing format mid-edit with confirmation dialog.
- */
-const FormatSwitcherPanel = () => {
-	const [showConfirm, setShowConfirm] = useState(false);
-	const [pendingFormat, setPendingFormat] = useState('');
-
-	const { currentFormat, hasBlocks } = useSelect((select) => {
-		const editor = select('core/editor');
-		const blockEditor = select('core/block-editor');
-
-		return {
-			currentFormat: editor.getEditedPostAttribute('format') || 'standard',
-			hasBlocks: blockEditor.getBlocks().length > 0,
-		};
-	}, []);
-
-	const { editPost } = useDispatch('core/editor');
-
-	const handleFormatChange = (newFormat) => {
-		if (hasBlocks && newFormat !== currentFormat) {
-			// Show confirmation dialog
-			setPendingFormat(newFormat);
-			setShowConfirm(true);
-		} else {
-			// No content, just change format
-			applyFormat(newFormat);
-		}
-	};
-
-	const applyFormat = (formatSlug, mode = 'replace') => {
-		editPost({ format: formatSlug });
-
-		// Mark as manually set to prevent auto-detection override
-		wp.apiFetch({
-			path: `/wp/v2/posts/${wp.data.select('core/editor').getCurrentPostId()}`,
-			method: 'POST',
-			data: {
-				meta: {
-					_pfbt_format_manual: true,
-				},
-			},
-		});
-
-		speak(
-			sprintf(
-				/* translators: %s: Format name */
-				__('Format changed to %s', 'post-formats-for-block-themes'),
-				window.pfbtData.formats[formatSlug]?.name || formatSlug
-			),
-			'polite'
-		);
-
-		setShowConfirm(false);
-	};
-
-	if (!window.pfbtData) {
-		return null;
-	}
-
-	const formats = window.pfbtData.formats;
-
-	return (
-		<>
-			<SelectControl
-				label={__('Post Format', 'post-formats-for-block-themes')}
-				value={currentFormat}
-				options={Object.entries(formats).map(([slug, format]) => ({
-					label: format.name,
-					value: slug,
-				}))}
-				onChange={handleFormatChange}
-				help={__('Choose the format that best matches your content.', 'post-formats-for-block-themes')}
-			/>
-
-			{showConfirm && (
-				<Modal
-					title={__('Change Post Format?', 'post-formats-for-block-themes')}
-					onRequestClose={() => setShowConfirm(false)}
-				>
-					<p>
-						{__('Your post already has content. How would you like to proceed?', 'post-formats-for-block-themes')}
-					</p>
-					<div className="pfpu-format-change-actions">
-						<Button
-							variant="primary"
-							onClick={() => applyFormat(pendingFormat, 'replace')}
-						>
-							{__('Replace content with new pattern', 'post-formats-for-block-themes')}
-						</Button>
-						<Button
-							variant="secondary"
-							onClick={() => applyFormat(pendingFormat, 'keep')}
-						>
-							{__('Keep content, just change format', 'post-formats-for-block-themes')}
-						</Button>
-						<Button
-							variant="tertiary"
-							onClick={() => setShowConfirm(false)}
-						>
-							{__('Cancel', 'post-formats-for-block-themes')}
-						</Button>
-					</div>
-				</Modal>
-			)}
-		</>
-	);
-};
 
 /**
- * Status Paragraph Validator Component
+ * Status Paragraph Validator Notice Component
  *
- * Adds character counter and validation to status format paragraphs.
+ * Shows character count as an editor notice for status format posts.
  */
-const StatusParagraphValidator = () => {
+const StatusParagraphValidatorNotice = () => {
+	const { createNotice, removeNotice } = useDispatch('core/notices');
 	const { currentFormat, blocks } = useSelect((select) => {
 		const editor = select('core/editor');
 		const blockEditor = select('core/block-editor');
@@ -272,75 +180,72 @@ const StatusParagraphValidator = () => {
 		};
 	}, []);
 
-	if (currentFormat !== 'status') {
-		return null;
-	}
+	useEffect(() => {
+		if (currentFormat !== 'status') {
+			removeNotice('pfbt-status-char-count');
+			return;
+		}
 
-	// Find status paragraph block
-	const statusBlock = blocks.find(block =>
-		block.name === 'core/paragraph' &&
-		block.attributes.className?.includes('status-paragraph')
-	);
+		const statusBlock = blocks.find(block =>
+			block.name === 'core/paragraph' &&
+			block.attributes.className?.includes('status-paragraph')
+		);
 
-	if (!statusBlock) {
-		return null;
-	}
+		if (!statusBlock) {
+			removeNotice('pfbt-status-char-count');
+			return;
+		}
 
-	const content = statusBlock.attributes.content || '';
-	const plainText = content.replace(/<[^>]*>/g, ''); // Strip HTML
-	const charCount = plainText.length;
-	const isWarning = charCount >= 260;
-	const isError = charCount > 280;
+		const content = statusBlock.attributes.content || '';
+		const plainText = content.replace(/<[^>]*>/g, '');
+		const charCount = plainText.length;
 
-	return (
-		<div className="pfpu-status-validator">
-			<Notice
-				status={isError ? 'error' : (isWarning ? 'warning' : 'info')}
-				isDismissible={false}
-			>
-				<p>
-					<strong>
-						{sprintf(
-							/* translators: 1: Current character count, 2: Maximum characters */
-							__('%1$d / %2$d characters', 'post-formats-for-block-themes'),
-							charCount,
-							280
-						)}
-					</strong>
-				</p>
-				{isError && (
-					<p>
-						{__('Status updates should be 280 characters or less for best display.', 'post-formats-for-block-themes')}
-					</p>
-				)}
-				{isWarning && !isError && (
-					<p>
-						{__('Approaching character limit. Consider shortening your status.', 'post-formats-for-block-themes')}
-					</p>
-				)}
-			</Notice>
-		</div>
-	);
+		if (charCount > 280) {
+			createNotice(
+				'error',
+				sprintf(
+					/* translators: %d: Current character count */
+					__('%d / 280 characters - Status updates should be 280 characters or less', 'post-formats-for-block-themes'),
+					charCount
+				),
+				{
+					id: 'pfbt-status-char-count',
+					isDismissible: false,
+				}
+			);
+		} else if (charCount >= 260) {
+			createNotice(
+				'warning',
+				sprintf(
+					/* translators: %d: Current character count */
+					__('%d / 280 characters - Approaching limit', 'post-formats-for-block-themes'),
+					charCount
+				),
+				{
+					id: 'pfbt-status-char-count',
+					isDismissible: false,
+				}
+			);
+		} else {
+			removeNotice('pfbt-status-char-count');
+		}
+	}, [currentFormat, blocks, createNotice, removeNotice]);
+
+	return null;
 };
 
 /**
  * Register Plugin
  *
- * Registers all components as a WordPress plugin.
+ * Registers format selection modal and status validator.
+ * Uses WordPress's built-in format selector instead of custom panel.
  */
 registerPlugin('post-formats-for-block-themes', {
 	render: () => {
 		return (
 			<>
 				<FormatSelectionModal />
-				<PluginDocumentSettingPanel
-					name="post-format-switcher"
-					title={__('Post Format', 'post-formats-for-block-themes')}
-					className="pfpu-format-switcher-panel"
-				>
-					<FormatSwitcherPanel />
-					<StatusParagraphValidator />
-				</PluginDocumentSettingPanel>
+				<StatusParagraphValidatorNotice />
 			</>
 		);
 	},
@@ -472,6 +377,51 @@ const editorStyles = `
 	.pfpu-char-counter.is-over-limit {
 		color: #d63638;
 		font-weight: 600;
+	}
+
+	/* Template Modal - Visual Separation for Format Templates */
+
+	/* Target template items in the template selection modal */
+	/* Format templates have "Format" in their title (e.g., "Gallery Format", "Aside Format") */
+
+	/* Template card styling - targets the button/card elements */
+	.edit-post-template__panel .components-panel__body button[aria-label*="Format"],
+	.edit-site-template-card button[aria-label*="Format"],
+	.block-editor-block-card button[aria-label*="Format"] {
+		border-left: 4px solid var(--wp-admin-theme-color, #2271b1) !important;
+		padding-left: 12px !important;
+		background: rgba(34, 113, 177, 0.05) !important;
+		position: relative;
+	}
+
+	/* Add emoji badge to format templates */
+	.edit-post-template__panel .components-panel__body button[aria-label*="Format"]::before,
+	.edit-site-template-card button[aria-label*="Format"]::before,
+	.block-editor-block-card button[aria-label*="Format"]::before {
+		content: "🎨 ";
+		margin-right: 4px;
+		font-size: 14px;
+	}
+
+	/* Template dropdown/modal items */
+	.edit-post-template-dropdown__content button[aria-label*="Format"],
+	.components-dropdown-menu__menu button[aria-label*="Format"] {
+		border-left: 4px solid var(--wp-admin-theme-color, #2271b1);
+		padding-left: 12px;
+		background: rgba(34, 113, 177, 0.05);
+	}
+
+	/* Add visual indicator to currently selected format template */
+	.edit-post-template__panel .components-panel__body .is-selected[aria-label*="Format"],
+	button[aria-checked="true"][aria-label*="Format"] {
+		background: rgba(34, 113, 177, 0.1) !important;
+		font-weight: 600;
+	}
+
+	/* Template name in sidebar - show when auto-applied */
+	.edit-post-template__panel .components-panel__body .components-base-control__help {
+		font-style: italic;
+		color: #757575;
 	}
 `;
 

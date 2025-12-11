@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 1.1.0
+ * Version: 1.1.2
  * Requires at least: 6.8
  * Tested up to: 6.9
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '1.1.0' );
+define( 'PFBT_VERSION', '1.1.2' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -75,6 +75,17 @@ function pfbt_register_template_types_early( $template_types ) {
 	return $template_types;
 }
 add_filter( 'default_template_types', 'pfbt_register_template_types_early', 1 );
+
+/**
+ * Hide format templates from template chooser dropdown
+ *
+ * NOTE: This filtering is handled by the rest_prepare_wp_template filter
+ * in includes/class-format-styles.php for block themes.
+ * The theme_post_templates filter is only for classic themes and causes
+ * conflicts with block theme template handling.
+ *
+ * @since 1.1.1
+ */
 
 /**
  * Suppress template type warnings from WordPress core timing issue

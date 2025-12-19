@@ -351,7 +351,7 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 
 **Performance**
 
-* **Fixed:** Critical performance issue with revision queries returning 11,000+ rows on sites with many synced patterns
+* **Fixed:** Critical performance issue with revision queries on sites with many synced patterns
 * **Added:** Transient-based caching for pattern registration to avoid unnecessary database operations
 * **Added:** Pattern registration now skipped entirely on front-end for better performance
 * **Added:** Pattern updates only occur when content has actually changed

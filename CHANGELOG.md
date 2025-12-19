@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pattern updates only occur when content has actually changed
 
 ### Fixed
-- **Critical:** Performance issue with revision queries returning 11,000+ rows on sites with many synced patterns
+- **Critical:** Performance issue with revision queries on sites with many synced patterns
 - Duplicate pattern insertion when selecting format from modal (patterns were being inserted twice)
 - Status format character counter appearing twice in editor
 - Aside format icon not displaying in Posts admin list (changed from `dashicons-aside` to `dashicons-format-aside`)

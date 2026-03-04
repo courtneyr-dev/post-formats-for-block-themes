@@ -147,6 +147,24 @@ function pfbt_include_files() {
 	// Feature flags and Abilities API (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-feature-flags.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-abilities-manager.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-abilities-formats.php';
+
+	// IndieWeb integrations (v1.2.0+).
+	require_once PFBT_PLUGIN_DIR . 'includes/mf2/class-pfbt-format-mf2.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/webmention/class-pfbt-webmention-context.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/posse/class-pfbt-posse-transformer.php';
+
+	// ActivityPub integration (v1.2.0+).
+	require_once PFBT_PLUGIN_DIR . 'includes/activitypub/class-pfbt-activitypub-transformer.php';
+
+	// Post Kinds integration (v1.2.0+).
+	require_once PFBT_PLUGIN_DIR . 'includes/post-kinds/class-pfbt-post-kinds-integration.php';
+
+	// Block Bindings source (v1.2.0+).
+	require_once PFBT_PLUGIN_DIR . 'includes/class-block-bindings-formats.php';
+
+	// Format Badge block (v1.2.0+).
+	require_once PFBT_PLUGIN_DIR . 'blocks/format-badge/format-badge.php';
 
 	// Include Chat Log block (integrated)
 	// This provides the chatlog/conversation block for the Chat post format
@@ -202,6 +220,11 @@ function pfbt_init() {
 	PFBT_Block_Locker::instance();
 	PFBT_Admin_Columns::instance();
 
+	// Initialize Block Bindings source (v1.2.0+).
+	if ( PFBT_Feature_Flags::has_block_bindings() ) {
+		PFBT_Block_Bindings_Formats::instance();
+	}
+
 	// Initialize Abilities API integration (v1.2.0+).
 	if ( PFBT_Feature_Flags::has_abilities_api() ) {
 		PFBT_Abilities_Manager::instance();
@@ -209,9 +232,16 @@ function pfbt_init() {
 
 	// Initialize IndieWeb integration (v1.2.0+).
 	if ( PFBT_Feature_Flags::has_indieweb() ) {
-		require_once PFBT_PLUGIN_DIR . 'includes/mf2/class-pfbt-format-mf2.php';
 		PFBT_Format_Mf2::instance();
 	}
+
+	// Initialize ActivityPub integration (v1.2.0+).
+	// Works when ActivityPub plugin is installed.
+	PFBT_ActivityPub_Transformer::instance();
+
+	// Initialize Post Kinds integration (v1.2.0+).
+	// Works when Post Kinds plugin is installed.
+	PFBT_Post_Kinds_Integration::instance();
 
 	// Register patterns after WordPress is fully loaded.
 	add_action( 'init', array( 'PFBT_Pattern_Manager', 'register_all_patterns' ) );
@@ -232,19 +262,35 @@ function pfbt_enqueue_editor_assets() {
 	$screen = get_current_screen();
 
 	// Only load on post editor screens.
-	if ( ! $screen || 'post' !== $screen->post_type ) {
+	// Check both post_type and base to handle various editor contexts.
+	if ( ! $screen ) {
+		return;
+	}
+
+	// Allow post editor (edit/add), site editor, and block editor contexts for posts.
+	$is_post_editor = 'post' === $screen->post_type;
+	$is_post_base   = in_array( $screen->base, array( 'post', 'post-new' ), true );
+
+	if ( ! $is_post_editor && ! $is_post_base ) {
 		return;
 	}
 
 	// Load asset file with dependencies.
-	$asset_file = include PFBT_PLUGIN_DIR . 'build/index.asset.php';
+	$asset_path = PFBT_PLUGIN_DIR . 'build/index.asset.php';
+	if ( ! file_exists( $asset_path ) ) {
+		return;
+	}
+	$asset_file = include $asset_path;
+	if ( ! is_array( $asset_file ) ) {
+		return;
+	}
 
 	// Editor script.
 	wp_enqueue_script(
 		'pfpu-editor',
 		PFBT_PLUGIN_URL . 'build/index.js',
-		$asset_file['dependencies'],
-		$asset_file['version'],
+		isset( $asset_file['dependencies'] ) ? $asset_file['dependencies'] : array(),
+		isset( $asset_file['version'] ) ? $asset_file['version'] : PFBT_VERSION,
 		true
 	);
 
@@ -265,6 +311,18 @@ function pfbt_enqueue_editor_assets() {
 	}
 
 
+	// Build Post Kinds integration data.
+	$post_kinds_data = array(
+		'active'       => class_exists( 'PFBT_Post_Kinds_Integration' ) && PFBT_Post_Kinds_Integration::instance()->is_post_kinds_active(),
+		'formatToKind' => array(),
+		'kindToFormat' => array(),
+	);
+
+	if ( $post_kinds_data['active'] ) {
+		$post_kinds_data['formatToKind'] = PFBT_Post_Kinds_Integration::instance()->get_all_format_kind_mappings();
+		$post_kinds_data['kindToFormat'] = PFBT_Post_Kinds_Integration::instance()->get_all_kind_format_mappings();
+	}
+
 	// Pass data to JavaScript.
 	wp_localize_script(
 		'pfpu-editor',
@@ -276,6 +334,7 @@ function pfbt_enqueue_editor_assets() {
 			'hasChatLog'      => true, // Chat Log block is now integrated
 			'nonce'           => wp_create_nonce( 'pfbt_editor_nonce' ),
 			'currentFormat'   => get_post_format() ?: 'standard',
+			'postKinds'       => $post_kinds_data,
 		)
 	);
 

@@ -484,37 +484,38 @@ class PFBT_Format_Styles {
 			}
 		}
 
-		// Add "Default" pseudo-template option
-		// This allows users to explicitly clear template assignment
-		// Add it to all queries - WordPress will filter by post_types if needed
-		$default_exists = false;
-		foreach ( $query_result as $existing_template ) {
-			if ( 'default' === $existing_template->slug ) {
-				$default_exists = true;
-				break;
+		// Add "Default" pseudo-template option ONLY in admin
+		// This allows users to explicitly clear template assignment in the editor
+		// Skip on front-end to avoid "Undefined array key" errors in block-template.php
+		if ( is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+			$default_exists = false;
+			foreach ( $query_result as $existing_template ) {
+				if ( 'default' === $existing_template->slug ) {
+					$default_exists = true;
+					break;
+				}
 			}
-		}
 
-		if ( ! $default_exists ) {
-			$default_template              = new WP_Block_Template();
-			$default_template->slug        = 'default';
-			$default_template->id          = get_stylesheet() . '//default';
-			$default_template->theme       = get_stylesheet();
-			$default_template->content     = '';
-			$default_template->source      = 'plugin';
-			$default_template->type        = 'wp_template';
-			$default_template->title       = __( 'Default', 'post-formats-for-block-themes' );
-			$default_template->description = __( 'Use default template hierarchy (no specific template)', 'post-formats-for-block-themes' );
-			$default_template->status      = 'publish';
-			$default_template->has_theme_file = false;
-			$default_template->is_custom   = false;
-			$default_template->post_types  = array( 'post' );
-			$default_template->author      = null;
-			$default_template->origin      = 'plugin';
+			if ( ! $default_exists ) {
+				$default_template              = new WP_Block_Template();
+				$default_template->slug        = 'default';
+				$default_template->id          = get_stylesheet() . '//default';
+				$default_template->theme       = get_stylesheet();
+				$default_template->content     = '';
+				$default_template->source      = 'plugin';
+				$default_template->type        = 'wp_template';
+				$default_template->title       = __( 'Default', 'post-formats-for-block-themes' );
+				$default_template->description = __( 'Use default template hierarchy (no specific template)', 'post-formats-for-block-themes' );
+				$default_template->status      = 'publish';
+				$default_template->has_theme_file = false;
+				$default_template->is_custom   = false;
+				$default_template->post_types  = array( 'post' );
+				$default_template->author      = null;
+				$default_template->origin      = 'plugin';
 
-			// Add at the very beginning so it's the first option
-			array_unshift( $query_result, $default_template );
-			error_log( "PFBT: Added 'Default' template option to results" );
+				// Add at the very beginning so it's the first option
+				array_unshift( $query_result, $default_template );
+			}
 		}
 
 		// Add format templates to BOTH post editor and site editor

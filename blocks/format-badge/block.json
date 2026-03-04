@@ -1,0 +1,21 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/block.json",
+  "apiVersion": 3,
+  "name": "post-formats/format-badge",
+  "version": "1.0.0",
+  "title": "Format Badge",
+  "category": "theme",
+  "icon": "tag",
+  "description": "Displays the current post format as a badge.",
+  "textdomain": "post-formats-for-block-themes",
+  "usesContext": ["postId", "postType"],
+  "supports": {
+    "html": false,
+    "color": { "background": true, "text": true },
+    "spacing": { "margin": true, "padding": true },
+    "typography": { "fontSize": true }
+  },
+  "blockHooks": {
+    "core/post-title": "before"
+  }
+}

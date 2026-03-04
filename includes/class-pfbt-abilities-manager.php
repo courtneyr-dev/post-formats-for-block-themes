@@ -118,6 +118,9 @@ class PFBT_Abilities_Manager {
 		// Load and register core abilities.
 		$this->register_core_abilities();
 
+		// Register format operation abilities.
+		$this->register_format_abilities();
+
 		// Register IndieWeb abilities if enabled.
 		if ( PFBT_Feature_Flags::has_indieweb() ) {
 			$this->register_indieweb_abilities();
@@ -157,6 +160,21 @@ class PFBT_Abilities_Manager {
 
 		$provider                = PFBT_Core_Abilities::instance();
 		$this->providers['core'] = $provider;
+		$provider->register();
+	}
+
+	/**
+	 * Register format operation abilities (detect, switch, repair, stats)
+	 *
+	 * @since 1.2.0
+	 */
+	private function register_format_abilities() {
+		if ( ! class_exists( 'PFBT_Abilities_Formats' ) ) {
+			require_once PFBT_PLUGIN_DIR . 'includes/class-abilities-formats.php';
+		}
+
+		$provider                   = PFBT_Abilities_Formats::instance();
+		$this->providers['formats'] = $provider;
 		$provider->register();
 	}
 

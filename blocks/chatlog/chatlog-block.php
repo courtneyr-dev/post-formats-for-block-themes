@@ -739,6 +739,7 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 			'show_avatars'           => true,
 			'show_timestamps'        => true,
 			'timestamp_format'       => 'time-only',
+			'collapse_threads'       => false,
 			'show_participant_list'  => false,
 			'highlight_current_user' => '',
 			'device_frame'           => 'none',
@@ -747,6 +748,9 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 
 		$options = wp_parse_args( $options, $defaults );
 
+		// Check for Interactivity API support (WP 6.5+).
+		$use_interactivity = function_exists( 'wp_interactivity_state' );
+
 		// Start device frame if needed
 		$output = '';
 		if ( $options['device_frame'] !== 'none' ) {
@@ -754,9 +758,11 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 			$output     .= sprintf( '<div class="%s">', $frame_class );
 		}
 
-		$output .= sprintf(
-			'<div class="chatlog chatlog--%s" role="log" aria-label="%s">',
+		$interactivity_attr = $use_interactivity ? ' data-wp-interactive="post-formats/chatlog"' : '';
+		$output            .= sprintf(
+			'<div class="chatlog chatlog--%s"%s role="log" aria-label="%s">',
 			esc_attr( $options['display_style'] ),
+			$interactivity_attr,
 			esc_attr__( 'Chat conversation', 'post-formats-for-block-themes' )
 		);
 
@@ -781,7 +787,53 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 
 		$output .= '<ol class="chatlog-messages">';
 
-		foreach ( $messages as $message ) {
+		$in_thread_group = false;
+		$message_count   = count( $messages );
+
+		foreach ( $messages as $index => $message ) {
+			$is_thread      = ! empty( $message['is_thread'] );
+			$next_is_thread = isset( $messages[ $index + 1 ] ) && ! empty( $messages[ $index + 1 ]['is_thread'] );
+
+			// Open thread group wrapper when entering a thread sequence.
+			if ( $is_thread && ! $in_thread_group ) {
+				$in_thread_group  = true;
+				$initial_expanded = ! $options['collapse_threads'];
+
+				// Count consecutive thread messages for the toggle label.
+				$thread_count = 0;
+				for ( $j = $index; $j < $message_count && ! empty( $messages[ $j ]['is_thread'] ); $j++ ) {
+					++$thread_count;
+				}
+
+				if ( $use_interactivity ) {
+					$context_attr = wp_interactivity_data_wp_context( array( 'isThreadExpanded' => $initial_expanded ) );
+					$output      .= sprintf( '<li class="chatlog-thread-group" %s>', $context_attr );
+					$output      .= sprintf(
+						'<button class="chatlog-thread-toggle" data-wp-on--click="actions.toggleThread" data-wp-bind--aria-expanded="context.isThreadExpanded">%s</button>',
+						sprintf(
+							/* translators: %d: Number of thread replies */
+							esc_html__( 'Thread replies (%d)', 'post-formats-for-block-themes' ),
+							$thread_count
+						)
+					);
+					$output .= '<ol class="chatlog-thread" data-wp-bind--hidden="!context.isThreadExpanded">';
+				} else {
+					$collapsed_class = $options['collapse_threads'] ? ' chatlog-thread--collapsed' : '';
+					$output         .= '<li class="chatlog-thread-group">';
+					$output         .= sprintf(
+						'<button class="chatlog-thread-toggle" aria-expanded="%s">%s</button>',
+						$initial_expanded ? 'true' : 'false',
+						sprintf(
+							/* translators: %d: Number of thread replies */
+							esc_html__( 'Thread replies (%d)', 'post-formats-for-block-themes' ),
+							$thread_count
+						)
+					);
+					$output .= sprintf( '<ol class="chatlog-thread%s">', esc_attr( $collapsed_class ) );
+				}
+			}
+
+			// Render individual message.
 			$is_highlighted = ! empty( $options['highlight_current_user'] ) &&
 								$message['speaker'] === $options['highlight_current_user'];
 
@@ -789,7 +841,7 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 			if ( $is_highlighted ) {
 				$message_class .= ' chatlog-message--highlighted';
 			}
-			if ( ! empty( $message['is_thread'] ) ) {
+			if ( $is_thread ) {
 				$message_class .= ' chatlog-message--thread';
 			}
 
@@ -815,10 +867,6 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 				);
 			}
 
-			if ( ! empty( $message['is_thread'] ) ) {
-				$output .= '<span class="chatlog-thread-indicator">' . esc_html__( '(in thread)', 'post-formats-for-block-themes' ) . '</span>';
-			}
-
 			$output .= '</div></div>';
 
 			$output .= sprintf(
@@ -827,6 +875,17 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 			);
 
 			$output .= '</li>';
+
+			// Close thread group wrapper when leaving a thread sequence.
+			if ( $is_thread && ! $next_is_thread ) {
+				$output         .= '</ol></li>';
+				$in_thread_group = false;
+			}
+		}
+
+		// Defensive: close thread group if still open at end of messages.
+		if ( $in_thread_group ) {
+			$output .= '</ol></li>';
 		}
 
 		$output .= '</ol></div>';

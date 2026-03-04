@@ -37,6 +37,7 @@ class PFBT_Feature_Flags {
 		'posse_preview'           => true,  // POSSE syndication preview - ON by default.
 		'federation_preview'      => false, // Federation preview panel - OFF by default.
 		'abilities_api'           => true,  // WordPress Abilities API - ON by default.
+		'block_bindings'          => true,  // Block Bindings + Block Hooks - ON by default.
 	);
 
 	/**
@@ -197,6 +198,17 @@ class PFBT_Feature_Flags {
 	 *
 	 * @return bool Whether ActivityPub integration is available.
 	 */
+	/**
+	 * Check if Block Bindings are available
+	 *
+	 * @since 1.2.0
+	 *
+	 * @return bool Whether Block Bindings API is available.
+	 */
+	public static function has_block_bindings() {
+		return self::is_enabled( 'block_bindings' ) && function_exists( 'register_block_bindings_source' );
+	}
+
 	public static function has_activitypub() {
 		return self::requires_plugin( 'activitypub_integration', 'activitypub/activitypub.php' );
 	}

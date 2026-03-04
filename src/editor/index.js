@@ -21,7 +21,7 @@ import { registerPlugin } from '@wordpress/plugins';
 import { Button, Modal, Card, CardBody } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useEffect, useState, useRef } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { speak } from '@wordpress/a11y';
 import { addFilter } from '@wordpress/hooks';
 import { parse } from '@wordpress/blocks';
@@ -141,11 +141,50 @@ const FormatChangeWatcher = () => {
  * Displays on new post creation to help users choose the appropriate format.
  * Accessible modal with keyboard navigation and screen reader support.
  */
+
+/**
+ * Get suggested Post Kind for a format
+ *
+ * @param {string} formatSlug - Format slug
+ * @return {string|null} Suggested kind or null
+ */
+const getSuggestedKind = (formatSlug) => {
+	const postKindsData = window.pfbtData?.postKinds;
+	if (!postKindsData?.active || !postKindsData?.formatToKind) {
+		return null;
+	}
+	return postKindsData.formatToKind[formatSlug] || null;
+};
+
+/**
+ * Get human-readable kind name
+ *
+ * @param {string} kindSlug - Kind slug
+ * @return {string} Human-readable name
+ */
+const getKindDisplayName = (kindSlug) => {
+	const kindNames = {
+		article: __('Article', 'post-formats-for-block-themes'),
+		note: __('Note', 'post-formats-for-block-themes'),
+		photo: __('Photo', 'post-formats-for-block-themes'),
+		video: __('Video', 'post-formats-for-block-themes'),
+		bookmark: __('Bookmark', 'post-formats-for-block-themes'),
+		quotation: __('Quotation', 'post-formats-for-block-themes'),
+		listen: __('Listen', 'post-formats-for-block-themes'),
+		watch: __('Watch', 'post-formats-for-block-themes'),
+		reply: __('Reply', 'post-formats-for-block-themes'),
+		like: __('Like', 'post-formats-for-block-themes'),
+		repost: __('Repost', 'post-formats-for-block-themes'),
+		checkin: __('Checkin', 'post-formats-for-block-themes'),
+	};
+	return kindNames[kindSlug] || kindSlug;
+};
+
 const FormatSelectionModal = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [hasShown, setHasShown] = useState(false);
 
-	const { isNewPost, currentFormat, postType } = useSelect((select) => {
+	const { isNewPost, currentFormat, postType, postId } = useSelect((select) => {
 		const editor = select('core/editor');
 		const post = editor.getCurrentPost();
 
@@ -153,11 +192,15 @@ const FormatSelectionModal = () => {
 			isNewPost: ! post.id || post.status === 'auto-draft',
 			currentFormat: editor.getEditedPostAttribute('format') || 'standard',
 			postType: post.type,
+			postId: post.id,
 		};
 	}, []);
 
 	const { editPost } = useDispatch('core/editor');
 	const { insertBlocks, resetBlocks } = useDispatch('core/block-editor');
+
+	// Check if Post Kinds is active
+	const postKindsActive = window.pfbtData?.postKinds?.active || false;
 
 	// Show modal on new post (only once)
 	useEffect(() => {
@@ -171,12 +214,20 @@ const FormatSelectionModal = () => {
 	}, [isNewPost, postType, hasShown]);
 
 	const handleFormatSelect = (formatSlug) => {
-		// Only set the format - do NOT set template
+		// Get suggested Post Kind if Post Kinds plugin is active
+		const suggestedKind = getSuggestedKind(formatSlug);
+
+		// Set the post format
 		// Format templates are applied on the front-end only via PHP template hierarchy
 		// This keeps the editor showing just post content, not the full template
-		editPost({
-			format: formatSlug
-		});
+		editPost({ format: formatSlug });
+
+		// Set Post Kind via Reactions for IndieWeb custom event
+		if (postKindsActive && suggestedKind) {
+			window.dispatchEvent(new CustomEvent('reactions-indieweb-set-kind', {
+				detail: { kind: suggestedKind }
+			}));
+		}
 
 		// Insert pattern if not standard
 		if (formatSlug !== 'standard' && window.pfbtData?.formats?.[formatSlug]) {
@@ -186,14 +237,20 @@ const FormatSelectionModal = () => {
 			insertPatternForFormat(formatSlug, insertBlocks, resetBlocks, true);
 
 			// Announce to screen readers
-			speak(
-				sprintf(
+			const announcement = suggestedKind
+				? sprintf(
+					/* translators: 1: Format name, 2: Kind name */
+					__('Selected %1$s format with %2$s kind. Pattern inserted.', 'post-formats-for-block-themes'),
+					format.name,
+					getKindDisplayName(suggestedKind)
+				)
+				: sprintf(
 					/* translators: %s: Format name */
 					__('Selected %s format. Pattern inserted.', 'post-formats-for-block-themes'),
 					format.name
-				),
-				'polite'
-			);
+				);
+
+			speak(announcement, 'polite');
 		}
 
 		setIsOpen(false);
@@ -205,16 +262,19 @@ const FormatSelectionModal = () => {
 
 	const formats = window.pfbtData.formats;
 
-	// Enhance format display with template information
+	// Enhance format display with template information and Post Kind suggestion
 	const formatsWithTemplateInfo = Object.entries(formats).map(([slug, format]) => {
+		const suggestedKind = getSuggestedKind(slug);
+
 		if (slug === 'standard') {
 			return [slug, {
 				...format,
 				name: __('Standard (Single Template)', 'post-formats-for-block-themes'),
-				description: __('Default post format using the Single template', 'post-formats-for-block-themes')
+				description: __('Default post format using the Single template', 'post-formats-for-block-themes'),
+				suggestedKind,
 			}];
 		}
-		return [slug, format];
+		return [slug, { ...format, suggestedKind }];
 	});
 
 	// Sort: Standard first, then alphabetically
@@ -243,6 +303,15 @@ const FormatSelectionModal = () => {
 								<span className="pfpu-format-name">{format.name}</span>
 							</Button>
 							<p className="pfpu-format-description">{format.description}</p>
+							{postKindsActive && format.suggestedKind && (
+								<p className="pfpu-format-kind-hint">
+									{sprintf(
+										/* translators: %s: Kind name */
+										__('→ Sets Post Kind: %s', 'post-formats-for-block-themes'),
+										getKindDisplayName(format.suggestedKind)
+									)}
+								</p>
+							)}
 						</CardBody>
 					</Card>
 				))}
@@ -374,6 +443,13 @@ const editorStyles = `
 		font-size: 0.875rem;
 		color: #757575;
 		margin-top: 0.5rem;
+	}
+
+	.pfpu-format-kind-hint {
+		font-size: 0.75rem;
+		color: #2271b1;
+		margin-top: 0.25rem;
+		font-style: italic;
 	}
 
 	.pfpu-format-change-actions {

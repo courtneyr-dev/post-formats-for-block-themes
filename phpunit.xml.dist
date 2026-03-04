@@ -1,13 +1,12 @@
 <?xml version="1.0"?>
 <phpunit
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.5/phpunit.xsd"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
 	bootstrap="tests/bootstrap.php"
 	backupGlobals="false"
 	colors="true"
-	beStrictAboutTestsThatDoNotTestAnything="true"
-	beStrictAboutOutputDuringTests="true"
-	beStrictAboutChangesToGlobalState="true"
+	failOnRisky="true"
+	failOnWarning="true"
 	>
 	<testsuites>
 		<testsuite name="unit">
@@ -29,22 +28,18 @@
 		</exclude>
 	</groups>
 
-	<coverage processUncoveredFiles="true">
+	<source>
 		<include>
 			<directory suffix=".php">./includes</directory>
 			<directory suffix=".php">./blocks</directory>
-			<file>./post-formats-power-up.php</file>
+			<file>./post-formats-for-block-themes.php</file>
 		</include>
 		<exclude>
 			<directory>./tests</directory>
 			<directory>./vendor</directory>
 			<directory>./node_modules</directory>
 		</exclude>
-		<report>
-			<html outputDirectory="coverage-report"/>
-			<text outputFile="php://stdout" showUncoveredFiles="false"/>
-		</report>
-	</coverage>
+	</source>
 
 	<php>
 		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="vendor/yoast/phpunit-polyfills"/>

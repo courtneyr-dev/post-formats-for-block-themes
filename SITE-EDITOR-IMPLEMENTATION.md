@@ -63,7 +63,7 @@ New PHP class that:
 
 ### 4. Updated Main Plugin File
 
-**File:** `/post-formats-for-block-themes.php`
+**File:** `/post-formats-power-up.php`
 
 Added: `require_once PFPU_PLUGIN_DIR . 'includes/class-format-styles.php';`
 
@@ -183,13 +183,13 @@ Created three new guides:
 ### Files Changed
 
 ```
-post-formats-for-block-themes/
+post-formats-power-up/
 ├── includes/
 │   └── class-format-styles.php          [NEW]
 ├── styles/
 │   └── format-styles.css                [UPDATED - uses theme.json colors]
 ├── theme.json                           [UPDATED - added color palette]
-├── post-formats-for-block-themes.php            [UPDATED - includes new class]
+├── post-formats-power-up.php            [UPDATED - includes new class]
 ├── FORMAT-CUSTOMIZATION-QUICK-START.md  [NEW]
 ├── SITE-EDITOR-GUIDE.md                 [NEW]
 └── STYLING-SUMMARY.md                   [UPDATED]
@@ -461,7 +461,7 @@ Users should refer to:
 The Site Editor integration is live and ready to use. Users can now customize every post format through the visual WordPress interface with no coding required.
 
 **Files deployed to:**
-- `/Users/crobertson/Downloads/postformats/post-formats-for-block-themes/` (development)
-- `/Users/crobertson/Local Sites/post-formats-test/app/public/wp-content/plugins/post-formats-for-block-themes/` (Local site)
+- `/Users/crobertson/Downloads/postformats/post-formats-power-up/` (development)
+- `/Users/crobertson/Local Sites/post-formats-test/app/public/wp-content/plugins/post-formats-power-up/` (Local site)
 
 **Ready to test in WordPress!** 🚀

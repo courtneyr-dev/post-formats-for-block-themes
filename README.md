@@ -1,26 +1,25 @@
 # Post Formats for Block Themes
 
-[![WordPress Version](https://img.shields.io/badge/WordPress-6.8%2B-blue.svg)](https://wordpress.org/plugins/post-formats-for-block-themes/)
+[![WordPress Version](https://img.shields.io/badge/WordPress-6.9%2B-blue.svg)](https://wordpress.org/plugins/post-formats-for-block-themes/)
 [![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://www.php.net/)
 [![License](https://img.shields.io/badge/license-GPL--2.0%2B-red.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/courtneyr-dev?label=Sponsor&logo=GitHub)](https://github.com/sponsors/courtneyr-dev)
 
 A modern WordPress plugin that brings post format functionality to block themes with intelligent patterns, automatic detection, and an enhanced editor experience.
 
-**✨ Includes integrated Chat Log block** - Display beautiful conversation transcripts from Slack, Discord, Teams, WhatsApp, Telegram, Signal, and more. Supports SRT subtitles, VTT captions, .docx documents, and .html files. No separate plugin needed!
+Includes an integrated Chat Log block for displaying conversation transcripts from Slack, Discord, Teams, WhatsApp, Telegram, Signal, and more. Supports SRT subtitles, VTT captions, .docx documents, and .html files. No separate plugin needed.
 
 ---
 
-## 📥 Download
-
-<!-- This section will be updated after WordPress.org approval -->
+## Download
 
 ### From WordPress.org (Recommended)
 
-**Coming Soon!** This plugin is currently under review by the WordPress.org plugin team.
+Install directly from the [WordPress.org Plugin Directory](https://wordpress.org/plugins/post-formats-for-block-themes/).
 
-Once approved, you'll be able to install it directly from:
-👉 **[WordPress.org Plugin Directory](https://wordpress.org/plugins/post-formats-for-block-themes/)** _(pending approval)_
+1. Go to **Plugins > Add New** in your WordPress admin
+2. Search for **"Post Formats for Block Themes"**
+3. Click **Install Now** and then **Activate**
 
 ### From GitHub Releases
 
@@ -28,7 +27,7 @@ Download the latest release: [Releases](https://github.com/courtneyr-dev/post-fo
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 
@@ -53,9 +52,9 @@ All integrations are optional with graceful fallbacks to WordPress core blocks.
 
 ---
 
-## 📋 Requirements
+## Requirements
 
-- **WordPress:** 6.8 or higher
+- **WordPress:** 6.9 or higher
 - **PHP:** 7.4 or higher (8.0+ recommended)
 - **Theme:** Block theme with Full Site Editing (classic themes not supported)
 - **Browser:** Modern browser with JavaScript enabled
@@ -69,22 +68,16 @@ All integrations are optional with graceful fallbacks to WordPress core blocks.
 
 ---
 
-## 🚀 Installation
+## Installation
 
-### Option 1: From WordPress.org (After Approval)
-
-1. Go to **Plugins → Add New** in your WordPress admin
-2. Search for **"Post Formats for Block Themes"**
-3. Click **Install Now** and then **Activate**
-
-### Option 2: Manual Installation
+### Manual Installation
 
 1. Download the latest release ZIP from [GitHub Releases](https://github.com/courtneyr-dev/post-formats-for-block-themes/releases)
-2. Go to **Plugins → Add New → Upload Plugin**
+2. Go to **Plugins > Add New > Upload Plugin**
 3. Choose the ZIP file and click **Install Now**
 4. Click **Activate Plugin**
 
-### Option 3: Development Installation
+### Development Installation
 
 ```bash
 # Clone the repository
@@ -110,14 +103,14 @@ wp plugin activate post-formats-for-block-themes
 
 ---
 
-## 🛠️ Development
+## Development
 
 ### Prerequisites
 
 - **Node.js** 18+ (LTS recommended)
 - **npm** or **yarn**
 - **Composer** (for PHP development tools)
-- **WordPress** 6.8+ local development environment
+- **WordPress** 6.9+ local development environment
 
 ### Quick Start
 
@@ -161,12 +154,15 @@ composer phpunit          # Unit tests only
 ```
 post-formats-for-block-themes/
 ├── .github/
-│   └── workflows/        # CI/CD pipelines
+│   ├── ISSUE_TEMPLATE/   # Bug report and feature request templates
+│   ├── workflows/        # CI/CD pipelines
+│   └── PULL_REQUEST_TEMPLATE.md
 ├── bin/                  # Helper scripts
 │   ├── prepare-release.sh
 │   └── detect-local-url.sh
 ├── blocks/
-│   └── chatlog/          # Integrated Chat Log block
+│   ├── chatlog/          # Integrated Chat Log block
+│   └── format-badge/     # Format Badge block (Block Hooks)
 ├── build/                # Compiled JavaScript (generated)
 ├── docs/                 # Documentation
 │   ├── TESTING-SUMMARY.md
@@ -177,6 +173,9 @@ post-formats-for-block-themes/
 │   ├── class-format-detector.php
 │   ├── class-pattern-manager.php
 │   ├── class-block-locker.php
+│   ├── class-block-bindings-formats.php
+│   ├── class-pfbt-feature-flags.php
+│   ├── class-pfbt-abilities-manager.php
 │   └── class-repair-tool.php
 ├── patterns/             # Block pattern PHP files
 ├── src/
@@ -188,9 +187,10 @@ post-formats-for-block-themes/
 ├── tests/                # Test suites
 │   ├── accessibility/
 │   ├── e2e/
+│   ├── integration/
+│   ├── unit/
 │   ├── visual/
-│   ├── performance/
-│   └── unit/
+│   └── performance/
 ├── post-formats-for-block-themes.php  # Main plugin file
 ├── package.json
 ├── composer.json
@@ -199,9 +199,7 @@ post-formats-for-block-themes/
 
 ---
 
-## 📸 Screenshots
-
-_Screenshots will be added after WordPress.org approval._
+## Screenshots
 
 1. **Format Selection Modal** - Visual card interface showing all 10 post formats
 2. **Format Switcher Panel** - Sidebar panel for changing formats mid-edit
@@ -214,15 +212,15 @@ _Screenshots will be added after WordPress.org approval._
 
 ---
 
-## 🎯 Usage
+## Usage
 
 ### For Users
 
-1. **Create a New Post** – Format selection modal appears automatically
-2. **Choose Your Format** – Select from 10 format options with descriptions
-3. **Start Writing** – Pattern is inserted with locked first block for consistency
-4. **Change Formats** – Use the Format Switcher in the sidebar at any time
-5. **Fix Old Posts** – Run **Tools → Post Format Repair** to scan existing posts
+1. **Create a New Post** - Format selection modal appears automatically
+2. **Choose Your Format** - Select from 10 format options with descriptions
+3. **Start Writing** - Pattern is inserted with locked first block for consistency
+4. **Change Formats** - Use the Format Switcher in the sidebar at any time
+5. **Fix Old Posts** - Run **Tools > Post Format Repair** to scan existing posts
 
 ### For Developers
 
@@ -321,23 +319,45 @@ add_action( 'pfbt_format_repaired', function( $post_id, $format ) {
 }, 10, 2 );
 ```
 
-### Available Filters
+### Hooks Reference
 
-- `pfbt_registered_formats` - Modify or add format definitions
-- `pfbt_detected_format` - Filter auto-detected format before assignment
-- `pfbt_pattern_content` - Modify pattern HTML before insertion
-- `pfbt_format_detection_rules` - Customize detection rules
+#### Filters
 
-### Available Actions
+| Filter                           | Description                                   | Parameters                               |
+| -------------------------------- | --------------------------------------------- | ---------------------------------------- |
+| `pfbt_registered_formats`        | Modify or add format definitions              | `$formats`                               |
+| `pfbt_detected_format`           | Filter auto-detected format before assignment | `$format`, `$first_block`, `$all_blocks` |
+| `pfbt_pattern_content`           | Modify pattern HTML before insertion          | `$content`, `$format_slug`               |
+| `pfbt_format_signal_weights`     | Adjust signal weights for format detection    | `$weights`                               |
+| `pfbt_format_signals`            | Filter format detection signals               | `$signals`, `$post_id`                   |
+| `pfbt_format_mf2_map`            | Modify microformats2 class mapping            | `$map`                                   |
+| `pfbt_mf2_markup`                | Filter generated mf2 markup                   | `$markup`, `$post_id`                    |
+| `pfbt_feature_{$flag}`           | Override individual feature flags             | `$enabled`                               |
+| `pfbt_webmention_contexts`       | Filter webmention context mapping             | `$contexts`                              |
+| `pfbt_webmention_display_config` | Filter webmention display configuration       | `$config`                                |
+| `pfbt_posse_targets`             | Filter POSSE syndication targets              | `$targets`                               |
+| `pfbt_format_char_limits`        | Modify character limits per format            | `$limits`                                |
+| `pfbt_format_kind_map`           | Filter format-to-Post-Kind mapping            | `$map`                                   |
+| `pfbt_kind_format_map`           | Filter Post-Kind-to-format mapping            | `$map`                                   |
+| `pfbt_auto_suggest_kind`         | Filter auto-suggested Post Kind               | `$kind`, `$post_id`                      |
+| `pfbt_auto_suggest_format`       | Filter auto-suggested format                  | `$format`, `$post_id`                    |
 
-- `pfbt_format_detected` - Runs after automatic format detection
-- `pfbt_format_changed` - Runs when user changes format via switcher
-- `pfbt_format_repaired` - Runs after repair tool fixes a format
-- `pfbt_pattern_inserted` - Runs after pattern is inserted into post
+#### Actions
+
+| Action                          | Description                                       | Parameters                               |
+| ------------------------------- | ------------------------------------------------- | ---------------------------------------- |
+| `pfbt_format_detected`          | Runs after automatic format detection             | `$post_id`, `$format`, `$post`           |
+| `pfbt_format_changed`           | Runs when user changes format via switcher        | `$post_id`, `$old_format`, `$new_format` |
+| `pfbt_format_repaired`          | Runs after repair tool fixes a format             | `$post_id`, `$format`                    |
+| `pfbt_format_switched`          | Runs when format is switched                      | `$post_id`, `$format`                    |
+| `pfbt_abilities_registered`     | Runs after Abilities API abilities are registered | -                                        |
+| `pfbt_mcp_abilities_registered` | Runs after MCP abilities are registered           | -                                        |
+| `pfbt_kind_auto_suggested`      | Runs after Post Kind auto-suggestion              | `$post_id`, `$kind`                      |
+| `pfbt_format_auto_suggested`    | Runs after format auto-suggestion                 | `$post_id`, `$format`                    |
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### Design Principles
 
@@ -357,6 +377,9 @@ add_action( 'pfbt_format_repaired', function( $post_id, $format ) {
 - **`Block_Locker`** - Manages block locking for first blocks
 - **`Repair_Tool`** - Admin interface for scanning and fixing formats
 - **`Format_Styles`** - Enqueues theme-aware CSS
+- **`Block_Bindings_Formats`** - Block Bindings source for format metadata
+- **`Feature_Flags`** - Manages optional feature toggles
+- **`Abilities_Manager`** - WordPress Abilities API integration
 
 #### JavaScript Modules
 
@@ -367,6 +390,7 @@ add_action( 'pfbt_format_repaired', function( $post_id, $format ) {
 #### Block Patterns
 
 Each format has a dedicated pattern file in `/patterns/`:
+
 - `standard.php`, `aside.php`, `status.php`, `link.php`
 - `gallery.php`, `image.php`, `quote.php`, `video.php`, `audio.php`, `chat.php`
 
@@ -374,50 +398,25 @@ Patterns use block locking to maintain format consistency while allowing content
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
-Contributions are welcome! Here's how to get started:
-
-### Ways to Contribute
-
-- 🐛 **Report bugs** via [GitHub Issues](https://github.com/courtneyr-dev/post-formats-for-block-themes/issues)
-- 💡 **Suggest features** by opening a discussion
-- 🔧 **Submit pull requests** for bug fixes or enhancements
-- 🌍 **Translate** the plugin via [WordPress.org translation system](https://translate.wordpress.org/) _(after approval)_
-- 📖 **Improve documentation** by fixing typos or adding examples
-- 💬 **Answer questions** in support forums _(after approval)_
-
-### Development Workflow
-
-1. **Fork** the repository
-2. **Create a feature branch**: `git checkout -b feature/your-feature-name`
-3. **Make changes** following WordPress Coding Standards
-4. **Test thoroughly**:
-   - Run `npm run lint:js` and `composer phpcs`
-   - Run `npm run test:all` to verify tests pass
-   - Test manually in multiple browsers if UI changes
-5. **Commit** with clear, descriptive messages
-6. **Push** to your fork and **submit a pull request**
-
-### Coding Standards
-
-- **PHP**: WordPress Coding Standards (enforced via PHP_CodeSniffer)
-- **JavaScript**: WordPress JavaScript Coding Standards (enforced via ESLint)
-- **CSS**: WordPress CSS Coding Standards (enforced via Stylelint)
-- **Accessibility**: Follow WCAG guidelines for any UI changes
-- **Testing**: Add tests for new features when applicable
-
-### Testing Requirements
-
-All PRs should:
-- ✅ Pass existing automated tests
-- ✅ Include new tests for added functionality
-- ✅ Be manually tested in WordPress 6.8+ with a block theme
-- ✅ Work in latest Chrome, Firefox, Safari, and Edge
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow, coding standards, and pull request guidelines.
 
 ---
 
-## 📄 License
+## Security
+
+See [SECURITY.md](SECURITY.md) for supported versions and how to report vulnerabilities.
+
+---
+
+## Support
+
+See [SUPPORT.md](SUPPORT.md) for support channels and what to include in your report.
+
+---
+
+## License
 
 This plugin is licensed under the **GPL v2 or later**.
 
@@ -439,7 +438,7 @@ Full license text: [GPL-2.0](https://www.gnu.org/licenses/gpl-2.0.html)
 
 ---
 
-## 🙏 Credits
+## Credits
 
 - **Inspired by:** WordPress [Twenty Thirteen theme](https://wordpress.org/themes/twentythirteen/)'s post format treatments
 - **Built with:** WordPress [Gutenberg components](https://developer.wordpress.org/block-editor/reference-guides/components/) and [Block Editor APIs](https://developer.wordpress.org/block-editor/)
@@ -455,33 +454,17 @@ Full license text: [GPL-2.0](https://www.gnu.org/licenses/gpl-2.0.html)
 
 ---
 
-## 💬 Support
-
-### For Users
-
-- **WordPress.org Support Forums**: [Plugin Support](https://wordpress.org/support/plugin/post-formats-for-block-themes/) _(after approval)_
-- **Documentation**: See [readme.txt](readme.txt) for comprehensive user guide
-- **FAQ**: Check [Frequently Asked Questions](https://wordpress.org/plugins/post-formats-for-block-themes/#faq) _(after approval)_
-
-### For Developers
-
-- **GitHub Issues**: [Report bugs or request features](https://github.com/courtneyr-dev/post-formats-for-block-themes/issues)
-- **GitHub Discussions**: [Ask questions or share ideas](https://github.com/courtneyr-dev/post-formats-for-block-themes/discussions)
-- **Technical Docs**: See `/docs/` directory for testing, deployment, and architecture guides
-
----
-
-## 🚢 Deployment
+## Deployment
 
 ### Creating a Release
 
 ```bash
 # Prepare release (runs tests, builds assets, updates versions)
-./bin/prepare-release.sh 1.0.0
+./bin/prepare-release.sh 1.2.0
 
 # Create GitHub release
-gh release create v1.0.0 \
-  --title "Version 1.0.0 - Initial Release" \
+gh release create v1.2.0 \
+  --title "Version 1.2.0" \
   --notes "See CHANGELOG for details"
 
 # Deployment to WordPress.org happens automatically via GitHub Actions
@@ -491,17 +474,18 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete deployment guide.
 
 ---
 
-## 📚 Additional Documentation
+## Additional Documentation
 
 - **[Testing Guide](docs/TESTING-SUMMARY.md)** - Comprehensive testing documentation
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - WordPress.org deployment process
 - **[Setup Complete](docs/SETUP-COMPLETE.md)** - Infrastructure overview
+- **[Changelog](CHANGELOG.md)** - Version history
 
 ---
 
-## 🔗 Links
+## Links
 
-- **WordPress.org**: https://wordpress.org/plugins/post-formats-for-block-themes/ _(pending approval)_
+- **WordPress.org**: https://wordpress.org/plugins/post-formats-for-block-themes/
 - **GitHub Repository**: https://github.com/courtneyr-dev/post-formats-for-block-themes
 - **Issue Tracker**: https://github.com/courtneyr-dev/post-formats-for-block-themes/issues
 - **Sponsor**: https://github.com/sponsors/courtneyr-dev
@@ -510,7 +494,7 @@ See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for complete deployment guide.
 
 <div align="center">
 
-**Made with ❤️ for the WordPress block theme community**
+**Made for the WordPress block theme community**
 
 [![GitHub stars](https://img.shields.io/github/stars/courtneyr-dev/post-formats-for-block-themes?style=social)](https://github.com/courtneyr-dev/post-formats-for-block-themes/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/courtneyr-dev/post-formats-for-block-themes?style=social)](https://github.com/courtneyr-dev/post-formats-for-block-themes/network/members)

@@ -66,7 +66,7 @@ See **`FORMAT-CUSTOMIZATION-QUICK-START.md`** for a 3-minute guide.
 ### CSS File Location
 
 ```
-/wp-content/plugins/post-formats-for-block-themes/styles/format-styles.css
+/wp-content/plugins/post-formats-power-up/styles/format-styles.css
 ```
 
 This uses the colors you set in Site Editor automatically.
@@ -74,7 +74,7 @@ This uses the colors you set in Site Editor automatically.
 ### theme.json Integration
 
 ```
-/wp-content/plugins/post-formats-for-block-themes/theme.json
+/wp-content/plugins/post-formats-power-up/theme.json
 ```
 
 Defines format-specific color variables that appear in Site Editor.
@@ -322,7 +322,7 @@ Only if absolutely necessary:
 
 ## 🎯 Quick Access Checklist
 
-- [ ] View styles: `/wp-content/plugins/post-formats-for-block-themes/styles/format-styles.css`
+- [ ] View styles: `/wp-content/plugins/post-formats-power-up/styles/format-styles.css`
 - [ ] Customize colors: Site Editor → Styles
 - [ ] Add overrides: Appearance → Customize → Additional CSS
 - [ ] Check integration: `/includes/class-media-player-integration.php`

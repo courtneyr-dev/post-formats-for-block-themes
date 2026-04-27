@@ -625,11 +625,18 @@ class PFBT_Format_Styles {
 	}
 
 	/**
-	 * Merge plugin theme.json with theme's theme.json
+	 * Merge plugin theme.json with the theme's theme.json data.
 	 *
-	 * This makes the format colors appear in the Site Editor.
+	 * This makes the format colors and templates appear in the Site Editor
+	 * without clobbering any contributions from the active theme. The merge
+	 * is additive: palette and gradient entries are added if their slugs do
+	 * not already exist; custom templates and template parts are added if
+	 * their names do not already exist; styles are deep-merged with theme
+	 * values winning on collisions.
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.1 Fix: was wholesale-replacing theme data via update_with().
+	 *
 	 * @param WP_Theme_JSON_Data $theme_json Theme JSON data.
 	 * @return WP_Theme_JSON_Data Modified theme JSON data.
 	 */
@@ -640,16 +647,112 @@ class PFBT_Format_Styles {
 			return $theme_json;
 		}
 
-		$plugin_theme_json_data = json_decode(
+		$plugin_data = json_decode(
 			file_get_contents( $plugin_theme_json_file ),
 			true
 		);
 
-		if ( ! $plugin_theme_json_data ) {
+		if ( ! is_array( $plugin_data ) ) {
 			return $theme_json;
 		}
 
-		return $theme_json->update_with( $plugin_theme_json_data );
+		$existing = $theme_json->get_data();
+		$merged   = self::deep_merge_theme_json_data( $existing, $plugin_data );
+
+		return $theme_json->update_with( $merged );
+	}
+
+	/**
+	 * Additively merge plugin theme.json data into existing theme.json data.
+	 *
+	 * Theme values always win on slug/name collisions. Plugin values are added
+	 * only when they do not collide with existing entries.
+	 *
+	 * @since 1.2.1
+	 *
+	 * @param array $existing Existing theme.json data (from theme + earlier filters).
+	 * @param array $plugin   Plugin's own theme.json data.
+	 * @return array Merged data.
+	 */
+	private static function deep_merge_theme_json_data( array $existing, array $plugin ): array {
+		// Top-level scalars: $schema, version, title — theme wins.
+		foreach ( array( '$schema', 'version', 'title' ) as $key ) {
+			if ( ! isset( $existing[ $key ] ) && isset( $plugin[ $key ] ) ) {
+				$existing[ $key ] = $plugin[ $key ];
+			}
+		}
+
+		// settings.color.palette, gradients, duotone — additive merge by slug.
+		foreach ( array( 'palette', 'gradients', 'duotone' ) as $color_key ) {
+			$plugin_entries = $plugin['settings']['color'][ $color_key ] ?? null;
+			if ( ! is_array( $plugin_entries ) || empty( $plugin_entries ) ) {
+				continue;
+			}
+
+			if ( ! isset( $existing['settings'] ) ) {
+				$existing['settings'] = array();
+			}
+			if ( ! isset( $existing['settings']['color'] ) ) {
+				$existing['settings']['color'] = array();
+			}
+
+			$existing_entries = $existing['settings']['color'][ $color_key ] ?? array();
+			$existing_slugs   = is_array( $existing_entries )
+				? array_filter( array_column( $existing_entries, 'slug' ) )
+				: array();
+
+			foreach ( $plugin_entries as $entry ) {
+				if ( ! is_array( $entry ) || ! isset( $entry['slug'] ) ) {
+					continue;
+				}
+				if ( ! in_array( $entry['slug'], $existing_slugs, true ) ) {
+					$existing_entries[] = $entry;
+					$existing_slugs[]   = $entry['slug'];
+				}
+			}
+
+			$existing['settings']['color'][ $color_key ] = $existing_entries;
+		}
+
+		// styles — deep merge, theme values win on scalar collisions.
+		if ( isset( $plugin['styles'] ) && is_array( $plugin['styles'] ) ) {
+			if ( ! isset( $existing['styles'] ) || ! is_array( $existing['styles'] ) ) {
+				$existing['styles'] = $plugin['styles'];
+			} else {
+				// array_replace_recursive merges nested arrays; $existing is second so theme keys win.
+				$existing['styles'] = array_replace_recursive(
+					$plugin['styles'],
+					$existing['styles']
+				);
+			}
+		}
+
+		// customTemplates and templateParts — additive merge by name.
+		foreach ( array( 'customTemplates', 'templateParts' ) as $list_key ) {
+			$plugin_items = $plugin[ $list_key ] ?? null;
+			if ( ! is_array( $plugin_items ) || empty( $plugin_items ) ) {
+				continue;
+			}
+
+			$existing_items = $existing[ $list_key ] ?? array();
+			$existing_names = is_array( $existing_items )
+				? array_filter( array_column( $existing_items, 'name' ) )
+				: array();
+
+			foreach ( $plugin_items as $item ) {
+				if ( ! is_array( $item ) || ! isset( $item['name'] ) ) {
+					continue;
+				}
+				if ( ! in_array( $item['name'], $existing_names, true ) ) {
+					$existing_items[] = $item;
+					$existing_names[] = $item['name'];
+				}
+			}
+
+			$existing[ $list_key ] = $existing_items;
+		}
+
+		return $existing;
 	}
 
 	/**

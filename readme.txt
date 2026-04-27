@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -346,6 +346,13 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 1.2.1 =
+
+**Fixed**
+
+* Plugin no longer wholesale-replaces the host theme's `theme.json` data when merging format colors. The merge is now additive: theme palette, gradients, styles, custom templates, and template parts are preserved alongside the plugin's contributions. Resolves an issue where activating this plugin would strip the active theme's brand palette from the Site Editor color picker.
+* Bumped plugin `theme.json` schema from version 2 to version 3 for forward compatibility with WordPress 6.6+.
 
 = 1.2.0 =
 

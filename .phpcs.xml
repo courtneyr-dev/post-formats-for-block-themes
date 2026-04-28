@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<ruleset name="Post Formats for Block Themes">
+    <description>WordPress Coding Standards for Post Formats for Block Themes plugin.</description>
+
+    <rule ref="WordPress"/>
+
+    <!-- Exclude generated/compiled files -->
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/build/*</exclude-pattern>
+    <exclude-pattern>*/blocks/*/build/*</exclude-pattern>
+    <exclude-pattern>*/*.asset.php</exclude-pattern>
+    <exclude-pattern>*/blocks/post-format-block/*.min.asset.php</exclude-pattern>
+    <exclude-pattern>*/tests/*</exclude-pattern>
+
+    <!-- Class files use class-{name}.php (without pfbt- prefix) — renaming would break all require calls -->
+    <rule ref="WordPress.Files.FileName">
+        <properties>
+            <property name="strict_class_file_names" value="false"/>
+        </properties>
+    </rule>
+
+    <!-- Suppress comment punctuation and debug-code warnings in this file only — it has many
+         intentional development notes and debug logging that will be cleaned up separately -->
+    <rule ref="Squiz.Commenting.InlineComment.InvalidEndChar">
+        <exclude-pattern>includes/class-format-styles.php</exclude-pattern>
+    </rule>
+    <rule ref="WordPress.PHP.DevelopmentFunctions">
+        <exclude-pattern>includes/class-format-styles.php</exclude-pattern>
+    </rule>
+
+    <!-- Minimum PHP version -->
+    <config name="minimum_supported_wp_version" value="6.9"/>
+    <config name="testVersion" value="7.4-"/>
+</ruleset>

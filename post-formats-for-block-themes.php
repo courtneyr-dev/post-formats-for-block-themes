@@ -47,6 +47,8 @@ define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
  * Register format template types VERY early to prevent warnings
  *
  * @since 1.0.0
+ * @param array $template_types Registered template types.
+ * @return array Modified template types.
  */
 function pfbt_register_template_types_early( $template_types ) {
 	$format_types = array(
@@ -107,14 +109,14 @@ add_filter( 'default_template_types', 'pfbt_register_template_types_early', 1 );
 // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler -- Required to suppress WordPress core timing issue with custom template types. See explanation above.
 set_error_handler(
 	function ( $errno, $errstr, $errfile, $errline ) {
-		// Only suppress our specific template type warnings from WordPress core
+		// Only suppress our specific template type warnings from WordPress core.
 		if ( false !== strpos( $errfile, 'block-template.php' ) &&
 			false !== strpos( $errstr, 'single-format-' ) &&
 			( false !== strpos( $errstr, 'Undefined array key' ) ||
 				false !== strpos( $errstr, 'Undefined index' ) ) ) {
-			return true; // Suppress only this specific warning
+			return true; // Suppress only this specific warning.
 		}
-		return false; // Let all other errors through normally
+		return false; // Let all other errors through normally.
 	},
 	E_WARNING
 );
@@ -166,13 +168,13 @@ function pfbt_include_files() {
 	// Format Badge block (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'blocks/format-badge/format-badge.php';
 
-	// Include Chat Log block (integrated)
-	// This provides the chatlog/conversation block for the Chat post format
+	// Include Chat Log block (integrated).
+	// This provides the chatlog/conversation block for the Chat post format.
 	require_once PFBT_PLUGIN_DIR . 'blocks/chatlog/chatlog-block.php';
 
-	// Include Post Format Block (integrated)
+	// Include Post Format Block (integrated).
 	// Forked from: https://wordpress.org/plugins/post-format-block/
-	// This provides a block variation to display post formats in block themes
+	// This provides a block variation to display post formats in block themes.
 	require_once PFBT_PLUGIN_DIR . 'blocks/post-format-block/post-format-block.php';
 }
 add_action( 'plugins_loaded', 'pfbt_include_files' );
@@ -208,7 +210,7 @@ function pfbt_init() {
 		add_theme_support( 'post-formats', $plugin_formats );
 	} else {
 		// Theme has some post format support - merge with plugin formats.
-		$theme_formats = is_array( $existing_formats[0] ) ? $existing_formats[0] : array();
+		$theme_formats  = is_array( $existing_formats[0] ) ? $existing_formats[0] : array();
 		$merged_formats = array_unique( array_merge( $theme_formats, $plugin_formats ) );
 		add_theme_support( 'post-formats', $merged_formats );
 	}
@@ -310,7 +312,6 @@ function pfbt_enqueue_editor_assets() {
 		}
 	}
 
-
 	// Build Post Kinds integration data.
 	$post_kinds_data = array(
 		'active'       => class_exists( 'PFBT_Post_Kinds_Integration' ) && PFBT_Post_Kinds_Integration::instance()->is_post_kinds_active(),
@@ -331,9 +332,9 @@ function pfbt_enqueue_editor_assets() {
 			'formats'         => PFBT_Format_Registry::get_all_formats(),
 			'patterns'        => $patterns,
 			'hasBookmarkCard' => function_exists( 'bookmark_card_register_block' ) || has_block( 'bookmark-card/bookmark-card' ),
-			'hasChatLog'      => true, // Chat Log block is now integrated
+			'hasChatLog'      => true, // Chat Log block is now integrated.
 			'nonce'           => wp_create_nonce( 'pfbt_editor_nonce' ),
-			'currentFormat'   => get_post_format() ?: 'standard',
+			'currentFormat'   => get_post_format() ? get_post_format() : 'standard',
 			'postKinds'       => $post_kinds_data,
 		)
 	);

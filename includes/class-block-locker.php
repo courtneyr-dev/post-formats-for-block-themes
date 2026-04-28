@@ -14,6 +14,8 @@
  * Editor UI for locked blocks includes proper ARIA labels via WordPress core.
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

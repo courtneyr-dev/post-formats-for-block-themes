@@ -12,6 +12,8 @@
  * that are screen-reader friendly and properly internationalized.
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

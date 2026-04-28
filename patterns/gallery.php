@@ -1,4 +1,10 @@
 <?php
+/**
+ * Gallery format pattern registration.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 1.0.0
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

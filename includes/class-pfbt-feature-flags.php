@@ -209,6 +209,11 @@ class PFBT_Feature_Flags {
 		return self::is_enabled( 'block_bindings' ) && function_exists( 'register_block_bindings_source' );
 	}
 
+	/**
+	 * Check if ActivityPub integration is available.
+	 *
+	 * @return bool
+	 */
 	public static function has_activitypub() {
 		return self::requires_plugin( 'activitypub_integration', 'activitypub/activitypub.php' );
 	}

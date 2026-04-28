@@ -10,6 +10,8 @@
  * @since 1.0.0
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -60,12 +62,12 @@ class PFBT_Media_Player_Integration {
 	 * @since 1.0.0
 	 */
 	public static function enqueue_integration_styles() {
-		// Only enqueue if we're on a post with audio or video format
+		// Only enqueue if we're on a post with audio or video format.
 		if ( ! is_singular() || ! has_post_format( array( 'audio', 'video' ) ) ) {
 			return;
 		}
 
-		// Add inline styles for better player integration
+		// Add inline styles for better player integration.
 		$custom_css = '';
 
 		if ( self::is_ableplayer_active() ) {
@@ -112,17 +114,17 @@ class PFBT_Media_Player_Integration {
 	 * @return string Modified block content.
 	 */
 	public static function enhance_media_blocks( $block_content, $block ) {
-		// Only process audio and video blocks
+		// Only process audio and video blocks.
 		if ( ! in_array( $block['blockName'], array( 'core/audio', 'core/video', 'core/embed' ), true ) ) {
 			return $block_content;
 		}
 
-		// Only on audio/video format posts
+		// Only on audio/video format posts.
 		if ( ! has_post_format( array( 'audio', 'video' ) ) ) {
 			return $block_content;
 		}
 
-		// Add helpful data attributes for player detection
+		// Add helpful data attributes for player detection.
 		$format  = get_post_format();
 		$players = array();
 
@@ -141,7 +143,7 @@ class PFBT_Media_Player_Integration {
 				esc_attr( implode( ',', $players ) )
 			);
 
-			// Add data attributes to the outermost element
+			// Add data attributes to the outermost element.
 			$block_content = preg_replace(
 				'/^<(div|figure)([^>]*)>/',
 				'<$1$2' . $data_attr . '>',
@@ -177,5 +179,5 @@ class PFBT_Media_Player_Integration {
 	}
 }
 
-// Initialize the integration
+// Initialize the integration.
 PFBT_Media_Player_Integration::init();

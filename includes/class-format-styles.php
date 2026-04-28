@@ -108,7 +108,7 @@ class PFBT_Format_Styles {
 				update_post_meta( $post->ID, '_wp_page_template', $manual_template );
 			}
 
-			error_log( "PFBT REST: === END (manual template in request) ===" );
+			error_log( 'PFBT REST: === END (manual template in request) ===' );
 			return;
 		}
 
@@ -119,23 +119,23 @@ class PFBT_Format_Styles {
 			// User has taken control, don't auto-assign
 			$manual_template_slug = get_post_meta( $post->ID, '_pfbt_manual_template_slug', true );
 			error_log( "PFBT REST: Manual override active for post {$post->ID}, keeping template: {$manual_template_slug}" );
-			error_log( "PFBT REST: === END (manual override active) ===" );
+			error_log( 'PFBT REST: === END (manual override active) ===' );
 			return;
 		}
 
 		// Get the ACTUAL current format from the post (after WordPress has processed it)
-		$current_format = get_post_format( $post->ID );
+		$current_format   = get_post_format( $post->ID );
 		$raw_format_value = $current_format;
 
 		// Normalize - WordPress stores standard as false/empty
 		$current_format = empty( $current_format ) || false === $current_format ? 'standard' : $current_format;
 
-		error_log( "PFBT REST: get_post_format() returned: " . var_export( $raw_format_value, true ) );
+		error_log( 'PFBT REST: get_post_format() returned: ' . var_export( $raw_format_value, true ) );
 		error_log( "PFBT REST: Normalized format: {$current_format}" );
 
 		// Get current template assignment
 		$current_template = get_post_meta( $post->ID, '_wp_page_template', true );
-		error_log( "PFBT REST: Current template meta: " . ( $current_template ? $current_template : 'EMPTY' ) );
+		error_log( 'PFBT REST: Current template meta: ' . ( $current_template ? $current_template : 'EMPTY' ) );
 
 		// Auto-assign template based on format (no manual override)
 		if ( 'standard' === $current_format ) {
@@ -146,7 +146,7 @@ class PFBT_Format_Styles {
 
 				// Verify it was actually deleted
 				$verify = get_post_meta( $post->ID, '_wp_page_template', true );
-				error_log( "PFBT REST: After delete, template meta is now: " . ( $verify ? $verify : 'EMPTY' ) );
+				error_log( 'PFBT REST: After delete, template meta is now: ' . ( $verify ? $verify : 'EMPTY' ) );
 			} elseif ( $current_template && strpos( $current_template, 'single-format-' ) !== 0 ) {
 				error_log( "PFBT REST: ⚠️ Standard post {$post->ID} has non-format template: {$current_template} (leaving as-is)" );
 			} else {
@@ -163,7 +163,7 @@ class PFBT_Format_Styles {
 			}
 		}
 
-		error_log( "PFBT REST: === END rest_assign_template ===" );
+		error_log( 'PFBT REST: === END rest_assign_template ===' );
 	}
 
 	/**
@@ -180,7 +180,7 @@ class PFBT_Format_Styles {
 			$post = get_post( $object_id );
 			if ( $post && 'post' === $post->post_type ) {
 				$backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 5 );
-				$caller = isset( $backtrace[3] ) ? $backtrace[3]['function'] : 'unknown';
+				$caller    = isset( $backtrace[3] ) ? $backtrace[3]['function'] : 'unknown';
 				error_log( "PFBT WATCH: Template meta updated for post {$object_id} to '{$meta_value}' by {$caller}" );
 			}
 		}
@@ -256,18 +256,14 @@ class PFBT_Format_Styles {
 			return $response;
 		}
 
-		$template_meta = get_post_meta( $post->ID, '_wp_page_template', true );
+		$template_meta        = get_post_meta( $post->ID, '_wp_page_template', true );
 		$template_in_response = $response->data['template'] ?? '';
 
-		error_log( "PFBT POST REST: Post {$post->ID} - Meta: " . ( $template_meta ?: '[EMPTY]' ) . " | Response: " . ( $template_in_response ?: '[EMPTY]' ) );
-
-		// If template meta is empty but response has a template, fix it
+		// If template meta is empty but response has a template, fix it.
 		if ( empty( $template_meta ) && ! empty( $template_in_response ) ) {
-			error_log( "PFBT POST REST: ⚠️ Fixing template - meta is empty but response shows '{$template_in_response}'" );
 			$response->data['template'] = 'default';
-		}
-		// If template meta is empty, ensure response shows 'default'
-		elseif ( empty( $template_meta ) ) {
+		} elseif ( empty( $template_meta ) ) {
+			// If template meta is empty, ensure response shows 'default'.
 			$response->data['template'] = 'default';
 			error_log( "PFBT POST REST: ✅ Set template to 'default' for post {$post->ID}" );
 		}
@@ -286,7 +282,7 @@ class PFBT_Format_Styles {
 	 * @return array Modified query parameters.
 	 */
 	public static function filter_rest_template_query( $args, $request ) {
-		error_log( "PFBT REST QUERY: Template query args: " . print_r( $args, true ) );
+		error_log( 'PFBT REST QUERY: Template query args: ' . print_r( $args, true ) );
 
 		// If querying for post templates, ensure 'single' is explicitly included
 		if ( isset( $args['post_type'] ) && 'post' === $args['post_type'] ) {
@@ -313,9 +309,9 @@ class PFBT_Format_Styles {
 	 * from theme templates in the editor UI.
 	 *
 	 * @since 1.1.1
-	 * @param WP_REST_Response $response The response object.
+	 * @param WP_REST_Response  $response The response object.
 	 * @param WP_Block_Template $template The template object.
-	 * @param WP_REST_Request $request The request object.
+	 * @param WP_REST_Request   $request The request object.
 	 * @return WP_REST_Response Modified response with template metadata.
 	 */
 	public static function hide_format_templates_from_rest( $response, $template, $request ) {
@@ -324,15 +320,13 @@ class PFBT_Format_Styles {
 
 		// Check if this is the "Default" pseudo-template
 		if ( 'default' === $template->slug ) {
-			$response->data['pfbt_template_type'] = 'default';
+			$response->data['pfbt_template_type']     = 'default';
 			$response->data['pfbt_is_default_option'] = true;
-			error_log( "PFBT REST: Marked as Default template option" );
-		}
-		// Check if this is a format template
-		elseif ( strpos( $template->slug, 'single-format-' ) === 0 ) {
+		} elseif ( strpos( $template->slug, 'single-format-' ) === 0 ) {
+			// Check if this is a format template.
 			// Add classification metadata for visual separation
-			$response->data['pfbt_template_type'] = 'format';
-			$response->data['pfbt_format_name'] = str_replace( 'single-format-', '', $template->slug );
+			$response->data['pfbt_template_type']   = 'format';
+			$response->data['pfbt_format_name']     = str_replace( 'single-format-', '', $template->slug );
 			$response->data['pfbt_auto_applicable'] = true;
 
 			error_log( "PFBT REST: Added metadata to format template {$template->slug}" );
@@ -359,7 +353,7 @@ class PFBT_Format_Styles {
 	public static function fix_template_display_name( $title, $template ) {
 		// Only for posts with format templates
 		if ( strpos( $template, 'single-format-' ) === 0 ) {
-			$format = str_replace( 'single-format-', '', $template );
+			$format      = str_replace( 'single-format-', '', $template );
 			$format_name = ucfirst( $format );
 			return sprintf( '%s Format', $format_name );
 		}
@@ -422,12 +416,17 @@ class PFBT_Format_Styles {
 			return $query_result;
 		}
 
-		error_log( "PFBT: add_block_templates called with " . count( $query_result ) . " templates" );
-		error_log( "PFBT: Query params: " . print_r( $query, true ) );
+		error_log( 'PFBT: add_block_templates called with ' . count( $query_result ) . ' templates' );
+		error_log( 'PFBT: Query params: ' . print_r( $query, true ) );
 
 		// Log what templates we currently have
-		$template_slugs = array_map( function( $t ) { return $t->slug; }, $query_result );
-		error_log( "PFBT: Current templates: " . implode( ', ', $template_slugs ) );
+		$template_slugs = array_map(
+			function ( $t ) {
+				return $t->slug;
+			},
+			$query_result
+		);
+		error_log( 'PFBT: Current templates: ' . implode( ', ', $template_slugs ) );
 
 		// Ensure theme's single template is available for posts
 		// The theme's single template often doesn't have post_types set, so it gets filtered out
@@ -451,7 +450,7 @@ class PFBT_Format_Styles {
 
 		// If single template wasn't in the filtered results, fetch it and add it
 		if ( ! $single_found ) {
-			error_log( "PFBT: Single template NOT found, attempting to fetch and add it" );
+			error_log( 'PFBT: Single template NOT found, attempting to fetch and add it' );
 
 			// Try to get the single template directly from the theme
 			// Avoid recursion by using remove_filter temporarily
@@ -459,7 +458,7 @@ class PFBT_Format_Styles {
 			$all_templates = get_block_templates( array(), $template_type );
 			add_filter( 'get_block_templates', array( __CLASS__, 'add_block_templates' ), 10, 3 );
 
-			error_log( "PFBT: Fetched " . count( $all_templates ) . " templates without filter" );
+			error_log( 'PFBT: Fetched ' . count( $all_templates ) . ' templates without filter' );
 
 			foreach ( $all_templates as $template ) {
 				if ( 'single' === $template->slug ) {
@@ -497,21 +496,21 @@ class PFBT_Format_Styles {
 			}
 
 			if ( ! $default_exists ) {
-				$default_template              = new WP_Block_Template();
-				$default_template->slug        = 'default';
-				$default_template->id          = get_stylesheet() . '//default';
-				$default_template->theme       = get_stylesheet();
-				$default_template->content     = '';
-				$default_template->source      = 'plugin';
-				$default_template->type        = 'wp_template';
-				$default_template->title       = __( 'Default', 'post-formats-for-block-themes' );
-				$default_template->description = __( 'Use default template hierarchy (no specific template)', 'post-formats-for-block-themes' );
-				$default_template->status      = 'publish';
+				$default_template                 = new WP_Block_Template();
+				$default_template->slug           = 'default';
+				$default_template->id             = get_stylesheet() . '//default';
+				$default_template->theme          = get_stylesheet();
+				$default_template->content        = '';
+				$default_template->source         = 'plugin';
+				$default_template->type           = 'wp_template';
+				$default_template->title          = __( 'Default', 'post-formats-for-block-themes' );
+				$default_template->description    = __( 'Use default template hierarchy (no specific template)', 'post-formats-for-block-themes' );
+				$default_template->status         = 'publish';
 				$default_template->has_theme_file = false;
-				$default_template->is_custom   = false;
-				$default_template->post_types  = array( 'post' );
-				$default_template->author      = null;
-				$default_template->origin      = 'plugin';
+				$default_template->is_custom      = false;
+				$default_template->post_types     = array( 'post' );
+				$default_template->author         = null;
+				$default_template->origin         = 'plugin';
 
 				// Add at the very beginning so it's the first option
 				array_unshift( $query_result, $default_template );
@@ -576,8 +575,13 @@ class PFBT_Format_Styles {
 		}
 
 		// Log final templates being returned
-		$final_slugs = array_map( function( $t ) { return $t->slug; }, $query_result );
-		error_log( "PFBT: Returning " . count( $query_result ) . " templates: " . implode( ', ', $final_slugs ) );
+		$final_slugs = array_map(
+			function ( $t ) {
+				return $t->slug;
+			},
+			$query_result
+		);
+		error_log( 'PFBT: Returning ' . count( $query_result ) . ' templates: ' . implode( ', ', $final_slugs ) );
 
 		return $query_result;
 	}

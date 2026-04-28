@@ -1,4 +1,10 @@
 <?php
+/**
+ * Status format pattern registration.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 1.0.0
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -34,4 +40,3 @@ if ( $pfbt_has_mood_card ) {
 	<?php
 }
 ?>
-

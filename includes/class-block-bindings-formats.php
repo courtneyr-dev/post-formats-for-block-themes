@@ -9,6 +9,8 @@
  * @since 1.2.0
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -85,9 +87,9 @@ class PFBT_Block_Bindings_Formats {
 	 *
 	 * @since 1.2.0
 	 *
-	 * @param array              $source_args    Binding source arguments. Must contain 'key'.
-	 * @param WP_Block           $block_instance The block instance requesting the value.
-	 * @param string             $attribute_name The attribute being bound.
+	 * @param array    $source_args    Binding source arguments. Must contain 'key'.
+	 * @param WP_Block $block_instance The block instance requesting the value.
+	 * @param string   $attribute_name The attribute being bound.
 	 * @return string|null The bound value, or null if key is unknown.
 	 */
 	public function get_value( array $source_args, $block_instance, $attribute_name ) {
@@ -96,7 +98,7 @@ class PFBT_Block_Bindings_Formats {
 			return null;
 		}
 
-		$format   = get_post_format( $post_id ) ?: 'standard';
+		$format   = get_post_format( $post_id ) ? get_post_format( $post_id ) : 'standard';
 		$key      = $source_args['key'] ?? '';
 		$registry = PFBT_Format_Registry::instance();
 		$meta     = $registry->get_format( $format );

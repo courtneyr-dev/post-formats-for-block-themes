@@ -15,6 +15,8 @@
  * - Validates post types and autosave/revision scenarios
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -74,9 +76,9 @@ class PFBT_Format_Detector {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
-		// TEMPORARILY DISABLED - causing format override issues
+		// Temporarily disabled — causes format override issues.
 		// add_action( 'save_post', array( $this, 'detect_and_set_format' ), 10, 3 );
-		// add_action( 'rest_after_insert_post', array( $this, 'detect_format_rest' ), 10, 2 );
+		// add_action( 'rest_after_insert_post', array( $this, 'detect_format_rest' ), 10, 2 ).
 	}
 
 	/**

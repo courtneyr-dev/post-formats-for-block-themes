@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	</p>
 
 	<?php
-	// Display transient messages
+	// Display transient messages.
 	$pfbt_repair_message = get_transient( 'pfbt_repair_message' );
 	if ( $pfbt_repair_message ) {
 		$pfbt_notice_class = 'success' === $pfbt_repair_message['type'] ? 'notice-success' : 'notice-error';
@@ -119,7 +119,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 							<td>
 								<strong>
 									<a href="<?php echo esc_url( $pfbt_mismatch['post_url'] ); ?>" target="_blank">
-										<?php echo esc_html( $pfbt_mismatch['post_title'] ?: __( '(no title)', 'post-formats-for-block-themes' ) ); ?>
+										<?php echo esc_html( $pfbt_mismatch['post_title'] ? $pfbt_mismatch['post_title'] : __( '(no title)', 'post-formats-for-block-themes' ) ); ?>
 										<span class="screen-reader-text"><?php esc_html_e( '(opens in new tab)', 'post-formats-for-block-themes' ); ?></span>
 									</a>
 								</strong>
@@ -240,7 +240,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 								<td>
 									<strong>
 										<a href="<?php echo esc_url( $pfbt_issue['post_url'] ); ?>" target="_blank">
-											<?php echo esc_html( $pfbt_issue['post_title'] ?: __( '(no title)', 'post-formats-for-block-themes' ) ); ?>
+											<?php echo esc_html( $pfbt_issue['post_title'] ? $pfbt_issue['post_title'] : __( '(no title)', 'post-formats-for-block-themes' ) ); ?>
 											<span class="screen-reader-text"><?php esc_html_e( '(opens in new tab)', 'post-formats-for-block-themes' ); ?></span>
 										</a>
 									</strong>

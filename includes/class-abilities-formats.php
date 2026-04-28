@@ -9,6 +9,8 @@
  * @since 1.2.0
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -366,7 +368,7 @@ class PFBT_Abilities_Formats {
 					'type'       => 'object',
 					'properties' => array(
 						'post_ids' => array(
-							'oneOf' => array(
+							'oneOf'       => array(
 								array(
 									'type'        => 'array',
 									'items'       => array( 'type' => 'integer' ),
@@ -611,7 +613,7 @@ class PFBT_Abilities_Formats {
 			)
 		);
 
-		$term_counts    = array();
+		$term_counts     = array();
 		$formatted_total = 0;
 
 		if ( ! is_wp_error( $terms ) ) {

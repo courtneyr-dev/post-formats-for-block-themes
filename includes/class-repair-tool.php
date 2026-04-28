@@ -23,6 +23,8 @@
  * - Clear visual feedback for actions
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -45,7 +47,7 @@ class PFBT_Repair_Tool {
 	 * @param string $hook_suffix The current admin page hook suffix.
 	 */
 	public static function enqueue_styles( $hook_suffix ) {
-		// Only enqueue on our repair tool page
+		// Only enqueue on our repair tool page.
 		if ( 'tools_page_pfbt-repair-tool' !== $hook_suffix ) {
 			return;
 		}
@@ -98,7 +100,7 @@ class PFBT_Repair_Tool {
 			wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pfbt_repair_nonce'] ) ), 'pfbt_repair_action' ) ) {
 			self::handle_repair_action();
 
-			// Redirect to prevent form resubmission (POST-Redirect-GET pattern)
+			// Redirect to prevent form resubmission (POST-Redirect-GET pattern).
 			wp_safe_redirect( admin_url( 'tools.php?page=pfbt-repair-tool' ) );
 			exit;
 		}
@@ -131,7 +133,7 @@ class PFBT_Repair_Tool {
 			);
 		}
 
-		// Start output buffering to catch any errors
+		// Start output buffering to catch any errors.
 		ob_start();
 		try {
 			include $template_file;
@@ -165,7 +167,7 @@ class PFBT_Repair_Tool {
 
 		foreach ( $posts as $post ) {
 			++$scanned_count;
-			$current_format   = get_post_format( $post->ID ) ?: 'standard';
+			$current_format   = get_post_format( $post->ID ) ? get_post_format( $post->ID ) : 'standard';
 			$blocks           = parse_blocks( $post->post_content );
 			$first_block      = self::get_first_meaningful_block( $blocks );
 			$suggested_format = 'standard';
@@ -220,7 +222,7 @@ class PFBT_Repair_Tool {
 
 		foreach ( $posts as $post ) {
 			++$scanned_count;
-			$format           = get_post_format( $post->ID ) ?: 'standard';
+			$format           = get_post_format( $post->ID ) ? get_post_format( $post->ID ) : 'standard';
 			$current_template = get_post_meta( $post->ID, '_wp_page_template', true );
 
 			// Determine expected template.
@@ -437,14 +439,14 @@ class PFBT_Repair_Tool {
 				__( 'Post #%d template assignment fixed successfully.', 'post-formats-for-block-themes' ),
 				$post_id
 			);
-			$type    = 'success';
+			$type = 'success';
 		} else {
 			$message = sprintf(
 				/* translators: %d: Post ID */
 				__( 'Failed to fix template assignment for post #%d.', 'post-formats-for-block-themes' ),
 				$post_id
 			);
-			$type    = 'error';
+			$type = 'error';
 		}
 
 		set_transient(
@@ -520,11 +522,15 @@ class PFBT_Repair_Tool {
 			);
 		}
 
-		// Store message in transient to persist across redirect
-		set_transient( 'pfbt_repair_message', array(
-			'message' => $message,
-			'type'    => 'success',
-		), 30 );
+		// Store message in transient to persist across redirect.
+		set_transient(
+			'pfbt_repair_message',
+			array(
+				'message' => $message,
+				'type'    => 'success',
+			),
+			30
+		);
 	}
 
 	/**
@@ -556,11 +562,15 @@ class PFBT_Repair_Tool {
 				);
 			}
 
-			// Store message in transient to persist across redirect
-			set_transient( 'pfbt_repair_message', array(
-				'message' => $message,
-				'type'    => 'success',
-			), 30 );
+			// Store message in transient to persist across redirect.
+			set_transient(
+				'pfbt_repair_message',
+				array(
+					'message' => $message,
+					'type'    => 'success',
+				),
+				30
+			);
 		} else {
 			$message = sprintf(
 				/* translators: %d: Post ID */
@@ -568,11 +578,15 @@ class PFBT_Repair_Tool {
 				$post_id
 			);
 
-			// Store error message in transient
-			set_transient( 'pfbt_repair_message', array(
-				'message' => $message,
-				'type'    => 'error',
-			), 30 );
+			// Store error message in transient.
+			set_transient(
+				'pfbt_repair_message',
+				array(
+					'message' => $message,
+					'type'    => 'error',
+				),
+				30
+			);
 		}
 	}
 
@@ -631,7 +645,4 @@ class PFBT_Repair_Tool {
 	}
 }
 
-// Create template file if it doesn't exist (this would normally be separate).
-if ( ! file_exists( PFBT_PLUGIN_DIR . 'templates/repair-tool-page.php' ) ) {
-	// We'll create this file separately.
-}
+// Template file is registered separately in templates/repair-tool-page.php.

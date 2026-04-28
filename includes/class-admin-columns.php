@@ -9,6 +9,8 @@
  * @since 1.0.0
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -50,19 +52,19 @@ class PFBT_Admin_Columns {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
-		// Add column to posts list
+		// Add column to posts list.
 		add_filter( 'manage_posts_columns', array( $this, 'add_format_column' ) );
 		add_action( 'manage_posts_custom_column', array( $this, 'render_format_column' ), 10, 2 );
 		add_filter( 'manage_edit-post_sortable_columns', array( $this, 'make_format_column_sortable' ) );
 
-		// Handle sorting
+		// Handle sorting.
 		add_action( 'pre_get_posts', array( $this, 'handle_format_column_sorting' ) );
 
-		// Screen Options support
+		// Screen Options support.
 		add_filter( 'manage_edit-post_columns', array( $this, 'handle_screen_options' ) );
 		add_filter( 'default_hidden_columns', array( $this, 'set_default_hidden_columns' ), 10, 2 );
 
-		// Add inline styles for the column
+		// Add inline styles for the column.
 		add_action( 'admin_head-edit.php', array( $this, 'add_column_styles' ) );
 	}
 
@@ -78,7 +80,7 @@ class PFBT_Admin_Columns {
 	 * @return array Modified columns.
 	 */
 	public function add_format_column( $columns ) {
-		// Insert after title column
+		// Insert after title column.
 		$new_columns = array();
 		foreach ( $columns as $key => $value ) {
 			$new_columns[ $key ] = $value;
@@ -107,21 +109,21 @@ class PFBT_Admin_Columns {
 
 		$format = get_post_format( $post_id );
 
-		// If no format, it's Standard
+		// If no format, it's Standard.
 		if ( ! $format ) {
 			$format = 'standard';
 		}
 
-		// Get format display name
+		// Get format display name.
 		$format_strings = PFBT_Format_Registry::get_all_formats();
-		$format_name = isset( $format_strings[ $format ] ) ? $format_strings[ $format ]['name'] : ucfirst( $format );
+		$format_name    = isset( $format_strings[ $format ] ) ? $format_strings[ $format ]['name'] : ucfirst( $format );
 
-		// Get format icon
+		// Get format icon.
 		$icon = $this->get_format_icon( $format );
 
-		// Build filter URL
+		// Build filter URL.
 		if ( 'standard' === $format ) {
-			// For standard format, we need to show posts WITHOUT any format taxonomy term
+			// For standard format, we need to show posts WITHOUT any format taxonomy term.
 			$filter_url = add_query_arg(
 				array(
 					'post_type'   => 'post',
@@ -130,7 +132,7 @@ class PFBT_Admin_Columns {
 				admin_url( 'edit.php' )
 			);
 		} else {
-			// For other formats, use the taxonomy term
+			// For other formats, use the taxonomy term.
 			$term = get_term_by( 'slug', 'post-format-' . $format, 'post_format' );
 			if ( $term ) {
 				$filter_url = add_query_arg(
@@ -140,18 +142,26 @@ class PFBT_Admin_Columns {
 					admin_url( 'edit.php' )
 				);
 			} else {
-				// Fallback if term doesn't exist
+				// Fallback if term doesn't exist.
 				$filter_url = admin_url( 'edit.php?post_type=post' );
 			}
 		}
 
-		// Output format with icon and link
+		// Output format with icon and link.
 		printf(
 			'<a href="%s" class="post-format-link" title="%s">%s<span class="post-format-name">%s</span></a>',
 			esc_url( $filter_url ),
 			/* translators: %s: Format name */
 			esc_attr( sprintf( __( 'Filter by %s format', 'post-formats-for-block-themes' ), $format_name ) ),
-			wp_kses( $icon, array( 'span' => array( 'class' => array(), 'aria-hidden' => array() ) ) ),
+			wp_kses(
+				$icon,
+				array(
+					'span' => array(
+						'class'       => array(),
+						'aria-hidden' => array(),
+					),
+				)
+			),
 			esc_html( $format_name )
 		);
 	}
@@ -220,7 +230,7 @@ class PFBT_Admin_Columns {
 			$query->set(
 				'orderby',
 				array(
-					'taxonomy' => $query->get( 'order' ) ?: 'ASC',
+					'taxonomy' => $query->get( 'order' ) ? $query->get( 'order' ) : 'ASC',
 				)
 			);
 			$query->set( 'taxonomy', 'post_format' );
@@ -239,8 +249,8 @@ class PFBT_Admin_Columns {
 	 * @return array Filtered columns.
 	 */
 	public function handle_screen_options( $columns ) {
-		// WordPress automatically handles Screen Options visibility
-		// This filter is called after checking user preferences
+		// WordPress automatically handles Screen Options visibility.
+		// This filter is called after checking user preferences.
 		return $columns;
 	}
 
@@ -257,10 +267,10 @@ class PFBT_Admin_Columns {
 	 * @return array Modified hidden columns.
 	 */
 	public function set_default_hidden_columns( $hidden, $screen ) {
-		// Only apply to edit-post screen
+		// Only apply to edit-post screen.
 		if ( 'edit-post' === $screen->id ) {
-			// Remove 'format' from hidden columns to make it visible by default
-			// Users can still hide it via Screen Options
+			// Remove 'format' from hidden columns to make it visible by default.
+			// Users can still hide it via Screen Options.
 			$hidden = array_diff( $hidden, array( 'format' ) );
 		}
 		return $hidden;
@@ -300,7 +310,7 @@ class PFBT_Admin_Columns {
 			.post-format-name {
 				vertical-align: middle;
 			}
-			/* Match category/tag column styling */
+			/* Match category/tag column styling. */
 			.column-format a {
 				color: #2271b1;
 			}

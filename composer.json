@@ -28,8 +28,8 @@
       "@phpstan",
       "@phpunit"
     ],
-    "phpcs": "phpcs -d memory_limit=512M --standard=WordPress --extensions=php --colors --ignore=*/vendor/*,*/node_modules/*,*/tests/* .",
-    "phpcbf": "phpcbf -d memory_limit=512M --standard=WordPress --extensions=php --ignore=*/vendor/*,*/node_modules/*,*/tests/* .",
+    "phpcs": "phpcs -d memory_limit=512M --extensions=php --colors .",
+    "phpcbf": "phpcbf -d memory_limit=512M --extensions=php .",
     "phpstan": "phpstan analyse --memory-limit=1G includes/ blocks/ post-formats-for-block-themes.php",
     "phpunit": "phpunit",
     "i18n": "wp i18n make-pot . languages/post-formats-for-block-themes.pot --exclude=node_modules,vendor,tests",

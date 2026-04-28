@@ -14,6 +14,8 @@
  * - Patterns designed for keyboard navigation compatibility
  */
 
+// phpcs:disable WordPress.Files.FileName.InvalidClassFileName
+
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

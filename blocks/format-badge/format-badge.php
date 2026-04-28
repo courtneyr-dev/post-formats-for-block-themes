@@ -34,7 +34,7 @@ function pfbt_format_badge_render( $attributes, $content, $block ) {
 		return '';
 	}
 
-	$format = get_post_format( $post_id ) ?: 'standard';
+	$format = get_post_format( $post_id ) ? get_post_format( $post_id ) : 'standard';
 	if ( 'standard' === $format ) {
 		return '';
 	}
@@ -92,7 +92,7 @@ add_filter(
 		if ( $context instanceof WP_Block_Template || is_singular() ) {
 			$post_id = get_the_ID();
 			if ( $post_id ) {
-				$format = get_post_format( $post_id ) ?: 'standard';
+				$format = get_post_format( $post_id ) ? get_post_format( $post_id ) : 'standard';
 				if ( 'standard' === $format ) {
 					$hooked_blocks = array_diff( $hooked_blocks, array( 'post-formats/format-badge' ) );
 				}

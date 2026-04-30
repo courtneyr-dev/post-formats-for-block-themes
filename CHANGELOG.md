@@ -15,6 +15,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactivity API integration for Chat Log block with thread grouping and frontend interactivity
 - `block_bindings` feature flag in `PFBT_Feature_Flags`
 
+## [2.1.0] - 2026-04-30
+
+### Added — 36 image and gallery block style variations
+
+**16 image variations** registered on `core/image`, surfaced in the block-styles picker:
+
+- *Everyday/Content (5):* `rounded`, `circle`, `soft-shadow`, `tinted-border`, `caption-card`
+- *Nostalgic/Tactile (5):* `polaroid`, `postcard`, `photo-strip`, `magazine-cutout`, `index-card`
+- *Editorial/Print (3):* `headline-crop`, `duotone-mood`, `halftone`
+- *Device/Mockup (3):* `phone-frame`, `browser-window`, `code-editor`
+
+**20 gallery variations** registered on `core/gallery`:
+
+- *CSS-only (8):* `justified-rows`, `square-tile`, `polaroid-stack`, `filmstrip-snap`, `caption-prominent`, `duotone-mood-gallery`, `mosaic-spotlight`, `bordered-grid`
+- *Interactivity API (8):* `masonry-cascade`, `headline-mosaic`, `lightbox-slideshow`, `before-after-pairs`, `filter-tags`, `lookbook-hotspots`, `card-deck-swipe`, `photo-essay-scroll`, `comparison-pairs`
+- *Advanced (3, SSR fallbacks):* `map-pinned-geo`, `panorama-360`, `dynamic-query-gallery`
+
+### Infrastructure
+
+- New `PFBT_Block_Style_Registry` singleton class loads variation definitions from `includes/definitions/{block}-style-variations.php` and pairs each with a registered style handle so WP loads CSS conditionally (only on pages where the variation is rendered).
+- New `pfbt_image_style_variations` and `pfbt_gallery_style_variations` filters let themes and other plugins extend or modify the shipped variations.
+- New `image_gallery_styles` feature flag in `PFBT_Feature_Flags`, default **off** — installs that don't enable it pay zero registration cost.
+- Interactivity-API view modules conditionally registered + enqueued when the matching variation is on a page (no JS bundle for sites that don't use the IA variations).
+
+### Default pattern updates
+
+- `patterns/image.php` now defaults to `is-style-caption-card` for new image-format posts.
+- `patterns/gallery.php` now defaults to `is-style-justified-rows` for new gallery-format posts.
+
+### Tests
+
+- 9 unit tests in `tests/unit/test-block-style-registry.php` covering flag default, filter extension, normalization, default style_handle computation, and a smoke test for `register_block_style` + `wp_register_style` integration.
+
+### Notes
+
+- Polaroid migration (Phase 4 of the v2.1.0 brief) was a no-op — zero existing polaroid markup was found on the source site. See `docs/POLAROID-AUDIT.md`.
+- Map-tile rendering (`map-pinned-geo`) and WebGL panorama viewer (`panorama-360`) are roadmap items for v2.2 — v2.1.0 ships the documented SSR fallbacks (text list and flat scroll-snap respectively) per Hard Rule 5 (no third-party JS libraries).
+- Author docs: `docs/BLOCK-STYLE-VARIATIONS.md` and `docs/ADDING-A-VARIATION.md`.
+
 ## [2.0.1] - 2026-04-30
 
 ### Added

@@ -26,6 +26,9 @@ class Test_Block_Style_Registry extends WP_UnitTestCase {
 		remove_all_filters( 'pfbt_gallery_style_variations' );
 	}
 
+	/**
+	 * Reset registry + remove filters between tests so state doesn't leak.
+	 */
 	public function tear_down() {
 		PFBT_Block_Style_Registry::instance()->reset_for_tests();
 		remove_all_filters( 'pfbt_feature_image_gallery_styles' );
@@ -128,14 +131,21 @@ class Test_Block_Style_Registry extends WP_UnitTestCase {
 	 * Definitions missing required fields are dropped silently.
 	 *
 	 * The normalize() guard prevents misconfigured third-party entries
-	 * from crashing the registry — they're just skipped.
+	 * from crashing the registry — they're just skipped. The 16 baseline
+	 * variations shipped in v2.1.0 still register; only the malformed
+	 * additions get dropped.
 	 */
 	public function test_invalid_definitions_are_dropped() {
+		$baseline_count = count( PFBT_Block_Style_Registry::instance()->get_image_variations() );
+
 		add_filter(
 			'pfbt_image_style_variations',
 			static function ( $defs ) {
 				$defs[] = array( 'slug' => 'missing-label-and-path' );
-				$defs[] = array( 'label' => 'Missing slug', 'style_path' => 'x.css' );
+				$defs[] = array(
+					'label'      => 'Missing slug',
+					'style_path' => 'x.css',
+				);
 				$defs[] = 'not-an-array';
 				return $defs;
 			}
@@ -145,7 +155,11 @@ class Test_Block_Style_Registry extends WP_UnitTestCase {
 		$variations = PFBT_Block_Style_Registry::instance()->get_image_variations();
 
 		$this->assertArrayNotHasKey( 'missing-label-and-path', $variations );
-		$this->assertEmpty( $variations, 'All three malformed entries should be dropped.' );
+		$this->assertCount(
+			$baseline_count,
+			$variations,
+			'Malformed entries should be dropped; baseline count unchanged.'
+		);
 	}
 
 	/**
@@ -172,7 +186,7 @@ class Test_Block_Style_Registry extends WP_UnitTestCase {
 	}
 
 	/**
-	 * register() runs without errors when the flag is on and the
+	 * Register() runs without errors when the flag is on and the
 	 * definitions arrays are populated. Smoke test only — verifying
 	 * actual register_block_style() side effects requires the WP
 	 * block-styles registry, which set_up() inherits via WP_UnitTestCase.

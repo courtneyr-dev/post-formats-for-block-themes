@@ -146,6 +146,7 @@ function pfbt_include_files() {
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-styles.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-classes.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-link-meta.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-format-helpers.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-block-templates.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-admin-columns.php';
 

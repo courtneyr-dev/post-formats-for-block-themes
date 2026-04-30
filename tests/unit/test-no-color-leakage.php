@@ -18,9 +18,10 @@
  * Exempt scopes:
  *   - tests/fixtures/ — test fixtures may include sample colors
  *   - vendor/ — third-party PHPUnit / coverage tooling
- *   - blocks/*/build/ — compiled output (sourced from style.scss)
+ *   - blocks/{name}/build/ — compiled output (sourced from style.scss)
  *   - node_modules/ — build dependencies
- *   - Comments — // and /* ... *\/ — color names inside docs are fine
+ *   - Comments — both line comments and block-comment ranges are stripped
+ *     before scanning, so color names inside documentation never trigger
  *   - Block declarations marked with `@pfbt-allow-color brand-replica`
  *     — device-frame brand replicas (Slack, Discord, IRC, iPhone, macOS)
  *     where the literal color IS the platform identity

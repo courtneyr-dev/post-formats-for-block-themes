@@ -1,0 +1,71 @@
+/**
+ * Quote variation: Whiteboard
+ *
+ * Clean white card with blue-marker-style sans-serif body, soft shadow,
+ * citation in red-marker style. Print stylesheet keeps marker colors.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-whiteboard,
+.wp-block-pullquote.is-style-whiteboard {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-whiteboard cite,
+.wp-block-pullquote.is-style-whiteboard cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-whiteboard cite:empty,
+.wp-block-pullquote.is-style-whiteboard cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-whiteboard,
+.wp-block-pullquote.is-style-whiteboard {
+	background: var(--pfbt-whiteboard-bg, #fefefe);
+	color: var(--pfbt-whiteboard-marker, #1f4eb8);
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	border-radius: var(--wp--preset--border-radius--sm, 0.375rem);
+	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
+	font-family: var(--wp--preset--font-family--primary, "Comic Sans MS", "Marker Felt", system-ui);
+	font-size: var(--wp--preset--font-size--medium, 1.125rem);
+	max-inline-size: 36rem;
+}
+
+.wp-block-quote.is-style-whiteboard p,
+.wp-block-pullquote.is-style-whiteboard p {
+	margin: 0;
+	line-height: 1.5;
+}
+
+.wp-block-quote.is-style-whiteboard cite,
+.wp-block-pullquote.is-style-whiteboard cite {
+	display: block;
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+	color: var(--pfbt-whiteboard-cite-marker, #d9342b);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-style: normal;
+}
+
+.wp-block-quote.is-style-whiteboard cite::before,
+.wp-block-pullquote.is-style-whiteboard cite::before {
+	content: "→ ";
+}
+
+@media print {
+	.wp-block-quote.is-style-whiteboard,
+	.wp-block-pullquote.is-style-whiteboard {
+		background: transparent;
+		box-shadow: none;
+		border: 1px solid currentColor;
+	}
+}

@@ -1,0 +1,94 @@
+/**
+ * Quote variation: Napkin
+ *
+ * Soft white card with a watermark coffee-ring stain in the bottom-end
+ * corner via radial-gradient pseudo-element, slightly torn corner,
+ * casual italic body. Citation as a "scrawl" beneath the body.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-napkin,
+.wp-block-pullquote.is-style-napkin {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-napkin cite,
+.wp-block-pullquote.is-style-napkin cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-napkin cite:empty,
+.wp-block-pullquote.is-style-napkin cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-napkin,
+.wp-block-pullquote.is-style-napkin {
+	background: var(--pfbt-napkin-bg, #fdfdfa);
+	color: var(--pfbt-napkin-fg, #1a1a1a);
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	font-family: var(--wp--preset--font-family--primary, "Caveat", cursive, system-ui);
+	font-style: italic;
+	font-size: var(--wp--preset--font-size--medium, 1.125rem);
+	max-inline-size: 22rem;
+	position: relative;
+	box-shadow: var(--wp--preset--shadow--small, 0 2px 4px rgba(0, 0, 0, 0.06));
+	clip-path: polygon(0 0, 100% 0, 100% 92%, 96% 100%, 0 100%);
+}
+
+.wp-block-quote.is-style-napkin p,
+.wp-block-pullquote.is-style-napkin p {
+	margin: 0;
+	line-height: 1.5;
+}
+
+.wp-block-quote.is-style-napkin cite,
+.wp-block-pullquote.is-style-napkin cite {
+	display: block;
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-style: italic;
+	opacity: 0.7;
+}
+
+/* Coffee-ring stain */
+.wp-block-quote.is-style-napkin::after,
+.wp-block-pullquote.is-style-napkin::after {
+	content: "";
+	position: absolute;
+	inset-block-end: 1rem;
+	inset-inline-end: 1rem;
+	width: 3rem;
+	height: 3rem;
+	border-radius: 50%;
+	background: radial-gradient(
+		circle,
+		transparent 60%,
+		var(--pfbt-napkin-stain, rgba(120, 70, 30, 0.18)) 62%,
+		var(--pfbt-napkin-stain, rgba(120, 70, 30, 0.18)) 70%,
+		transparent 72%
+	);
+	pointer-events: none;
+}
+
+@media print {
+	.wp-block-quote.is-style-napkin,
+	.wp-block-pullquote.is-style-napkin {
+		background: transparent;
+		box-shadow: none;
+		clip-path: none;
+		border: 1px solid currentColor;
+	}
+	.wp-block-quote.is-style-napkin::after,
+	.wp-block-pullquote.is-style-napkin::after {
+		display: none;
+	}
+}

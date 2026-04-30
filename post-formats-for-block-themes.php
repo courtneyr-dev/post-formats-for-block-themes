@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 2.1.0
+ * Version: 2.2.0
  * Requires at least: 6.9
  * Tested up to: 6.9
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '2.1.0' );
+define( 'PFBT_VERSION', '2.2.0' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -254,11 +254,15 @@ function pfbt_init() {
 		PFBT_Block_Bindings_Formats::instance();
 	}
 
-	// Initialize Image + Gallery block style variations (v2.1.0+).
-	// Opt-in via the image_gallery_styles feature flag — registry is
-	// only instantiated when the flag is on, so installs that don't
-	// enable it pay zero registration cost.
-	if ( PFBT_Feature_Flags::has_image_gallery_styles() ) {
+	// Initialize block style variation registry. The registry serves both
+	// the v2.1.0 image+gallery variations and the v2.2.0 quote+pullquote
+	// variations. Each set is gated behind its own independent flag inside
+	// the registry's register() method, so installs that enable only one
+	// pay zero cost for the other.
+	if (
+		PFBT_Feature_Flags::has_image_gallery_styles() ||
+		PFBT_Feature_Flags::has_quote_styles()
+	) {
 		PFBT_Block_Style_Registry::instance()->init();
 	}
 

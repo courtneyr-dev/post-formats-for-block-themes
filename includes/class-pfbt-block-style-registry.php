@@ -57,6 +57,18 @@ class PFBT_Block_Style_Registry {
 	private $gallery_variations = array();
 
 	/**
+	 * Quote variation definitions (resolved + filtered).
+	 *
+	 * Each entry registers against BOTH `core/quote` and `core/pullquote`
+	 * (unless the entry's `block_names` field overrides). Default is
+	 * the dual-block registration.
+	 *
+	 * @since 2.2.0
+	 * @var array<string, array<string, mixed>>
+	 */
+	private $quote_variations = array();
+
+	/**
 	 * Whether definitions have been loaded yet.
 	 *
 	 * @since 2.1.0
@@ -106,14 +118,45 @@ class PFBT_Block_Style_Registry {
 	 * @since 2.1.0
 	 */
 	public function register() {
-		$this->load_definitions();
+		// Flags are independent — a site can opt into v2.1.0 image/gallery
+		// variations without v2.2.0 quote variations, or vice versa.
+		$image_gallery_on = class_exists( 'PFBT_Feature_Flags' )
+			? PFBT_Feature_Flags::has_image_gallery_styles()
+			: false;
+		$quote_on         = class_exists( 'PFBT_Feature_Flags' )
+			? PFBT_Feature_Flags::has_quote_styles()
+			: false;
 
-		foreach ( $this->image_variations as $variation ) {
-			$this->register_one( 'core/image', $variation );
+		if ( ! $image_gallery_on && ! $quote_on ) {
+			return;
 		}
 
-		foreach ( $this->gallery_variations as $variation ) {
-			$this->register_one( 'core/gallery', $variation );
+		$this->load_definitions();
+
+		if ( $image_gallery_on ) {
+			foreach ( $this->image_variations as $variation ) {
+				$this->register_one( 'core/image', $variation );
+			}
+
+			foreach ( $this->gallery_variations as $variation ) {
+				$this->register_one( 'core/gallery', $variation );
+			}
+		}
+
+		if ( $quote_on ) {
+			// v2.2.0: quote variations register against BOTH core/quote
+			// and core/pullquote by default. Definition can override
+			// per-entry via a `block_names` array (e.g. for variations
+			// whose visual conceit only makes sense on one block type).
+			foreach ( $this->quote_variations as $variation ) {
+				$block_names = isset( $variation['block_names'] ) && is_array( $variation['block_names'] )
+					? $variation['block_names']
+					: array( 'core/quote', 'core/pullquote' );
+
+				foreach ( $block_names as $block_name ) {
+					$this->register_one( (string) $block_name, $variation );
+				}
+			}
 		}
 	}
 
@@ -137,6 +180,7 @@ class PFBT_Block_Style_Registry {
 
 		$image_definitions   = $this->load_definition_file( 'image-style-variations.php' );
 		$gallery_definitions = $this->load_definition_file( 'gallery-style-variations.php' );
+		$quote_definitions   = $this->load_definition_file( 'quote-style-variations.php' );
 
 		/**
 		 * Filter the image block style variation definitions.
@@ -161,8 +205,21 @@ class PFBT_Block_Style_Registry {
 		 */
 		$gallery_definitions = apply_filters( 'pfbt_gallery_style_variations', $gallery_definitions );
 
+		/**
+		 * Filter the quote/pullquote block style variation definitions.
+		 *
+		 * Each entry registers against both `core/quote` and `core/pullquote`
+		 * by default. Set `block_names` in the entry to override.
+		 *
+		 * @since 2.2.0
+		 *
+		 * @param array<string, array<string, mixed>> $quote_definitions Definitions keyed by slug.
+		 */
+		$quote_definitions = apply_filters( 'pfbt_quote_style_variations', $quote_definitions );
+
 		$this->image_variations   = $this->normalize( $image_definitions, 'image' );
 		$this->gallery_variations = $this->normalize( $gallery_definitions, 'gallery' );
+		$this->quote_variations   = $this->normalize( $quote_definitions, 'quote' );
 
 		$this->loaded = true;
 	}
@@ -307,6 +364,17 @@ class PFBT_Block_Style_Registry {
 	}
 
 	/**
+	 * Get quote variation definitions (post-filter, post-normalization).
+	 *
+	 * @since 2.2.0
+	 * @return array<string, array<string, mixed>>
+	 */
+	public function get_quote_variations() {
+		$this->load_definitions();
+		return $this->quote_variations;
+	}
+
+	/**
 	 * Reset the load guard (test-only).
 	 *
 	 * Allows the unit suite to re-run load_definitions() after toggling
@@ -318,5 +386,6 @@ class PFBT_Block_Style_Registry {
 		$this->loaded             = false;
 		$this->image_variations   = array();
 		$this->gallery_variations = array();
+		$this->quote_variations   = array();
 	}
 }

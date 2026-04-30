@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -346,6 +346,17 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 2.2.0 =
+
+**Added — 16 quote and pullquote block style variations.**
+
+* 16 quote variations registered on BOTH `core/quote` and `core/pullquote`: post-it, notebook-scrap, typewriter, napkin, library-card, chalkboard, whiteboard, postcard, magazine-pull, broadsheet, decorative-marks, side-rule-editorial, speech-bubble, message-bubble, comment-card, plaque.
+* Variations apply to the quote block ITSELF, not inner content. Each leads with a chrome-reset (zeroes default left border, padding, italic body) before drawing its own design — no inner Group/Paragraph wrapping needed.
+* Citation built into every variation: styled when present, hidden via `cite:empty { display: none; }` when empty.
+* New `quote_styles` feature flag, **default off** — independent of v2.1.0's `image_gallery_styles`. Flip via `add_filter( 'pfbt_feature_quote_styles', '__return_true' )`.
+* `patterns/quote.php` defaults to `is-style-side-rule-editorial` (the most minimal of the 16, intentionally chosen as the editor-default).
+* New `pfbt_quote_style_variations` filter for theme/plugin extension. Per-entry `block_names` field overrides the default dual-block registration.
 
 = 2.1.0 =
 

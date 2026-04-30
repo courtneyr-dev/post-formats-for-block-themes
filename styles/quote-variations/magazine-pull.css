@@ -1,0 +1,94 @@
+/**
+ * Quote variation: Magazine Pullquote
+ *
+ * Large display font, oversized decorative quote mark via ::before
+ * (huge, sits behind the text), short divider rule between body and
+ * citation, generous spacing.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-magazine-pull,
+.wp-block-pullquote.is-style-magazine-pull {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-magazine-pull cite,
+.wp-block-pullquote.is-style-magazine-pull cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-magazine-pull cite:empty,
+.wp-block-pullquote.is-style-magazine-pull cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-magazine-pull,
+.wp-block-pullquote.is-style-magazine-pull {
+	font-family: var(--wp--preset--font-family--expanded, var(--wp--preset--font-family--primary, "Georgia", serif));
+	font-weight: 700;
+	font-size: var(--wp--preset--font-size--xx-large, 2.5rem);
+	line-height: 1.2;
+	max-inline-size: 36rem;
+	margin-block: var(--wp--preset--spacing--large, 3rem);
+	padding-block: var(--wp--preset--spacing--medium, 1.5rem);
+	position: relative;
+	color: var(--wp--preset--color--main, #0a0a0a);
+}
+
+.wp-block-quote.is-style-magazine-pull::before,
+.wp-block-pullquote.is-style-magazine-pull::before {
+	content: """;
+	position: absolute;
+	inset-block-start: -1.5rem;
+	inset-inline-start: -0.5rem;
+	font-size: 8rem;
+	line-height: 1;
+	color: var(--wp--preset--color--primary, #2271b1);
+	opacity: 0.18;
+	pointer-events: none;
+	z-index: 0;
+}
+
+.wp-block-quote.is-style-magazine-pull p,
+.wp-block-pullquote.is-style-magazine-pull p {
+	margin: 0;
+	position: relative;
+	z-index: 1;
+}
+
+.wp-block-quote.is-style-magazine-pull cite,
+.wp-block-pullquote.is-style-magazine-pull cite {
+	display: block;
+	margin-block-start: var(--wp--preset--spacing--medium, 1.5rem);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 400;
+	font-style: normal;
+	color: var(--wp--preset--color--secondary, #666666);
+	letter-spacing: 0.05em;
+	text-transform: uppercase;
+}
+
+.wp-block-quote.is-style-magazine-pull cite::before,
+.wp-block-pullquote.is-style-magazine-pull cite::before {
+	content: "";
+	display: block;
+	width: 3rem;
+	height: 2px;
+	background: var(--wp--preset--color--primary, #2271b1);
+	margin-block-end: var(--wp--preset--spacing--small, 0.75rem);
+}
+
+@media print {
+	.wp-block-quote.is-style-magazine-pull::before,
+	.wp-block-pullquote.is-style-magazine-pull::before {
+		display: none;
+	}
+}

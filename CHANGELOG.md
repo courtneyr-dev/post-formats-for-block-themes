@@ -15,6 +15,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactivity API integration for Chat Log block with thread grouping and frontend interactivity
 - `block_bindings` feature flag in `PFBT_Feature_Flags`
 
+## [2.2.0] - 2026-04-30
+
+### Added — 16 quote and pullquote block style variations
+
+**16 quote variations** registered on BOTH `core/quote` and `core/pullquote`, surfaced in each block's Styles picker:
+
+- *Tactile/Nostalgic (8):* `post-it`, `notebook-scrap`, `typewriter`, `napkin`, `library-card`, `chalkboard`, `whiteboard`, `postcard`
+- *Editorial/Print (4):* `magazine-pull`, `broadsheet`, `decorative-marks`, `side-rule-editorial`
+- *Conversational/Digital (3):* `speech-bubble`, `message-bubble`, `comment-card`
+- *Decorative (1):* `plaque`
+
+### Architectural rule
+
+**Variations apply to the quote block itself, not inner content.** Each variation file leads with a chrome-reset (zeroes the default left border, padding, italic body, citation styles) before drawing its own design — no inner Group/Paragraph wrapping needed. Citation is built into every variation: visible when present, hidden via `cite:empty { display: none; }` when empty so no leftover gap remains.
+
+### Infrastructure
+
+- New `quote_styles` feature flag in `PFBT_Feature_Flags`, **default off** — independent of the v2.1.0 `image_gallery_styles` flag.
+- `PFBT_Block_Style_Registry` extended to register quote variations against both `core/quote` and `core/pullquote` by default. Per-entry `block_names` field overrides for single-block exceptions.
+- New `pfbt_quote_style_variations` filter for theme/plugin extension.
+- New `_reset.css` shared partial in `styles/quote-variations/` documenting the reset rules; each variation embeds them inline (so the conditional-load story still ships only the rules needed for the active variation).
+
+### Default pattern updates
+
+- `patterns/quote.php` now defaults to `is-style-side-rule-editorial` and includes an empty `<cite>` slot. Authors fill in the attribution; if left empty, no leftover spacing.
+
+### Notes
+
+- Post-it migration (Phase 3 of the v2.2.0 brief) was a no-op — zero existing post-it markup was found on the source site. See `docs/POST-IT-MIGRATION.md`.
+
 ## [2.1.0] - 2026-04-30
 
 ### Added — 36 image and gallery block style variations

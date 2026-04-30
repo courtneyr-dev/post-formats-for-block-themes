@@ -128,6 +128,70 @@ class Test_Block_Style_Registry extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Quote variations filter accepts an entry that registers on both
+	 * core/quote and core/pullquote by default. Default style_handle uses
+	 * the `quote` namespace.
+	 */
+	public function test_quote_variations_filter_can_add_entry() {
+		add_filter(
+			'pfbt_quote_style_variations',
+			static function ( $defs ) {
+				$defs[] = array(
+					'slug'       => 'test-card',
+					'label'      => 'Test Card',
+					'style_path' => 'styles/quote-variations/test-card.css',
+				);
+				return $defs;
+			}
+		);
+
+		PFBT_Block_Style_Registry::instance()->reset_for_tests();
+		$variations = PFBT_Block_Style_Registry::instance()->get_quote_variations();
+
+		$this->assertArrayHasKey( 'test-card', $variations );
+		$this->assertSame(
+			'pfbt-quote-variation-test-card',
+			$variations['test-card']['style_handle']
+		);
+	}
+
+	/**
+	 * Quote_styles feature flag exists and defaults to off.
+	 */
+	public function test_quote_styles_feature_flag_default_is_off() {
+		$this->assertFalse( PFBT_Feature_Flags::is_enabled( 'quote_styles' ) );
+		$this->assertFalse( PFBT_Feature_Flags::has_quote_styles() );
+	}
+
+	/**
+	 * Quote variation entries can override the default block_names to
+	 * register against only one block type.
+	 */
+	public function test_quote_variation_block_names_override() {
+		add_filter(
+			'pfbt_quote_style_variations',
+			static function ( $defs ) {
+				$defs[] = array(
+					'slug'        => 'pull-only',
+					'label'       => 'Pullquote Only',
+					'style_path'  => 'styles/quote-variations/pull-only.css',
+					'block_names' => array( 'core/pullquote' ),
+				);
+				return $defs;
+			}
+		);
+
+		PFBT_Block_Style_Registry::instance()->reset_for_tests();
+		$variations = PFBT_Block_Style_Registry::instance()->get_quote_variations();
+
+		$this->assertArrayHasKey( 'pull-only', $variations );
+		$this->assertSame(
+			array( 'core/pullquote' ),
+			$variations['pull-only']['block_names']
+		);
+	}
+
+	/**
 	 * Definitions missing required fields are dropped silently.
 	 *
 	 * The normalize() guard prevents misconfigured third-party entries

@@ -1,23 +1,29 @@
 # Block Style Variations
 
-PFBT v2.1.0 ships **16 image** and **20 gallery** block style variations. They register on `core/image` and `core/gallery` respectively and surface in each block's Styles sidebar panel.
+PFBT ships block style variations across four core blocks:
+
+- **v2.1.0:** 16 image variations on `core/image` and 20 gallery variations on `core/gallery`.
+- **v2.2.0:** 16 quote variations on `core/quote` AND `core/pullquote`.
+
+Each set is gated behind its own independent feature flag — sites can opt into image/gallery without quote, or vice versa.
 
 ## Enabling the variations
 
-Variations are gated behind the `image_gallery_styles` feature flag, which defaults to **off**. Turn it on once per site via any of:
+Both feature flags default to **off**. Turn each on independently:
 
 ```php
-// wp-config.php constant (highest priority)
+// v2.1.0 image + gallery variations
 define( 'PFBT_FEATURE_IMAGE_GALLERY_STYLES', true );
-
-// or theme code / mu-plugin
 add_filter( 'pfbt_feature_image_gallery_styles', '__return_true' );
-
-// or via the option
 update_option( 'pfbt_feature_image_gallery_styles', true );
+
+// v2.2.0 quote + pullquote variations
+define( 'PFBT_FEATURE_QUOTE_STYLES', true );
+add_filter( 'pfbt_feature_quote_styles', '__return_true' );
+update_option( 'pfbt_feature_quote_styles', true );
 ```
 
-When the flag is off, no variations register — installs that don't enable it pay zero registration cost.
+Priority order for both flags: constant > filter > option > default. When a flag is off, the corresponding variations don't register — zero cost.
 
 ## How loading works
 
@@ -99,6 +105,48 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 | `map-pinned-geo` | Geo-tagged collections. **v2.1.0 ships the SSR text-list fallback** per Hard Rule 5 (no third-party JS libraries). Tile rendering is a v2.2 roadmap item. |
 | `panorama-360` | Panoramic photos. **v2.1.0 ships the SSR flat-image fallback** with horizontal scroll-snap. WebGL viewer is a v2.2 roadmap item. |
 | `dynamic-query-gallery` | Auto-curated galleries fed by a Query Loop. Set `data-pfbt-layout="grid\|tile\|mosaic"` to pick the inner layout. |
+
+## Quote variations (16)
+
+Variations register on **both** `core/quote` and `core/pullquote`. Each one resets the default core chrome (left border, padding, italic body) before drawing its own design — no inner block structure required from authors.
+
+**Citation handling:** every variation positions and styles the `<cite>` to fit its visual context. When citation is empty, the element is hidden via `cite:empty { display: none; }` so no awkward gap remains.
+
+### Tactile / Nostalgic (8)
+
+| Slug | When to use |
+|---|---|
+| `post-it` | Personal notes, reminders, scratch ideas. Yellow square card with folded corner and slight rotation. Citation rendered inside, em-dash prefixed. |
+| `notebook-scrap` | Field notes, drafted thoughts. Torn top edge, ruled lines, red margin line. Citation as a signature line. |
+| `typewriter` | Manuscript-style quotes, retro vibes. Monospace on cream paper with faint ink-bleed. Citation prefixed `--`. |
+| `napkin` | Casual ideas, "scrawled-on-the-back-of" feel. Soft white card with coffee-ring stain and torn corner. |
+| `library-card` | Book quotes, references. Cream card with ruled lines and a dark header bar. Citation as the all-caps title. |
+| `chalkboard` | Classroom feel, lecture quotes. Dark slate with chalk-style text and wooden frame. Print inverts to plain. |
+| `whiteboard` | Brainstorm quotes. White card with blue-marker body and red-marker citation. |
+| `postcard` | Travel quotes, "wish you were here" feel. Landscape card with vertical divider — quote on inline-start, citation + stamp on inline-end. |
+
+### Editorial / Print (4)
+
+| Slug | When to use |
+|---|---|
+| `magazine-pull` | Big editorial moments. Large display font with oversized decorative quote mark behind the text. |
+| `broadsheet` | Classical centered quote treatment. Centered serif with double-rule top and bottom and corner quotation marks. |
+| `decorative-marks` | Editorial restraint with one design beat. Oversized opening quote mark in the upper-inline-start corner. |
+| `side-rule-editorial` | The minimal default. Thick brand-color rule on inline-start, clean serif body. **Used as the default in `patterns/quote.php`.** |
+
+### Conversational / Digital (3)
+
+| Slug | When to use |
+|---|---|
+| `speech-bubble` | Conversational extracts, dialogue. Rounded card with a tail. Citation rendered below as the speaker (not inside). |
+| `message-bubble` | SMS/chat-style snippets. Accent-colored rounded rectangle. Citation below as sender label. |
+| `comment-card` | Quoted comments, testimonials. Card with decorative initial avatar — set `data-pfbt-avatar="A"` on the block via Advanced → HTML attribute (or via Block Bindings). Citation as username. |
+
+### Decorative (1)
+
+| Slug | When to use |
+|---|---|
+| `plaque` | Award-style quotes, dedication blocks. Engraved metal plaque with ornamental border and embossed text. |
 
 ## Customization
 

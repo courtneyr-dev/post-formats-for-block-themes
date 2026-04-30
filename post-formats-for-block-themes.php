@@ -406,21 +406,16 @@ function pfbt_enqueue_frontend_assets() {
 
 	// 2.0 contract-compliant tokens + structural CSS. Wrapped in
 	// @layer pfbt-format-tokens so theme styles always win the cascade.
-	// Loads first so legacy format-styles.css can still override during
-	// the migration window — Session 5 will retire format-styles.css when
-	// patterns and the chatlog block have all migrated to the new tokens.
+	// This is the only frontend stylesheet the plugin enqueues — the
+	// legacy 1.x format-styles.css was retired in 2.0 (themes own
+	// paint; the plugin contributes only structure). Sites upgrading
+	// from 1.x see no visible color regression because the tokens
+	// default to neutral inheritance — formats inherit normal theme
+	// styling unless the theme paints them.
 	wp_enqueue_style(
 		'pfbt-format-tokens',
 		PFBT_PLUGIN_URL . 'styles/format-tokens.css',
 		array(),
-		PFBT_VERSION
-	);
-
-	// Legacy 1.x stock-color baseline. Marked for retirement in 2.0.
-	wp_enqueue_style(
-		'pfpu-format-styles',
-		PFBT_PLUGIN_URL . 'styles/format-styles.css',
-		array( 'pfbt-format-tokens' ),
 		PFBT_VERSION
 	);
 }

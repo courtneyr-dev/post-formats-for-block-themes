@@ -183,6 +183,7 @@ class Test_No_Color_Leakage extends WP_UnitTestCase {
 			'/node_modules/',
 			'/tests/fixtures/',
 			'/build/',
+			'/img/',
 		);
 
 		foreach ( $iterator as $path => $info ) {
@@ -239,12 +240,17 @@ class Test_No_Color_Leakage extends WP_UnitTestCase {
 			return array();
 		}
 
-		// Strip CSS/SCSS comments and PHP block comments. Color tokens
-		// inside docblocks describing the contract are not violations.
-		$stripped = preg_replace( '#/\*.*?\*/#s', '', $source ) ?? $source;
-		// Strip PHP // line comments and HTML <!-- comments.
+		// Strip block comments WITHOUT changing line numbers — replace
+		// each comment with the same number of newlines it contained.
+		// Then the line numbers in $stripped still match the original
+		// $source so brand-replica exempt ranges align correctly.
+		$keep_lines = static function ( $matches ) {
+			return str_repeat( "\n", substr_count( $matches[0], "\n" ) );
+		};
+		$stripped = preg_replace_callback( '#/\*.*?\*/#s', $keep_lines, $source ) ?? $source;
+		$stripped = preg_replace_callback( '#<!--.*?-->#s', $keep_lines, $stripped ) ?? $stripped;
+		// Line comments are single-line, so safe to blank in place.
 		$stripped = preg_replace( '#//.*$#m', '', $stripped ) ?? $stripped;
-		$stripped = preg_replace( '#<!--.*?-->#s', '', $stripped ) ?? $stripped;
 
 		// Compute exempt line ranges (within the original source, since
 		// brand-replica markers and the rule blocks they cover live in

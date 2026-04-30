@@ -30,7 +30,11 @@ class PFBT_Format_Styles {
 	 */
 	public static function init() {
 		add_action( 'init', array( __CLASS__, 'register_block_styles' ) );
-		add_filter( 'body_class', array( __CLASS__, 'add_format_body_classes' ) );
+		// 2.0: body_class addition moved to PFBT_Format_Classes (covers
+		// both body_class and post_class, adds plugin-namespaced hooks
+		// and the .pfbt-format-titleless aggregate). The legacy method
+		// add_format_body_classes() remains as a deprecated stub for
+		// backward compatibility with code that called it directly.
 		add_filter( 'wp_theme_json_data_theme', array( __CLASS__, 'merge_theme_json' ) );
 		add_filter( 'get_block_templates', array( __CLASS__, 'add_block_templates' ), 10, 3 );
 		add_filter( 'pre_get_block_file_template', array( __CLASS__, 'get_block_file_template' ), 10, 3 );

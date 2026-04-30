@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 1.2.5
+ * Version: 2.0.0
  * Requires at least: 6.9
  * Tested up to: 6.9
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '1.2.5' );
+define( 'PFBT_VERSION', '2.0.0' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -144,6 +144,10 @@ function pfbt_include_files() {
 	require_once PFBT_PLUGIN_DIR . 'includes/class-repair-tool.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-media-player-integration.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-styles.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-format-classes.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-link-meta.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-format-helpers.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-block-templates.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-admin-columns.php';
 
 	// Feature flags and Abilities API (v1.2.0+).
@@ -167,6 +171,11 @@ function pfbt_include_files() {
 
 	// Format Badge block (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'blocks/format-badge/format-badge.php';
+
+	// Format Icon block (v2.0+).
+	// Registration in index.php; render template in format-icon.php (loaded
+	// by WordPress per render via block.json's render directive).
+	require_once PFBT_PLUGIN_DIR . 'blocks/format-icon/index.php';
 
 	// Include Chat Log block (integrated).
 	// This provides the chatlog/conversation block for the Chat post format.
@@ -221,6 +230,21 @@ function pfbt_init() {
 	PFBT_Pattern_Manager::instance();
 	PFBT_Block_Locker::instance();
 	PFBT_Admin_Columns::instance();
+
+	// 2.0: post + body class additions (replaces the body_class filter
+	// in PFBT_Format_Styles::init(), which is now a deprecated stub).
+	PFBT_Format_Classes::instance();
+
+	// 2.0: register _pfbt_link_url post meta + Bookmark Card fallback.
+	// Wires the external-URL meta that the link display pattern's
+	// post-title binds to via Block Bindings (key: link_url).
+	PFBT_Link_Meta::instance();
+
+	// 2.0: opt-in single + archive block templates per format. Gated
+	// behind the pfbt_use_block_templates option (default false) +
+	// matching filter. Inactive when option is off — no hierarchy
+	// disruption, no template registrations.
+	PFBT_Block_Templates::instance();
 
 	// Initialize Block Bindings source (v1.2.0+).
 	if ( PFBT_Feature_Flags::has_block_bindings() ) {
@@ -366,18 +390,31 @@ function pfbt_enqueue_frontend_assets() {
 	/**
 	 * Whether to enqueue the plugin's frontend format styles.
 	 *
+	 * Gates BOTH the legacy format-styles.css (1.x stock-color baseline)
+	 * AND the 2.0 format-tokens.css (contract-compliant tokens +
+	 * structural CSS). Themes that ship their own format styling end-to-end
+	 * can opt out of both with one filter.
+	 *
 	 * @since 1.2.3
 	 *
-	 * @param bool $enqueue Default true. Return false to skip the enqueue
+	 * @param bool $enqueue Default true. Return false to skip the enqueues
 	 *                      so a child theme's own format styles win.
 	 */
 	if ( ! apply_filters( 'pfbt_enqueue_format_styles', true ) ) {
 		return;
 	}
 
+	// 2.0 contract-compliant tokens + structural CSS. Wrapped in
+	// @layer pfbt-format-tokens so theme styles always win the cascade.
+	// This is the only frontend stylesheet the plugin enqueues — the
+	// legacy 1.x format-styles.css was retired in 2.0 (themes own
+	// paint; the plugin contributes only structure). Sites upgrading
+	// from 1.x see no visible color regression because the tokens
+	// default to neutral inheritance — formats inherit normal theme
+	// styling unless the theme paints them.
 	wp_enqueue_style(
-		'pfpu-format-styles',
-		PFBT_PLUGIN_URL . 'styles/format-styles.css',
+		'pfbt-format-tokens',
+		PFBT_PLUGIN_URL . 'styles/format-tokens.css',
 		array(),
 		PFBT_VERSION
 	);

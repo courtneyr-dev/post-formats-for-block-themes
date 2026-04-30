@@ -1,111 +1,29 @@
 {
-  "$schema": "https://schemas.wp.org/wp/6.9/theme.json",
-  "version": 3,
-  "title": "Post Formats for Block Themes",
-  "settings": {
-    "color": {
-      "palette": [
-        {
-          "name": "Aside Format Background",
-          "slug": "format-aside-bg",
-          "color": "#f0f0f1"
-        },
-        {
-          "name": "Aside Format Border",
-          "slug": "format-aside-border",
-          "color": "#1e1e1e"
-        },
-        {
-          "name": "Status Format Background",
-          "slug": "format-status-bg",
-          "color": "#f0f0f1"
-        },
-        {
-          "name": "Link Format Background",
-          "slug": "format-link-bg",
-          "color": "#f0f8ff"
-        },
-        {
-          "name": "Link Format Border",
-          "slug": "format-link-border",
-          "color": "#0073aa"
-        },
-        {
-          "name": "Quote Format Border",
-          "slug": "format-quote-border",
-          "color": "#0073aa"
-        },
-        {
-          "name": "Quote Format Accent",
-          "slug": "format-quote-accent",
-          "color": "#0073aa"
-        },
-        {
-          "name": "Gallery Format Border",
-          "slug": "format-gallery-border",
-          "color": "#cccccc"
-        },
-        {
-          "name": "Image Format Border",
-          "slug": "format-image-border",
-          "color": "#cccccc"
-        },
-        {
-          "name": "Video Format Background",
-          "slug": "format-video-bg",
-          "color": "#f0f0f1"
-        },
-        {
-          "name": "Audio Format Background",
-          "slug": "format-audio-bg",
-          "color": "#f0f0f1"
-        },
-        {
-          "name": "Chat Format Background",
-          "slug": "format-chat-bg",
-          "color": "#f0f0f1"
-        }
-      ]
-    }
-  },
-  "styles": {
-    "blocks": {
-      "core/quote": {
-        "border": {
-          "left": {
-            "width": "4px",
-            "style": "solid"
-          }
-        },
-        "spacing": {
-          "padding": {
-            "left": "var(--wp--preset--spacing--medium)"
-          }
-        }
-      }
-    }
-  },
-  "customTemplates": [
-    {
-      "name": "single-format-aside",
-      "title": "Aside Format",
-      "postTypes": ["post"]
-    },
-    {
-      "name": "single-format-link",
-      "title": "Link Format",
-      "postTypes": ["post"]
-    },
-    {
-      "name": "single-format-quote",
-      "title": "Quote Format",
-      "postTypes": ["post"]
-    },
-    {
-      "name": "single-format-status",
-      "title": "Status Format",
-      "postTypes": ["post"]
-    }
-  ],
-  "templateParts": []
+	"$schema": "https://schemas.wp.org/wp/6.9/theme.json",
+	"version": 3,
+	"title": "Post Formats for Block Themes",
+	"settings": {
+		"color": {
+			"palette": []
+		}
+	},
+	"styles": {
+		"blocks": {
+			"core/quote": {
+				"border": {
+					"left": {
+						"width": "4px",
+						"style": "solid"
+					}
+				},
+				"spacing": {
+					"padding": {
+						"left": "var(--wp--preset--spacing--medium)"
+					}
+				}
+			}
+		}
+	},
+	"customTemplates": [],
+	"templateParts": []
 }

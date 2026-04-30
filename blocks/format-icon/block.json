@@ -1,0 +1,39 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "post-formats/format-icon",
+	"version": "1.0.0",
+	"title": "Format Icon",
+	"category": "theme",
+	"icon": "format-status",
+	"description": "Renders an SVG icon for the current post's format. Inherits text color via currentColor — paint via the theme's --pfbt-format-X-accent token. Hides itself for standard-format posts.",
+	"keywords": [ "post format", "icon", "format", "indicator" ],
+	"textdomain": "post-formats-for-block-themes",
+	"parent": [ "core/post-template", "core/group", "core/post-meta" ],
+	"usesContext": [ "postId", "postType" ],
+	"supports": {
+		"html": false,
+		"color": {
+			"text": true,
+			"background": false
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"interactivity": {
+			"clientNavigation": true
+		}
+	},
+	"attributes": {
+		"showLabel": {
+			"type": "boolean",
+			"default": false,
+			"description": "When true, renders the format name as visible text alongside the icon. When false (default), the format name is announced to screen readers only."
+		}
+	},
+	"render": "file:./format-icon.php"
+}

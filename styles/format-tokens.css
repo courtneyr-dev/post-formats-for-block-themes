@@ -1,0 +1,308 @@
+/**
+ * Post Formats for Block Themes — Design Tokens + Structural CSS
+ *
+ * The hard contract:
+ *   - Plugin owns LAYOUT (which blocks render, in what order, with what
+ *     classes; titles hidden on title-less formats; chat row striping;
+ *     format-icon slot; video aspect ratio; gallery grid).
+ *   - Theme owns PAINT (every color, font, spacing scale, border radius,
+ *     shadow value).
+ *
+ * The handshake:
+ *   Every plugin reference to color or typography routes through
+ *   var(--pfbt-format-X-*, NEUTRAL) where NEUTRAL is one of:
+ *     transparent | inherit | currentColor | none
+ *
+ * If the theme sets the token, the plugin's structure gets painted.
+ * If the theme stays silent, the format inherits the theme's normal
+ * styling — distinctive STRUCTURE, no distinctive PAINT.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.0.0
+ *
+ * Layout reference: WordPress Twenty Thirteen (canonical example of
+ * shared archive/single template parts per format). Source:
+ *   https://themes.trac.wordpress.org/log/twentythirteen
+ *   wp-content/themes/twentythirteen/content-{format}.php
+ *
+ * The plugin borrows Twenty Thirteen's LAYOUT IDEAS only — never its
+ * colors or fonts. See /docs/DESIGN-TOKENS.md for the complete token
+ * reference and what each token paints.
+ */
+
+/* ===========================================================================
+ * Cascade layer
+ * ---------------------------------------------------------------------------
+ * All plugin format CSS lives in the `pfbt-format-tokens` layer so theme
+ * styles in any later layer (or no layer at all) win the cascade. Themes
+ * never have to fight the plugin with !important.
+ *
+ * Layer order: WP core < pfbt-format-tokens < theme < user.
+ * ======================================================================== */
+
+@layer pfbt-format-tokens {
+
+	/* =====================================================================
+	 * 1. Sizing tokens — structural, themes rarely override
+	 * ================================================================== */
+
+	:root {
+		--pfbt-format-icon-size: 1em;
+		--pfbt-format-icon-gap: 0.4em;
+	}
+
+	/* =====================================================================
+	 * 2. Per-format paint tokens
+	 *
+	 * Every value defaults to a NEUTRAL fallback (transparent / inherit /
+	 * currentColor / none). Themes set these in theme.json or stylesheet
+	 * to paint each format. Tokens never set leave that format inheriting
+	 * the theme's normal styling.
+	 *
+	 * NO STOCK GUTENBERG DEFAULTS. NO HEX. NO HARD-CODED FONT NAMES.
+	 * ================================================================== */
+
+	:root {
+		/* Aside */
+		--pfbt-format-aside-bg:        transparent;
+		--pfbt-format-aside-fg:        inherit;
+		--pfbt-format-aside-accent:    currentColor;
+		--pfbt-format-aside-font:      inherit;
+
+		/* Status */
+		--pfbt-format-status-bg:       transparent;
+		--pfbt-format-status-fg:       inherit;
+		--pfbt-format-status-accent:   currentColor;
+		--pfbt-format-status-font:     inherit;
+
+		/* Quote */
+		--pfbt-format-quote-bg:        transparent;
+		--pfbt-format-quote-fg:        inherit;
+		--pfbt-format-quote-accent:    currentColor;
+		--pfbt-format-quote-font:      inherit;
+
+		/* Link */
+		--pfbt-format-link-bg:         transparent;
+		--pfbt-format-link-fg:         inherit;
+		--pfbt-format-link-accent:     currentColor;
+		--pfbt-format-link-font:       inherit;
+
+		/* Image */
+		--pfbt-format-image-bg:        transparent;
+		--pfbt-format-image-fg:        inherit;
+		--pfbt-format-image-caption-font: inherit;
+
+		/* Gallery */
+		--pfbt-format-gallery-bg:      transparent;
+		--pfbt-format-gallery-fg:      inherit;
+		--pfbt-format-gallery-accent:  currentColor;
+
+		/* Video */
+		--pfbt-format-video-bg:        transparent;
+		--pfbt-format-video-fg:        inherit;
+		--pfbt-format-video-accent:    currentColor;
+
+		/* Audio */
+		--pfbt-format-audio-bg:        transparent;
+		--pfbt-format-audio-fg:        inherit;
+		--pfbt-format-audio-accent:    currentColor;
+
+		/* Chat — base + element tokens.
+		   Used by both the standalone Chat Log block (.chatlog) and the
+		   .pfbt-format-chat container styles. Section 7 of the 2.0
+		   format-styling system migrated the chatlog block's hard-coded
+		   colors to these tokens. */
+		--pfbt-format-chat-bg:               transparent;
+		--pfbt-format-chat-fg:               inherit;
+		--pfbt-format-chat-row-bg-odd:       transparent;
+		--pfbt-format-chat-row-bg-even:      transparent;
+		--pfbt-format-chat-speaker-fg:       inherit;
+		--pfbt-format-chat-font:             inherit;
+		--pfbt-format-chat-meta-fg:          inherit;
+		--pfbt-format-chat-rule:             currentColor;
+		--pfbt-format-chat-highlight-bg:     transparent;
+		--pfbt-format-chat-highlight-accent: currentColor;
+		--pfbt-format-chat-link-fg:          inherit;
+		--pfbt-format-chat-link-hover-fg:    inherit;
+		--pfbt-format-chat-code-bg:          transparent;
+		--pfbt-format-chat-avatar-bg:        currentColor;
+		--pfbt-format-chat-avatar-fg:        inherit;
+	}
+
+	/* =====================================================================
+	 * 3. Structural CSS — title-less formats
+	 *
+	 * Aside, Status, and Quote hide the post title visually but keep it in
+	 * the DOM and accessibility tree (visually-hidden pattern). Themes that
+	 * disagree opt the title back in by adding `is-style-show-format-title`
+	 * to the Post Title block in their template:
+	 *
+	 *   <!-- wp:post-title {"className":"is-style-show-format-title"} /-->
+	 * ================================================================== */
+
+	.format-aside .wp-block-post-title:not(.is-style-show-format-title),
+	.format-status .wp-block-post-title:not(.is-style-show-format-title),
+	.format-quote .wp-block-post-title:not(.is-style-show-format-title) {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		clip-path: inset(50%);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	/* =====================================================================
+	 * 4. Format Icon slot
+	 *
+	 * The Format Icon block emits:
+	 *   <span class="pfbt-format-icon pfbt-format-icon--{slug}">
+	 *     <svg aria-hidden="true">...</svg>
+	 *     <span class="screen-reader-text">{Format Name}</span>
+	 *   </span>
+	 *
+	 * Icon color flows through `currentColor` so it inherits the surrounding
+	 * text color. Themes can override per format via the `--pfbt-format-X-accent`
+	 * token by setting `color: var(--pfbt-format-aside-accent)` on a wrapping
+	 * selector, or by writing direct rules against `.pfbt-format-icon--{slug}`.
+	 * ================================================================== */
+
+	.pfbt-format-icon {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--pfbt-format-icon-gap);
+		line-height: 1;
+		font-size: var(--pfbt-format-icon-size);
+		color: currentColor;
+	}
+
+	.pfbt-format-icon svg {
+		width: 1em;
+		height: 1em;
+		fill: none;
+		stroke: currentColor;
+	}
+
+	/* =====================================================================
+	 * 5. Per-format containers — paint via tokens, structure here
+	 *
+	 * Each container class is added to the format's outermost wrapper by
+	 * the pattern markup. Themes paint by setting the matching token; if
+	 * tokens are unset, the container is invisible (inherits theme defaults).
+	 * ================================================================== */
+
+	.pfbt-format-aside {
+		background:  var(--pfbt-format-aside-bg, transparent);
+		color:       var(--pfbt-format-aside-fg, inherit);
+		font-family: var(--pfbt-format-aside-font, inherit);
+	}
+
+	.pfbt-format-status {
+		background:  var(--pfbt-format-status-bg, transparent);
+		color:       var(--pfbt-format-status-fg, inherit);
+		font-family: var(--pfbt-format-status-font, inherit);
+	}
+
+	.pfbt-format-quote {
+		background:  var(--pfbt-format-quote-bg, transparent);
+		color:       var(--pfbt-format-quote-fg, inherit);
+		font-family: var(--pfbt-format-quote-font, inherit);
+	}
+
+	.pfbt-format-link {
+		background:  var(--pfbt-format-link-bg, transparent);
+		color:       var(--pfbt-format-link-fg, inherit);
+		font-family: var(--pfbt-format-link-font, inherit);
+	}
+
+	.pfbt-format-image {
+		background:  var(--pfbt-format-image-bg, transparent);
+		color:       var(--pfbt-format-image-fg, inherit);
+	}
+
+	.pfbt-format-image .wp-element-caption {
+		font-family: var(--pfbt-format-image-caption-font, inherit);
+	}
+
+	.pfbt-format-gallery {
+		background:  var(--pfbt-format-gallery-bg, transparent);
+		color:       var(--pfbt-format-gallery-fg, inherit);
+	}
+
+	.pfbt-format-video {
+		background:  var(--pfbt-format-video-bg, transparent);
+		color:       var(--pfbt-format-video-fg, inherit);
+	}
+
+	.pfbt-format-audio {
+		background:  var(--pfbt-format-audio-bg, transparent);
+		color:       var(--pfbt-format-audio-fg, inherit);
+	}
+
+	/* =====================================================================
+	 * 6. Format-specific structural rules
+	 * ================================================================== */
+
+	/* --- Video: 16:9 default for embedded videos and iframes --- */
+	.pfbt-format-video .wp-block-embed iframe,
+	.pfbt-format-video .wp-block-video video {
+		aspect-ratio: 16 / 9;
+	}
+
+	/* --- Chat: structural row striping. Visible only when the theme
+	       sets the row tokens; otherwise both rows inherit normal flow. --- */
+	.format-chat .pfbt-chat-line:nth-child(odd) {
+		background: var(--pfbt-format-chat-row-bg-odd, transparent);
+	}
+
+	.format-chat .pfbt-chat-line:nth-child(even) {
+		background: var(--pfbt-format-chat-row-bg-even, transparent);
+	}
+
+	.format-chat .pfbt-chat-speaker {
+		color:       var(--pfbt-format-chat-speaker-fg, inherit);
+		font-family: var(--pfbt-format-chat-font, inherit);
+		font-weight: 700;
+	}
+
+	/* --- Gallery: photo count badge structural slot. The badge text is
+	       set by markup; positioning is structural; paint comes from
+	       --pfbt-format-gallery-accent or theme rules. --- */
+	.pfbt-format-gallery__count {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--pfbt-format-icon-gap);
+	}
+
+	/* =====================================================================
+	 * 7. Screen-reader-text utility
+	 *
+	 * For the format-name label inside .pfbt-format-icon. Mirrors WP core's
+	 * .screen-reader-text so themes don't need to ship their own.
+	 * ================================================================== */
+
+	.pfbt-format-icon .screen-reader-text {
+		border: 0;
+		clip: rect(1px, 1px, 1px, 1px);
+		clip-path: inset(50%);
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		padding: 0;
+		position: absolute;
+		width: 1px;
+		word-wrap: normal !important;
+	}
+}
+
+/*
+ * Audit note for maintainers:
+ * The only literal values in this file are 0, 1, 1px, 1em, 50%, 16, 9, 700.
+ * No hex codes. No rgb()/rgba()/hsl()/oklch()/named CSS colors.
+ * No font names. No spacing scales beyond 0/1px/1em (structural minimums).
+ * The test-no-color-leakage.php guardrail will fail this file if any of
+ * the above changes. See /docs/DESIGN-TOKENS.md for the contract details.
+ */

@@ -169,6 +169,9 @@ function pfbt_include_files() {
 	// Block Bindings source (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'includes/class-block-bindings-formats.php';
 
+	// Image + Gallery block style variations (v2.1.0+, opt-in).
+	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-block-style-registry.php';
+
 	// Format Badge block (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'blocks/format-badge/format-badge.php';
 
@@ -249,6 +252,14 @@ function pfbt_init() {
 	// Initialize Block Bindings source (v1.2.0+).
 	if ( PFBT_Feature_Flags::has_block_bindings() ) {
 		PFBT_Block_Bindings_Formats::instance();
+	}
+
+	// Initialize Image + Gallery block style variations (v2.1.0+).
+	// Opt-in via the image_gallery_styles feature flag — registry is
+	// only instantiated when the flag is on, so installs that don't
+	// enable it pay zero registration cost.
+	if ( PFBT_Feature_Flags::has_image_gallery_styles() ) {
+		PFBT_Block_Style_Registry::instance()->init();
 	}
 
 	// Initialize Abilities API integration (v1.2.0+).

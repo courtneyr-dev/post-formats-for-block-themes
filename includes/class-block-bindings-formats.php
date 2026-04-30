@@ -134,6 +134,87 @@ class PFBT_Block_Bindings_Formats {
 				}
 				return '';
 
+			case 'format_icon_svg':
+				/*
+				 * Return the SVG markup the Format Icon block would emit
+				 * for the current post's format. Routes through the same
+				 * filters the block uses (pfbt_format_icon_svg short-circuit,
+				 * pfbt_format_icon_map slug-to-symbol-id, and
+				 * pfbt_format_icon_sprite_url) so a binding-driven block
+				 * sees the same icon as a directly-placed Format Icon block.
+				 *
+				 * Standard format returns an empty string — same behavior
+				 * as the Format Icon block, which renders nothing for
+				 * standard posts.
+				 *
+				 * @since 2.0.0
+				 */
+				if ( ! $format || 'standard' === $format ) {
+					return '';
+				}
+
+				$short = apply_filters( 'pfbt_format_icon_svg', null, $format, $post_id );
+				if ( null !== $short ) {
+					return (string) $short;
+				}
+
+				$map = apply_filters(
+					'pfbt_format_icon_map',
+					array(
+						'aside'   => 'pfbt-format-icon-aside',
+						'audio'   => 'pfbt-format-icon-audio',
+						'chat'    => 'pfbt-format-icon-chat',
+						'gallery' => 'pfbt-format-icon-gallery',
+						'image'   => 'pfbt-format-icon-image',
+						'link'    => 'pfbt-format-icon-link',
+						'quote'   => 'pfbt-format-icon-quote',
+						'status'  => 'pfbt-format-icon-status',
+						'video'   => 'pfbt-format-icon-video',
+					)
+				);
+
+				$symbol_id = $map[ $format ] ?? null;
+				if ( ! $symbol_id ) {
+					return '';
+				}
+
+				$sprite_url = apply_filters(
+					'pfbt_format_icon_sprite_url',
+					PFBT_PLUGIN_URL . 'img/format-icons.svg'
+				);
+
+				return sprintf(
+					'<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="%1$s#%2$s"></use></svg>',
+					esc_url( $sprite_url ),
+					esc_attr( $symbol_id )
+				);
+
+			case 'format_permalink_archive':
+				/*
+				 * Return the URL to the post-format taxonomy archive
+				 * (e.g. /type/aside/) for the current post's format.
+				 * Returns empty string for standard-format posts since
+				 * /type/standard/ would be misleading — standard posts
+				 * appear in the main blog archive, not a typed one.
+				 *
+				 * @since 2.0.0
+				 */
+				if ( ! $format || 'standard' === $format ) {
+					return '';
+				}
+
+				$term = get_term_by( 'slug', 'post-format-' . $format, 'post_format' );
+				if ( ! $term || is_wp_error( $term ) ) {
+					return '';
+				}
+
+				$url = get_term_link( $term );
+				if ( is_wp_error( $url ) ) {
+					return '';
+				}
+
+				return esc_url( $url );
+
 			default:
 				return null;
 		}

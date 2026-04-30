@@ -640,11 +640,34 @@ class PFBT_Format_Styles {
 	 *
 	 * @since 1.0.0
 	 * @since 1.2.1 Fix: was wholesale-replacing theme data via update_with().
+	 * @since 1.2.3 Added `pfbt_merge_format_palette` filter for opt-out.
+	 *
+	 * Themes whose palette is fully bespoke can opt out by returning false:
+	 *
+	 *     add_filter( 'pfbt_merge_format_palette', '__return_false' );
+	 *
+	 * The plugin's palette additions (format-aside-bg, format-link-border, etc.)
+	 * are stock Gutenberg defaults intended as sensible defaults for
+	 * un-customized themes. They appear in the WP color picker alongside any
+	 * branded swatches, which can be visual clutter in heavily-customized themes.
 	 *
 	 * @param WP_Theme_JSON_Data $theme_json Theme JSON data.
 	 * @return WP_Theme_JSON_Data Modified theme JSON data.
 	 */
 	public static function merge_theme_json( $theme_json ) {
+		/**
+		 * Whether to merge the plugin's theme.json palette + settings into the
+		 * site's resolved theme.json data.
+		 *
+		 * @since 1.2.3
+		 *
+		 * @param bool $merge Default true. Return false to skip the merge so
+		 *                    the theme's palette is used unmodified.
+		 */
+		if ( ! apply_filters( 'pfbt_merge_format_palette', true ) ) {
+			return $theme_json;
+		}
+
 		$plugin_theme_json_file = PFBT_PLUGIN_DIR . 'theme.json';
 
 		if ( ! file_exists( $plugin_theme_json_file ) ) {

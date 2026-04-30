@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 1.2.2
+ * Version: 1.2.3
  * Requires at least: 6.9
  * Tested up to: 6.9
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '1.2.2' );
+define( 'PFBT_VERSION', '1.2.3' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -350,9 +350,31 @@ add_action( 'enqueue_block_editor_assets', 'pfbt_enqueue_editor_assets' );
  * Loads format-specific styles that use CSS custom properties
  * from theme.json for consistent theming.
  *
+ * Themes that ship their own format styling can opt out by returning
+ * false from the `pfbt_enqueue_format_styles` filter:
+ *
+ *     add_filter( 'pfbt_enqueue_format_styles', '__return_false' );
+ *
+ * The plugin's stylesheet ships with stock WordPress fallback colors
+ * (#0073aa, #f0f0f1, #cccccc, etc.) that override branded child-theme
+ * palettes when both target the same `.format-X` body-class selectors.
+ *
  * @since 1.0.0
+ * @since 1.2.3 Added `pfbt_enqueue_format_styles` filter for opt-out.
  */
 function pfbt_enqueue_frontend_assets() {
+	/**
+	 * Whether to enqueue the plugin's frontend format styles.
+	 *
+	 * @since 1.2.3
+	 *
+	 * @param bool $enqueue Default true. Return false to skip the enqueue
+	 *                      so a child theme's own format styles win.
+	 */
+	if ( ! apply_filters( 'pfbt_enqueue_format_styles', true ) ) {
+		return;
+	}
+
 	wp_enqueue_style(
 		'pfpu-format-styles',
 		PFBT_PLUGIN_URL . 'styles/format-styles.css',

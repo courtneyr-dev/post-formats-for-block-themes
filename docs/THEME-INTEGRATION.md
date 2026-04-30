@@ -67,14 +67,31 @@ Full reference: [`/docs/DESIGN-TOKENS.md`](DESIGN-TOKENS.md). Quick cheat sheet:
 
 ### Per format
 
-Each non-standard format has up to four base tokens:
+Token coverage varies by format. The aside / status / quote / link formats
+have the full four base tokens; image / gallery / video / audio formats
+have a partial set; chat has a different shape (paint by element rather
+than container).
 
-```
---pfbt-format-{slug}-bg       Container background
---pfbt-format-{slug}-fg       Container text color
---pfbt-format-{slug}-accent   Format icon, decorative borders, etc.
---pfbt-format-{slug}-font     Container font-family
-```
+| Format | bg | fg | accent | font | Extra |
+|---|---|---|---|---|---|
+| aside | ✓ | ✓ | ✓ | ✓ | — |
+| status | ✓ | ✓ | ✓ | ✓ | — |
+| quote | ✓ | ✓ | ✓ | ✓ | — |
+| link | ✓ | ✓ | ✓ | ✓ | — |
+| image | ✓ | ✓ | — | — | `--pfbt-format-image-caption-font` |
+| gallery | ✓ | ✓ | ✓ | — | — |
+| video | ✓ | ✓ | ✓ | — | — |
+| audio | ✓ | ✓ | ✓ | — | — |
+| chat | ✓ | ✓ | — | ✓ | 11 element tokens (see below) |
+
+The shape reflects how each format reads in practice: aside / status / quote /
+link are short bodies of text where a font-family change is meaningful; image /
+gallery / video / audio are media-led where the content itself dominates and
+font isn't a paint surface; chat has so many element tokens that a single
+container "accent" doesn't capture the design need.
+
+Image format intentionally has no `--pfbt-format-image-accent` — borders on
+the image itself should come through the theme's normal `core/image` rules.
 
 ### Format-specific extras
 

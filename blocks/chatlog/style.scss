@@ -1,26 +1,47 @@
 /**
- * Frontend styles for Chat Log block
- * 
+ * Chat Log block — frontend styles.
+ *
+ * 2.0 contract:
+ *   Format-paint sections route through var(--pfbt-format-chat-*, NEUTRAL)
+ *   tokens (see /styles/format-tokens.css and /docs/DESIGN-TOKENS.md).
+ *   Themes paint by setting the tokens in theme.json or stylesheet;
+ *   themes that stay silent see neutral inheritance from the surrounding
+ *   post content.
+ *
+ * @pfbt-allow-color brand-replica   exemption for device-frame replicas.
+ *   The .chatlog-device-frame--phone | --desktop | --slack-app |
+ *   --discord-app | .chatlog--irc selectors render recognizable brand
+ *   replicas of those platforms (Slack purple, Discord gray, IRC
+ *   black-on-green, iPhone notch). These are SEMANTIC colors — themes
+ *   never want to override Slack's brand to something else without
+ *   losing the "this is what Slack looks like" cue. Tokenizing them
+ *   would harm the feature without benefit. The marker comment above
+ *   each affected block exempts those literals from the
+ *   test-no-color-leakage.php contract guardrail.
+ *
  * Accessibility considerations:
- * - High contrast ratios (4.5:1 minimum)
- * - Focus indicators visible and clear
- * - Reduced motion support
- * - Semantic color usage
- * - Touch target sizes (44x44px minimum)
+ *   - High contrast ratios (4.5:1 minimum) — assumes themes set tokens
+ *     with sufficient contrast. Plugin defaults inherit from the
+ *     theme's normal post text, which the theme is expected to have
+ *     audited.
+ *   - Focus indicators: keyboard focus uses currentColor outlines so
+ *     the visible color always matches the surrounding text contrast.
+ *   - Reduced motion support unchanged from 1.x.
+ *   - Touch target sizes (44x44px minimum) preserved structurally.
  */
 
 .chatlog {
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+	font-family: var(--pfbt-format-chat-font, inherit);
 	font-size: 1rem;
 	line-height: 1.5;
-	color: #1e1e1e;
-	background: #fff;
+	color: var(--pfbt-format-chat-fg, inherit);
+	background: var(--pfbt-format-chat-bg, transparent);
 	border-radius: 8px;
 	padding: 1.5rem;
 	margin: 1rem 0;
 
 	&.format-chat {
-		border: 1px solid #e0e0e0;
+		border: 1px solid var(--pfbt-format-chat-rule, currentColor);
 	}
 }
 
@@ -28,7 +49,7 @@
 .chatlog-participants {
 	margin-bottom: 1.5rem;
 	padding: 1rem;
-	background: #f5f5f5;
+	background: var(--pfbt-format-chat-row-bg-odd, transparent);
 	border-radius: 6px;
 
 	summary {
@@ -39,12 +60,12 @@
 
 		&:hover,
 		&:focus {
-			background: #e8e8e8;
+			background: var(--pfbt-format-chat-row-bg-even, transparent);
 			border-radius: 4px;
 		}
 
 		&:focus-visible {
-			outline: 2px solid #0073aa;
+			outline: 2px solid currentColor;
 			outline-offset: 2px;
 		}
 	}
@@ -63,13 +84,17 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 0.75rem;
-		background: #fff;
+		background: var(--pfbt-format-chat-bg, transparent);
 		border-radius: 20px;
-		border: 1px solid #ddd;
+		border: 1px solid var(--pfbt-format-chat-rule, currentColor);
 	}
 }
 
-/* Avatar component */
+/* Avatar component.
+   --avatar-bg is set inline by the chatlog edit/view JS based on a
+   per-speaker hash so each speaker gets a stable distinct circle.
+   The token fallback inherits currentColor; themes that want a
+   default mat color set --pfbt-format-chat-avatar-bg.  */
 .chatlog-avatar {
 	position: relative;
 	display: inline-flex;
@@ -79,8 +104,8 @@
 	height: 40px;
 	min-width: 40px;
 	border-radius: 50%;
-	background-color: var(--avatar-bg, #6366f1);
-	color: #fff;
+	background-color: var(--avatar-bg, var(--pfbt-format-chat-avatar-bg, currentColor));
+	color: var(--pfbt-format-chat-avatar-fg, inherit);
 	font-weight: 600;
 	font-size: 14px;
 	overflow: hidden;
@@ -131,15 +156,15 @@
 
 	&.chatlog-message--system {
 		font-style: italic;
-		color: #666;
+		color: var(--pfbt-format-chat-meta-fg, inherit);
 		text-align: center;
 		padding: 0.5rem;
 		font-size: 0.875rem;
 	}
 
 	&.chatlog-message--highlighted {
-		background: #fff8dc;
-		border-left: 3px solid #ffd700;
+		background: var(--pfbt-format-chat-highlight-bg, transparent);
+		border-left: 3px solid var(--pfbt-format-chat-highlight-accent, currentColor);
 		padding-left: 1rem;
 		margin-left: -1rem;
 	}
@@ -147,13 +172,13 @@
 	&.chatlog-message--thread {
 		margin-left: 2rem;
 		padding-left: 1rem;
-		border-left: 2px solid #d0d0d0;
+		border-left: 2px solid var(--pfbt-format-chat-rule, currentColor);
 	}
 }
 
 @keyframes highlight-message {
 	0%, 100% { background: transparent; }
-	50% { background: #fff8dc; }
+	50% { background: var(--pfbt-format-chat-highlight-bg, transparent); }
 }
 
 /* Message header */
@@ -172,22 +197,22 @@
 
 .chatlog-speaker {
 	font-weight: 600;
-	color: #1e1e1e;
+	color: var(--pfbt-format-chat-speaker-fg, inherit);
 }
 
 .chatlog-timestamp {
 	font-size: 0.875rem;
-	color: #666;
+	color: var(--pfbt-format-chat-meta-fg, inherit);
 	text-decoration: none;
 
 	&:hover,
 	&:focus {
-		color: #0073aa;
+		color: var(--pfbt-format-chat-link-hover-fg, inherit);
 		text-decoration: underline;
 	}
 
 	&:focus-visible {
-		outline: 2px solid #0073aa;
+		outline: 2px solid currentColor;
 		outline-offset: 2px;
 		border-radius: 2px;
 	}
@@ -195,7 +220,7 @@
 
 .chatlog-thread-indicator {
 	font-size: 0.8125rem;
-	color: #888;
+	color: var(--pfbt-format-chat-meta-fg, inherit);
 	font-style: italic;
 }
 
@@ -214,25 +239,25 @@
 	}
 
 	a {
-		color: #0073aa;
+		color: var(--pfbt-format-chat-link-fg, inherit);
 		text-decoration: underline;
 
 		&:hover,
 		&:focus {
-			color: #005177;
+			color: var(--pfbt-format-chat-link-hover-fg, inherit);
 		}
 
 		&:focus-visible {
-			outline: 2px solid #0073aa;
+			outline: 2px solid currentColor;
 			outline-offset: 2px;
 		}
 	}
 
 	code {
-		background: #f5f5f5;
+		background: var(--pfbt-format-chat-code-bg, transparent);
 		padding: 0.125rem 0.25rem;
 		border-radius: 3px;
-		font-family: 'Courier New', monospace;
+		font-family: monospace;
 		font-size: 0.875em;
 	}
 
@@ -258,14 +283,14 @@
 	align-items: center;
 	gap: 0.25rem;
 	padding: 0.25rem 0.5rem;
-	background: #f5f5f5;
-	border: 1px solid #ddd;
+	background: var(--pfbt-format-chat-row-bg-odd, transparent);
+	border: 1px solid var(--pfbt-format-chat-rule, currentColor);
 	border-radius: 12px;
 	font-size: 0.875rem;
 
 	.chatlog-reaction-count {
 		font-weight: 600;
-		color: #666;
+		color: var(--pfbt-format-chat-meta-fg, inherit);
 	}
 }
 
@@ -274,7 +299,7 @@
 	list-style: none;
 	padding: 0;
 	margin: 1rem 0 0 3rem;
-	border-left: 2px solid #e0e0e0;
+	border-left: 2px solid var(--pfbt-format-chat-rule, currentColor);
 	padding-left: 1rem;
 
 	.chatlog-message {
@@ -287,7 +312,7 @@
 	.chatlog-message {
 		&:not(.chatlog-message--system) {
 			.chatlog-body {
-				background: #e8e8e8;
+				background: var(--pfbt-format-chat-row-bg-even, transparent);
 				padding: 0.75rem 1rem;
 				border-radius: 18px;
 				max-width: 70%;
@@ -296,16 +321,20 @@
 
 		&.chatlog-message--highlighted {
 			.chatlog-body {
-				background: #d4edda;
-				border-color: #28a745;
+				background: var(--pfbt-format-chat-highlight-bg, transparent);
+				border-color: var(--pfbt-format-chat-highlight-accent, currentColor);
 			}
 		}
 	}
 }
 
-/* IRC style */
+/* @pfbt-allow-color brand-replica
+   IRC theme: classic terminal aesthetic — black background, green text,
+   cyan speakers. These are recognizable IRC client conventions; themes
+   never want to override them without losing the "this is IRC" cue.
+   Exempt from the no-color-leakage guardrail per the marker above. */
 .chatlog--irc {
-	font-family: 'Courier New', monospace;
+	font-family: monospace;
 	background: #000;
 	color: #0f0;
 	padding: 1rem;
@@ -343,7 +372,7 @@
 /* Transcript style */
 .chatlog--transcript {
 	.chatlog-message-header {
-		border-bottom: 1px solid #e0e0e0;
+		border-bottom: 1px solid var(--pfbt-format-chat-rule, currentColor);
 		padding-bottom: 0.5rem;
 		margin-bottom: 0.5rem;
 	}
@@ -357,7 +386,9 @@
 	}
 }
 
-/* Timeline style */
+/* Timeline style.
+   The timeline rail and bullet inherit currentColor by default; themes
+   can paint via --pfbt-format-chat-rule and --pfbt-format-chat-highlight-accent. */
 .chatlog--timeline {
 	position: relative;
 	padding-left: 3rem;
@@ -369,7 +400,7 @@
 		top: 0;
 		bottom: 0;
 		width: 2px;
-		background: #e0e0e0;
+		background: var(--pfbt-format-chat-rule, currentColor);
 	}
 
 	.chatlog-message {
@@ -382,10 +413,10 @@
 			top: 0.5rem;
 			width: 12px;
 			height: 12px;
-			background: #0073aa;
-			border: 2px solid #fff;
+			background: var(--pfbt-format-chat-highlight-accent, currentColor);
+			border: 2px solid var(--pfbt-format-chat-bg, transparent);
 			border-radius: 50%;
-			box-shadow: 0 0 0 2px #e0e0e0;
+			box-shadow: 0 0 0 2px var(--pfbt-format-chat-rule, currentColor);
 		}
 	}
 }
@@ -397,6 +428,10 @@
 	position: relative;
 }
 
+/* @pfbt-allow-color brand-replica
+   iPhone-style frame: deep matte body, screen well, notch. Tuned to
+   look like an iPhone — black body + neutral notch. Themes don't
+   override Apple's industrial design palette. */
 .chatlog-device-frame--phone {
 	max-width: 390px;
 	padding: 20px;
@@ -430,6 +465,10 @@
 	}
 }
 
+/* @pfbt-allow-color brand-replica
+   macOS-style window frame: dark window chrome + traffic-light buttons
+   (red/yellow/green). Replicates Apple's macOS Big Sur+ window controls
+   verbatim — these colors are recognizable platform identity. */
 .chatlog-device-frame--desktop {
 	max-width: 1200px;
 	padding: 40px 20px 20px;
@@ -461,6 +500,8 @@
 	}
 }
 
+/* @pfbt-allow-color brand-replica
+   Slack: aubergine purple header. Recognizable Slack identity. */
 .chatlog-device-frame--slack-app {
 	max-width: 1000px;
 	background: #f8f8f8;
@@ -486,6 +527,9 @@
 	}
 }
 
+/* @pfbt-allow-color brand-replica
+   Discord: dark gray chrome (#36393f), darker header (#2f3136), text
+   in Discord's specific gray-on-gray palette. Recognizable Discord identity. */
 .chatlog-device-frame--discord-app {
 	max-width: 1000px;
 	background: #36393f;
@@ -591,10 +635,14 @@
 	border-width: 0;
 }
 
-/* Print styles */
+/* Print styles.
+   Print preserves the format paint via tokens — themes that have
+   defined chat tokens see them respected on print. The print
+   override on .chatlog-device-frame is structural (hiding device
+   chrome that doesn't print well), not a paint decision. */
 @media print {
 	.chatlog {
-		border: 1px solid #000;
+		border: 1px solid currentColor;
 		page-break-inside: avoid;
 	}
 
@@ -603,8 +651,8 @@
 	}
 
 	.chatlog--bubbles .chatlog-body {
-		background: #f0f0f0 !important;
-		color: #000 !important;
+		background: var(--pfbt-format-chat-row-bg-even, transparent) !important;
+		color: var(--pfbt-format-chat-fg, inherit) !important;
 	}
 
 	.chatlog-device-frame--phone,

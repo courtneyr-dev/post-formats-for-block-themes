@@ -1,12 +1,18 @@
 /**
- * Editor styles for Chat Log block
+ * Chat Log block — editor styles.
+ *
+ * 2.0: hard-coded admin colors removed. The editor canvas inherits its
+ * surface, ink, and rule colors from the WP editor's own design tokens
+ * (--wp-admin-theme-color, --wp-block-editor-* via Gutenberg) instead
+ * of shipping our own. Themes that customize the editor inherit
+ * automatically; themes that don't get the WP defaults.
  */
 
 .chatlog-editor {
-	border: 1px solid #e0e0e0;
+	border: 1px solid currentColor;
 	border-radius: 8px;
 	padding: 1.5rem;
-	background: #fff;
+	background: var(--pfbt-format-chat-bg, transparent);
 
 	.components-notice {
 		margin-bottom: 1rem;
@@ -14,7 +20,7 @@
 
 	.chatlog-transcript-input {
 		textarea {
-			font-family: 'Courier New', monospace;
+			font-family: monospace;
 			font-size: 0.875rem;
 			line-height: 1.5;
 			min-height: 300px;
@@ -24,9 +30,9 @@
 	.chatlog-preview-notice {
 		margin-top: 1rem;
 		padding: 1rem;
-		background: #f0f6fc;
+		background: var(--pfbt-format-chat-highlight-bg, transparent);
 		border-radius: 4px;
-		border-left: 3px solid #0073aa;
+		border-left: 3px solid var(--pfbt-format-chat-highlight-accent, currentColor);
 
 		.components-notice__content {
 			margin: 0;

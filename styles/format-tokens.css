@@ -107,11 +107,26 @@
 		--pfbt-format-audio-fg:        inherit;
 		--pfbt-format-audio-accent:    currentColor;
 
-		/* Chat */
-		--pfbt-format-chat-row-bg-odd:  transparent;
-		--pfbt-format-chat-row-bg-even: transparent;
-		--pfbt-format-chat-speaker-fg:  inherit;
-		--pfbt-format-chat-font:        inherit;
+		/* Chat — base + element tokens.
+		   Used by both the standalone Chat Log block (.chatlog) and the
+		   .pfbt-format-chat container styles. Section 7 of the 2.0
+		   format-styling system migrated the chatlog block's hard-coded
+		   colors to these tokens. */
+		--pfbt-format-chat-bg:               transparent;
+		--pfbt-format-chat-fg:               inherit;
+		--pfbt-format-chat-row-bg-odd:       transparent;
+		--pfbt-format-chat-row-bg-even:      transparent;
+		--pfbt-format-chat-speaker-fg:       inherit;
+		--pfbt-format-chat-font:             inherit;
+		--pfbt-format-chat-meta-fg:          inherit;
+		--pfbt-format-chat-rule:             currentColor;
+		--pfbt-format-chat-highlight-bg:     transparent;
+		--pfbt-format-chat-highlight-accent: currentColor;
+		--pfbt-format-chat-link-fg:          inherit;
+		--pfbt-format-chat-link-hover-fg:    inherit;
+		--pfbt-format-chat-code-bg:          transparent;
+		--pfbt-format-chat-avatar-bg:        currentColor;
+		--pfbt-format-chat-avatar-fg:        inherit;
 	}
 
 	/* =====================================================================

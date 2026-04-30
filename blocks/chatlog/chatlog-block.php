@@ -1128,10 +1128,33 @@ function chatlog_render_callback( $attributes, $content, $block ) { // phpcs:ign
 	$highlight_current_user = $attributes['highlightCurrentUser'] ?? '';
 	$device_frame           = $attributes['deviceFrame'] ?? 'none';
 
+	/*
+	 * 2.0.1 — wrapper attributes from block.json's `supports` field.
+	 *
+	 * The block.json declares align (left/center/wide/full), className,
+	 * color, spacing, typography, and border supports — but the inner
+	 * chatlog_render_messages() output hardcodes its `<div class="chatlog">`
+	 * without honoring those attributes. Without this wrapper, alignfull
+	 * never reaches the DOM, theme-supplied classNames get dropped, and
+	 * user color/spacing settings are lost.
+	 *
+	 * Pattern: get_block_wrapper_attributes() merges WP-computed classes
+	 * (alignfull, custom className, has-X-color, etc.) and styles into
+	 * one attributes string. We wrap the rendered chatlog in a div that
+	 * carries those attributes; the inner .chatlog div retains its
+	 * structural classes for theme targeting.
+	 */
+	$wrapper_attributes = get_block_wrapper_attributes(
+		array(
+			'class' => 'wp-block-chatlog-conversation',
+		)
+	);
+
 	// If no transcript, return placeholder.
 	if ( empty( $raw_transcript ) ) {
 		return sprintf(
-			'<div class="chatlog-placeholder">%s</div>',
+			'<div %s><div class="chatlog-placeholder">%s</div></div>',
+			$wrapper_attributes,
 			esc_html__( 'Paste your chat transcript to get started.', 'post-formats-for-block-themes' )
 		);
 	}
@@ -1142,14 +1165,19 @@ function chatlog_render_callback( $attributes, $content, $block ) { // phpcs:ign
 	// If parsing failed, show error.
 	if ( is_wp_error( $messages ) ) {
 		return sprintf(
-			'<div class="chatlog-error"><p>%s</p><p>%s</p></div>',
+			'<div %s><div class="chatlog-error"><p>%s</p><p>%s</p></div></div>',
+			$wrapper_attributes,
 			esc_html__( 'Error parsing chat transcript:', 'post-formats-for-block-themes' ),
 			esc_html( $messages->get_error_message() )
 		);
 	}
 
-	// Render the transcript.
-	return chatlog_render_messages(
+	// Render the transcript inside the block wrapper so align / className /
+	// color / spacing settings from the editor reach the DOM.
+	return sprintf(
+		'<div %s>%s</div>',
+		$wrapper_attributes,
+		chatlog_render_messages(
 		$messages,
 		array(
 			'display_style'          => $display_style,
@@ -1161,6 +1189,7 @@ function chatlog_render_callback( $attributes, $content, $block ) { // phpcs:ign
 			'highlight_current_user' => $highlight_current_user,
 			'device_frame'           => $device_frame,
 			'platform'               => $source,
+		)
 		)
 	);
 }

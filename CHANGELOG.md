@@ -15,6 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactivity API integration for Chat Log block with thread grouping and frontend interactivity
 - `block_bindings` feature flag in `PFBT_Feature_Flags`
 
+## [2.0.1] - 2026-04-30
+
+### Added
+
+- New filter `pfbt_format_badge_icon` lets themes replace the Format Badge's Dashicon span with their own icon markup (SVG, image, icon font). Default returns the existing dashicon. Theme example in `/docs/THEME-INTEGRATION.md`.
+- Expanded block supports across the four plugin blocks:
+  - `post-formats/format-badge`: `anchor`, `className`, `__experimentalBorder` (color/radius/width/style), `typography.lineHeight`, `typography.letterSpacing`
+  - `post-formats/format-icon`: `anchor`, `className`, `align: [left, center, right]`, `color.background`, `__experimentalBorder`, `typography.lineHeight`
+  - `post-formats-for-block-themes/post-format`: `anchor`, `className`, `align: [left, center, right, wide, full]`, `__experimentalBorder`
+  - `chatlog/conversation`: was previously declared but unused at render — fixed (see below)
+
+### Fixed
+
+- **Chat Log block now honors its declared block supports.** The render callback hardcoded `<div class="chatlog">` without calling `get_block_wrapper_attributes()`, so the `align`, `className`, `color`, `spacing`, `typography`, and `border` supports declared in `block.json` never reached the DOM. Users who set the chat block to "Wide width" or "Full width" in the editor saw their setting ignored. Fixed by wrapping the rendered output in a `<div %s>` carrying the wrapper attributes.
+
+
+
 ## [2.0.0] - 2026-04-30
 
 ### Major release — format styling system

@@ -20,6 +20,15 @@
 	"usesContext": [ "postId", "postType" ],
 	"supports": {
 		"html": false,
+		"anchor": true,
+		"className": true,
+		"align": [ "left", "center", "right", "wide", "full" ],
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"width": true,
+			"style": true
+		},
 		"color": {
 			"gradients": true,
 			"link": true,

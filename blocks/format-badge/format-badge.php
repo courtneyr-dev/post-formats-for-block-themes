@@ -42,16 +42,49 @@ function pfbt_format_badge_render( $attributes, $content, $block ) {
 	$registry = PFBT_Format_Registry::instance();
 	$meta     = $registry->get_format( $format );
 	$label    = esc_html( $meta['name'] ?? ucfirst( $format ) );
-	$icon     = esc_attr( $meta['icon'] ?? 'admin-post' );
+	$dashicon = esc_attr( $meta['icon'] ?? 'admin-post' );
+
+	// Default icon markup: dashicon span. Themes that ship their own
+	// icon sprite can filter this to inject SVG / image / icon-font markup.
+	$default_icon_markup = sprintf(
+		'<span class="dashicons dashicons-%s" aria-hidden="true"></span>',
+		$dashicon
+	);
+
+	/**
+	 * Filter the icon markup for a Format Badge.
+	 *
+	 * Default returns a Dashicon span. Themes that want their own
+	 * hand-drawn SVG (or any other icon source) can return a custom
+	 * markup string. The plugin appends the format label after the
+	 * icon markup, so the filter only needs to return the icon itself.
+	 *
+	 * @since 2.0.1
+	 *
+	 * @param string $markup  Default Dashicon `<span>`.
+	 * @param string $format  Post format slug (e.g. 'aside', 'chat').
+	 * @param int    $post_id Current post id.
+	 *
+	 * Example (theme functions.php):
+	 *
+	 *     add_filter( 'pfbt_format_badge_icon', function ( $markup, $format ) {
+	 *         return sprintf(
+	 *             '<svg viewBox="0 0 24 24" aria-hidden="true"><use href="%s/assets/svg/icons.svg#post-icon-%s"></use></svg>',
+	 *             esc_url( get_stylesheet_directory_uri() ),
+	 *             esc_attr( $format )
+	 *         );
+	 *     }, 10, 2 );
+	 */
+	$icon_markup = apply_filters( 'pfbt_format_badge_icon', $default_icon_markup, $format, $post_id );
 
 	$wrapper_attributes = get_block_wrapper_attributes(
 		array( 'class' => 'pfbt-format-badge pfbt-format-badge--' . esc_attr( $format ) )
 	);
 
 	return sprintf(
-		'<span %s><span class="dashicons dashicons-%s" aria-hidden="true"></span> %s</span>',
+		'<span %s>%s %s</span>',
 		$wrapper_attributes,
-		$icon,
+		$icon_markup, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — filter is responsible for escaping; default markup is built from esc_attr above.
 		$label
 	);
 }

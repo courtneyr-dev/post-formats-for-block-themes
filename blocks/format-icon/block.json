@@ -13,16 +13,27 @@
 	"usesContext": [ "postId", "postType" ],
 	"supports": {
 		"html": false,
+		"anchor": true,
+		"className": true,
+		"align": [ "left", "center", "right" ],
 		"color": {
 			"text": true,
-			"background": false
+			"background": true,
+			"link": false
 		},
 		"spacing": {
 			"margin": true,
 			"padding": true
 		},
 		"typography": {
-			"fontSize": true
+			"fontSize": true,
+			"lineHeight": true
+		},
+		"__experimentalBorder": {
+			"color": true,
+			"radius": true,
+			"width": true,
+			"style": true
 		},
 		"interactivity": {
 			"clientNavigation": true

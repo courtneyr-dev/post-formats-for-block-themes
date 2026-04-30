@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -346,6 +346,17 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 2.0.1 =
+
+**Added:**
+
+* New filter `pfbt_format_badge_icon` lets themes replace the Format Badge's Dashicon span with their own icon markup (SVG, image, icon font).
+* Expanded block supports on `format-badge`, `format-icon`, `post-format`, and `chatlog/conversation` — anchor, className, align (where applicable), border, expanded typography.
+
+**Fixed:**
+
+* Chat Log block now honors its declared `align`, `className`, color, spacing, typography, and border supports. Previously the render hardcoded its wrapper div without calling `get_block_wrapper_attributes()`, so editor-set wide / full alignment was ignored.
 
 = 2.0.0 =
 

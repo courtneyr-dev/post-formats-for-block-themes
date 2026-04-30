@@ -11,9 +11,17 @@
   "usesContext": ["postId", "postType"],
   "supports": {
     "html": false,
+    "anchor": true,
+    "className": true,
     "color": { "background": true, "text": true },
     "spacing": { "margin": true, "padding": true },
-    "typography": { "fontSize": true }
+    "typography": { "fontSize": true, "lineHeight": true, "letterSpacing": true },
+    "__experimentalBorder": {
+      "color": true,
+      "radius": true,
+      "width": true,
+      "style": true
+    }
   },
   "blockHooks": {
     "core/post-title": "before"

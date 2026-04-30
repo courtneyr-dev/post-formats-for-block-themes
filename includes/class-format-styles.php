@@ -458,59 +458,97 @@ class PFBT_Format_Styles {
 		);
 		error_log( 'PFBT: Current templates: ' . implode( ', ', $template_slugs ) );
 
-		// Ensure theme's single template is available for posts
-		// The theme's single template often doesn't have post_types set, so it gets filtered out
-		// We need to explicitly fetch it and add it to the results
-		$single_found = false;
-		foreach ( $query_result as $template ) {
-			if ( 'single' === $template->slug ) {
-				$single_found = true;
-				error_log( "PFBT: Found 'single' template in results" );
-				// Ensure it's assigned to post type
-				if ( ! isset( $template->post_types ) || ! is_array( $template->post_types ) ) {
-					$template->post_types = array();
-				}
-				if ( ! in_array( 'post', $template->post_types, true ) ) {
-					$template->post_types[] = 'post';
-					error_log( "PFBT: Added 'post' to single template post_types" );
-				}
-				break;
-			}
+		/*
+		 * v1.2.5 — narrow the single-template injection to queries that
+		 * actually want it.
+		 *
+		 * Prior versions ran the array_unshift unconditionally, which
+		 * outranked `front-page` / `page-X` / `home` / `archive` in the
+		 * block-template renderer's first-match resolution. Result:
+		 * pages with their own resolved templates ended up rendering
+		 * with `single.html` markup. The behavior is correct only when:
+		 *
+		 *   1. `slug__in` is empty (full editor template list query —
+		 *      the editor's "Choose a Template" panel asks for everything),
+		 *      OR
+		 *   2. `slug__in` explicitly contains `single` (the editor or a
+		 *      caller is looking for the single template specifically),
+		 *      OR
+		 *   3. `post_type` is `post` (editor querying templates assignable
+		 *      to a post — which is what the original comment was for).
+		 *
+		 * For any other query (front-page resolution, page resolution,
+		 * archive resolution, etc.), don't disturb the result order.
+		 */
+		$wants_single = false;
+		if ( ! isset( $query['slug__in'] ) || empty( $query['slug__in'] ) ) {
+			// No slug filter → editor's full template list query.
+			$wants_single = true;
+		} elseif ( is_array( $query['slug__in'] ) && in_array( 'single', $query['slug__in'], true ) ) {
+			// Caller explicitly asks for single.
+			$wants_single = true;
+		} elseif ( isset( $query['post_type'] ) && 'post' === $query['post_type'] ) {
+			// Editor querying templates for a post.
+			$wants_single = true;
 		}
 
-		// If single template wasn't in the filtered results, fetch it and add it
-		if ( ! $single_found ) {
-			error_log( 'PFBT: Single template NOT found, attempting to fetch and add it' );
-
-			// Try to get the single template directly from the theme
-			// Avoid recursion by using remove_filter temporarily
-			remove_filter( 'get_block_templates', array( __CLASS__, 'add_block_templates' ), 10 );
-			$all_templates = get_block_templates( array(), $template_type );
-			add_filter( 'get_block_templates', array( __CLASS__, 'add_block_templates' ), 10, 3 );
-
-			error_log( 'PFBT: Fetched ' . count( $all_templates ) . ' templates without filter' );
-
-			foreach ( $all_templates as $template ) {
+		if ( $wants_single ) {
+			// Ensure theme's single template is available for posts.
+			// The theme's single template often doesn't have post_types set,
+			// so it gets filtered out — fetch it and add it to results.
+			$single_found = false;
+			foreach ( $query_result as $template ) {
 				if ( 'single' === $template->slug ) {
-					// Clone the template and set post_types
-					$single_template = clone $template;
-					if ( ! isset( $single_template->post_types ) || ! is_array( $single_template->post_types ) ) {
-						$single_template->post_types = array();
+					$single_found = true;
+					error_log( "PFBT: Found 'single' template in results" );
+					// Ensure it's assigned to post type
+					if ( ! isset( $template->post_types ) || ! is_array( $template->post_types ) ) {
+						$template->post_types = array();
 					}
-					if ( ! in_array( 'post', $single_template->post_types, true ) ) {
-						$single_template->post_types[] = 'post';
+					if ( ! in_array( 'post', $template->post_types, true ) ) {
+						$template->post_types[] = 'post';
+						error_log( "PFBT: Added 'post' to single template post_types" );
 					}
-					// Add it to the beginning of results so it's the default
-					array_unshift( $query_result, $single_template );
-					$single_found = true; // Mark as found
-					error_log( "PFBT: Successfully added 'single' template to results" );
 					break;
 				}
 			}
 
+			// If single template wasn't in the filtered results, fetch it and add it
 			if ( ! $single_found ) {
-				error_log( "PFBT: WARNING - Could not find 'single' template even after fetching all templates" );
+				error_log( 'PFBT: Single template NOT found, attempting to fetch and add it' );
+
+				// Try to get the single template directly from the theme
+				// Avoid recursion by using remove_filter temporarily
+				remove_filter( 'get_block_templates', array( __CLASS__, 'add_block_templates' ), 10 );
+				$all_templates = get_block_templates( array(), $template_type );
+				add_filter( 'get_block_templates', array( __CLASS__, 'add_block_templates' ), 10, 3 );
+
+				error_log( 'PFBT: Fetched ' . count( $all_templates ) . ' templates without filter' );
+
+				foreach ( $all_templates as $template ) {
+					if ( 'single' === $template->slug ) {
+						// Clone the template and set post_types
+						$single_template = clone $template;
+						if ( ! isset( $single_template->post_types ) || ! is_array( $single_template->post_types ) ) {
+							$single_template->post_types = array();
+						}
+						if ( ! in_array( 'post', $single_template->post_types, true ) ) {
+							$single_template->post_types[] = 'post';
+						}
+						// Add it to the beginning of results so it's the default
+						array_unshift( $query_result, $single_template );
+						$single_found = true; // Mark as found
+						error_log( "PFBT: Successfully added 'single' template to results" );
+						break;
+					}
+				}
+
+				if ( ! $single_found ) {
+					error_log( "PFBT: WARNING - Could not find 'single' template even after fetching all templates" );
+				}
 			}
+		} else {
+			error_log( 'PFBT: Skipped single-template injection — query does not target it (slug__in=' . wp_json_encode( $query['slug__in'] ?? null ) . ', post_type=' . ( $query['post_type'] ?? 'n/a' ) . ')' );
 		}
 
 		// Add "Default" pseudo-template option ONLY in admin

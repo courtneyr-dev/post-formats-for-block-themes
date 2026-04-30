@@ -1,0 +1,30 @@
+/**
+ * Image variation: Duotone Mood
+ *
+ * CSS filter chain that approximates a duotone effect:
+ * grayscale → sepia → hue-rotate → contrast bump. The effect leans
+ * cool by default; authors can override via a custom property
+ * `--pfbt-duotone-hue` per-block (set in the inspector additional CSS,
+ * or via theme styles) to retint.
+ *
+ * Doesn't use core's duotone filter slot because that requires
+ * theme.json configuration outside the variation's scope.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-duotone-mood img {
+	filter:
+		grayscale(1)
+		sepia(0.6)
+		hue-rotate( var(--pfbt-duotone-hue, 200deg) )
+		contrast(1.1);
+	display: block;
+}
+
+@media print {
+	.wp-block-image.is-style-duotone-mood img {
+		filter: grayscale(1);
+	}
+}

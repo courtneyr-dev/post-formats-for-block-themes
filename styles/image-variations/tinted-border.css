@@ -1,0 +1,27 @@
+/**
+ * Image variation: Tinted Border
+ *
+ * 3px solid brand-color outer border with a 4px inner offset that
+ * reads as a printed mat. Pure presentation, no layout impact.
+ * Border color is the theme's primary; falls back to WP admin blue.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-tinted-border img {
+	border-style: solid;
+	border-color: var(--wp--preset--color--primary, #2271b1);
+	border-width: var(--pfbt-tinted-border-width, 3px);
+	box-shadow:
+		0 0 0 var(--pfbt-tinted-border-mat, 4px) var(--wp--preset--color--base, #ffffff),
+		0 0 0 var(--pfbt-tinted-border-outer, 5px) var(--wp--preset--color--primary, #2271b1);
+	display: block;
+}
+
+@media print {
+	.wp-block-image.is-style-tinted-border img {
+		border: 1px solid currentColor;
+		box-shadow: none;
+	}
+}

@@ -1,0 +1,21 @@
+/**
+ * Image variation: Soft Shadow
+ *
+ * Drop shadow only — no border. filter: drop-shadow follows the
+ * image's transparent edges (PNG/SVG with alpha) instead of always
+ * casting a rectangular shadow like box-shadow does.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-soft-shadow img {
+	filter: drop-shadow( var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08)) );
+	display: block;
+}
+
+@media print {
+	.wp-block-image.is-style-soft-shadow img {
+		filter: none;
+	}
+}

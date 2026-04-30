@@ -1,0 +1,27 @@
+/**
+ * Image variation: Rounded
+ *
+ * Soft rounded corners. The simplest variation — pure presentation,
+ * no layout side effects, no motion. Ships clipping for both the
+ * <figure> wrapper and the <img> so caption + image radii stay in sync.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-rounded {
+	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
+	overflow: hidden;
+}
+
+.wp-block-image.is-style-rounded img {
+	border-radius: inherit;
+	display: block;
+}
+
+@media print {
+	.wp-block-image.is-style-rounded,
+	.wp-block-image.is-style-rounded img {
+		border-radius: 0;
+	}
+}

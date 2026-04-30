@@ -347,6 +347,29 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 
 == Changelog ==
 
+= 2.0.0 =
+
+**Major release — format styling system.** Twelve-session overhaul that establishes a hard contract between the plugin and consumer themes: plugin owns layout, theme owns paint. Every plugin reference to color or typography routes through `var(--pfbt-format-X-*, NEUTRAL)` tokens.
+
+**This is a breaking change.** Sites that customized via the old `--wp--preset--color--format-*` tokens must rename to the new `--pfbt-format-*` namespace. Sites that did not customize see no visible change after upgrading (most look better, since stock Gutenberg colors that fought brand palettes are gone).
+
+**Highlights:**
+
+* 34 new design tokens covering all 9 non-standard formats + chat sub-elements, all in `@layer pfbt-format-tokens` so theme styles win the cascade automatically (no `!important` arms-races).
+* New Format Icon block (`post-formats/format-icon`) — manually-placed standalone icon with currentColor inheritance.
+* 9-symbol SVG sprite at `/img/format-icons.svg`.
+* Three new body + post classes: `pfbt-format-{slug}`, `pfbt-format-titleless`, `has-post-format`.
+* Twenty new display patterns under the `pfbt/` namespace (10 formats × 2 variants — archive + single).
+* 18 opt-in block templates (9 single-post + 9 archive variants) with a Tools page toggle.
+* `_pfbt_link_url` post meta + Bookmark Card fallback for link-format external URLs.
+* First-media helpers: `pfbt_get_first_gallery()`, `_video()`, `_audio()`.
+* New contract enforcement test (`tests/unit/test-no-color-leakage.php`) that fails CI on any forbidden color literal.
+* Three new docs: `DESIGN-TOKENS.md`, `THEME-INTEGRATION.md`, `HOOKS-REFERENCE.md`.
+
+**Migration:**
+
+See `THEME-INTEGRATION.md` for the full table of old → new token names. Pattern slugs `pfpu/{format}` are deprecated; use `pfbt/{format}-archive` or `pfbt/{format}-single`. Plugin's `theme.json` no longer ships palette entries — themes own the palette.
+
 = 1.2.5 =
 
 **Fixed**
@@ -593,6 +616,9 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 * **Privacy:** No data collection, external API calls, cookies, or user tracking
 
 == Upgrade Notice ==
+
+= 2.0.0 =
+**Major release — breaking change.** Establishes a hard plugin/theme styling contract: plugin owns layout, theme owns paint. Sites that customized via `--wp--preset--color--format-*` tokens must rename to `--pfbt-format-*`. Sites that did not customize see no visible change. Pattern slugs `pfpu/{format}` deprecated in favor of `pfbt/{format}-archive` and `pfbt/{format}-single`. See THEME-INTEGRATION.md before upgrading on heavily customized sites.
 
 = 1.2.5 =
 Important fix: Resolves homepage / page / archive resolution rendering with `single.html` markup on heavily-themed sites. Recommended for any site that has its own front-page or page templates and saw post-title, author byline, or related-posts sections leaking onto non-post pages.

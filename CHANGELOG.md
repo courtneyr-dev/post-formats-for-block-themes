@@ -15,6 +15,79 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactivity API integration for Chat Log block with thread grouping and frontend interactivity
 - `block_bindings` feature flag in `PFBT_Feature_Flags`
 
+## [2.0.0] - 2026-04-30
+
+### Major release — format styling system
+
+Twelve-session overhaul that establishes a hard contract between the plugin and consumer themes: **plugin owns layout, theme owns paint**. Every plugin reference to color or typography routes through `var(--pfbt-format-X-*, NEUTRAL)` tokens where NEUTRAL is `transparent` / `inherit` / `currentColor` / `none`. Themes that customize see their brand applied to the plugin's structural treatment; themes that don't customize see the format inherit normal theme styling — distinctive structure, no distinctive paint.
+
+This is a **breaking change**. See the migration table at the bottom.
+
+### Added
+
+- **34 design tokens** (`--pfbt-format-X-*`) in a new `@layer pfbt-format-tokens` cascade layer covering: per-format bg/fg/accent/font for nine non-standard formats, plus extras for chat (row striping, speaker, meta, rule, highlight, link, code, avatar) and image (caption font).
+- **Structural CSS** in the same layer: title-hiding for aside / status / quote (with `is-style-show-format-title` opt-back-in class), Format Icon slot, per-format containers, chat row striping, video 16:9 default, gallery photo-count badge slot, `.screen-reader-text` utility.
+- **Format Icon block** (`post-formats/format-icon`) — manually-placed standalone icon block for use inside patterns and templates. Renders an SVG that inherits text color via `currentColor`. Standard-format posts render nothing (block bails). Three filters: `pfbt_format_icon_svg` (full short-circuit), `pfbt_format_icon_map` (slug→symbol-id), `pfbt_format_icon_sprite_url` (sprite location). One label filter: `pfbt_format_icon_label`.
+- **9-symbol SVG sprite** at `/img/format-icons.svg` — one symbol per non-standard format. 24x24 viewBox, stroke-based icons that follow text color.
+- **Three new body + post classes** via new class `PFBT_Format_Classes`:
+  - `pfbt-format-{slug}` — plugin-namespaced parallel to WP core's `.format-{slug}`
+  - `pfbt-format-titleless` — aside, status, quote (formats with hidden titles)
+  - `has-post-format` — any non-standard format
+  Filter: `pfbt_format_card_classes` lets themes append their own.
+- **Two new block-bindings keys** in the `post-formats/format-data` source: `format_icon_svg` (full SVG markup) and `format_permalink_archive` (URL to format's taxonomy archive). Plus `link_url` for link-format posts (with 3-layer fallback: `_pfbt_link_url` meta → first Bookmark Card block URL → empty).
+- **Twenty display patterns** registered under the `pfbt/` namespace — 10 formats × 2 variants (archive + single). Each pair shares one PHP base file via the new `pfbt_pattern_variant` variable. Visual DNA stays identical between variants; only content depth differs (Excerpt vs Content).
+- **18 opt-in block templates** in `templates/v2/` — 9 single-post + 9 archive variants. Gated by the `pfbt_use_block_templates` option (default false) + matching filter. New Tools subpage at `Tools → Post Format Templates` for the toggle. When enabled, the plugin filters `template_hierarchy` to inject `single-post-{format}` and `archive-post-format-{format}` ahead of the generic slugs.
+- **`_pfbt_link_url` post meta** registered via `register_post_meta` with `show_in_rest=true` — REST-editable external URL for link-format posts. Used by the link display pattern's post-title binding to render the title as an anchor to the external URL. Bookmark Card plugin fallback when meta is empty.
+- **Three first-media helpers** for archive teaser composition: `pfbt_get_first_gallery()`, `pfbt_get_first_video()`, `pfbt_get_first_audio()`. Walk parsed blocks depth-first; return null when no match. Three filters extend the candidates: `pfbt_first_gallery_candidates`, `pfbt_first_video_candidates`, `pfbt_first_audio_candidates`.
+- **Contract enforcement test** `tests/unit/test-no-color-leakage.php` scans every plugin CSS / SCSS / pattern / template file for forbidden color literals. Fails CI on any violation. Respects `@pfbt-allow-color brand-replica` markers for device-frame brand replicas (Slack, Discord, IRC, iPhone, macOS) where the literal color IS platform identity.
+- **PFBT_Format_Classes coverage tests** in `tests/unit/test-format-classes.php` covering all nine formats, the title-less subset, non-post post types, and the filter-extension hook.
+- **`/docs/DESIGN-TOKENS.md`** — exhaustive token reference with "What this paints" + "What happens if you don't set it" columns, structural class catalog, migration table.
+- **`/docs/THEME-INTEGRATION.md`** — quick-start theme-integration guide covering token setting from `theme.json` or stylesheets, section style variations, opt-in template toggle, opt-out filters, migration from 1.x.
+- **`/docs/HOOKS-REFERENCE.md`** — exhaustive list of every filter and action, with code examples and `@since` tags.
+
+### Changed
+
+- **Pattern slug namespace `pfpu/` → `pfbt/`** for all new display patterns. The pre-2.0 `pfpu/` synced reusable blocks (`wp_block` post type entries) remain in the database and are not deleted (would break user content that referenced them).
+- **Chatlog block (`blocks/chatlog/style.scss` + `editor.scss`) tokenized** — 30+ raw hex values migrated to `--pfbt-format-chat-*` tokens. Five device-frame selectors (IRC, iPhone, macOS Desktop, Slack-app, Discord-app) keep their literal brand-replica colors with `@pfbt-allow-color brand-replica` markers documenting the contract exemption.
+- **Plugin's `theme.json` palette emptied.** The 12 stock-Gutenberg `format-X-bg` / `format-X-border` palette entries (`#f0f0f1`, `#0073aa`, `#cccccc`) are removed. Themes own the palette in 2.0.
+- **`PFBT_Format_Styles::add_format_body_classes()` is now a deprecated stub.** The `body_class` filter that called it is no longer registered. `PFBT_Format_Classes` is the single source of truth for body + post class additions.
+- **`PFBT_Pattern_Manager` extended** with `register_v2_display_patterns()` on init priority 11 — registers each format's archive + single variants from `patterns/display/{format}.php` via a scope-isolating closure.
+
+### Deprecated
+
+- `--wp--preset--color--format-aside-bg` → use `--pfbt-format-aside-bg`
+- `--wp--preset--color--format-aside-border` → use `--pfbt-format-aside-accent`
+- `--wp--preset--color--format-status-bg` → use `--pfbt-format-status-bg`
+- `--wp--preset--color--format-link-bg` → use `--pfbt-format-link-bg`
+- `--wp--preset--color--format-link-border` → use `--pfbt-format-link-accent`
+- `--wp--preset--color--format-quote-border` → use `--pfbt-format-quote-accent`
+- `--wp--preset--color--format-quote-accent` → use `--pfbt-format-quote-accent`
+- `--wp--preset--color--format-gallery-border` → use `--pfbt-format-gallery-accent`
+- `--wp--preset--color--format-image-border` → removed; use the theme's normal `core/image` rules instead (no separate format-image accent)
+- `--wp--preset--color--format-video-bg` → use `--pfbt-format-video-bg`
+- `--wp--preset--color--format-audio-bg` → use `--pfbt-format-audio-bg`
+- `--wp--preset--color--format-chat-bg` → use `--pfbt-format-chat-row-bg-odd` and/or `--pfbt-format-chat-row-bg-even` (split into row striping)
+
+### Removed
+
+- Stock Gutenberg color fallbacks in plugin CSS (`#f0f0f1`, `#0073aa`, `#cccccc`, `#f0f8ff`). Replaced with neutral `transparent` / `inherit` / `currentColor` / `none` fallbacks.
+- The 12 plugin-contributed palette entries from `theme.json`. Themes that relied on them appearing in the WP color picker now define their own equivalents.
+- `customTemplates` entries in plugin's `theme.json` referencing the legacy `single-format-*` template files (those files were never registered with WP and are superseded by the new opt-in `templates/v2/` set).
+- The `body_class` filter registration in `PFBT_Format_Styles::init()`. `PFBT_Format_Classes` replaces it.
+- The pattern-naming `pfpu/` namespace for new patterns (existing wp_block reusable blocks under that name remain in DB; new patterns register under `pfbt/`).
+
+### Migration
+
+Sites that did NOT customize tokens see no visible color change after upgrading. They saw stock Gutenberg colors before; they see the theme's normal post styling now. Most themes will look BETTER — formatting that previously fought brand identity now inherits it.
+
+Sites that customized via the old `--wp--preset--color--format-*` token names need to rename to `--pfbt-format-*`. Full migration table in `/docs/THEME-INTEGRATION.md`.
+
+Sites that referenced patterns by `pfpu/{format}` slug need to update to `pfbt/{format}-archive` or `pfbt/{format}-single` depending on context.
+
+Sites that customized `format-styles.css` directly need to migrate to the new token system or use the `pfbt_enqueue_format_styles` filter to opt out and ship their own CSS.
+
+
+
 ## [1.2.5] - 2026-04-29
 
 ### Fixed

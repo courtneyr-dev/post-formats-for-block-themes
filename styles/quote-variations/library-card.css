@@ -1,9 +1,18 @@
 /**
  * Quote variation: Library Card
  *
- * Cream card with horizontal ruled lines, dark accent header bar with
- * "DATE DUE" style typography, body lays on the rules. Citation in the
- * header bar as the "title" line, all-caps + letter-spaced.
+ * Cream card with horizontal ruled lines, dark accent header bar,
+ * "DATE DUE" style typography. Body lays on the rules. Citation is
+ * the header bar (uppercase, letter-spaced, light text on dark bg).
+ *
+ * Layout: flex column with cite reordered to first row via order:-1.
+ * That makes the cite render as the header bar visually while
+ * preserving DOM order (cite stays last child of <blockquote>, which
+ * is what core/quote emits).
+ *
+ * v2.2.0-fix: original used position:absolute on cite which fell
+ * through the layout when the parent didn't have position:relative.
+ * Replaced with deterministic flex layout (image #160).
  *
  * @package PostFormatsBlockThemes
  * @since 2.2.0
@@ -32,47 +41,53 @@
 /* Variation */
 .wp-block-quote.is-style-library-card,
 .wp-block-pullquote.is-style-library-card {
-	background:
-		linear-gradient(
-			to bottom,
-			var(--pfbt-library-header, #2c1810) 0,
-			var(--pfbt-library-header, #2c1810) 2.25rem,
-			var(--pfbt-library-bg, #f3ead4) 2.25rem
-		),
-		repeating-linear-gradient(
-			to bottom,
-			var(--pfbt-library-bg, #f3ead4) 2.25rem,
-			var(--pfbt-library-bg, #f3ead4) calc(2.25rem + 1.6em),
-			var(--pfbt-library-rule, rgba(50, 30, 10, 0.2)) calc(2.25rem + 1.6em),
-			var(--pfbt-library-rule, rgba(50, 30, 10, 0.2)) calc(2.25rem + 1.6em + 1px)
-		);
+	display: flex;
+	flex-direction: column;
+	background: var(--pfbt-library-bg, #f3ead4);
 	color: var(--pfbt-library-fg, #1a1a1a);
-	padding: var(--wp--preset--spacing--medium, 1.5rem);
-	padding-block-start: 3.25rem;
 	max-inline-size: 32rem;
-	position: relative;
 	box-shadow: var(--wp--preset--shadow--small, 0 2px 4px rgba(0, 0, 0, 0.06));
 	font-family: var(--wp--preset--font-family--primary, "Georgia", serif);
+	overflow: hidden;
 }
 
+/* Citation as header bar (DATE-DUE-style title line) */
+.wp-block-quote.is-style-library-card cite,
+.wp-block-pullquote.is-style-library-card cite {
+	order: -1;
+	display: block;
+	background: var(--pfbt-library-header, #2c1810);
+	color: var(--pfbt-library-header-fg, #f3ead4);
+	padding-block: var(--pfbt-library-header-padding-block, 0.85rem);
+	padding-inline: var(--wp--preset--spacing--medium, 1.5rem);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-style: normal;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+}
+
+/* Cite links inherit header-bar text color so theme link styles
+   (cerulean/blue) don't bleed in. Underline preserved as the
+   standard "this is interactive" cue. */
+.wp-block-quote.is-style-library-card cite a,
+.wp-block-pullquote.is-style-library-card cite a {
+	color: inherit;
+	text-decoration-color: currentColor;
+}
+
+/* Body region with ruled-paper bg */
 .wp-block-quote.is-style-library-card p,
 .wp-block-pullquote.is-style-library-card p {
 	margin: 0;
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
 	line-height: 1.6em;
-}
-
-.wp-block-quote.is-style-library-card cite,
-.wp-block-pullquote.is-style-library-card cite {
-	display: block;
-	position: absolute;
-	inset-block-start: 0.5rem;
-	inset-inline: 1rem;
-	color: var(--pfbt-library-header-fg, #f3ead4);
-	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	font-family: var(--wp--preset--font-family--primary, "Georgia", serif);
-	letter-spacing: 0.15em;
-	text-transform: uppercase;
-	font-style: normal;
+	background: repeating-linear-gradient(
+		to bottom,
+		var(--pfbt-library-bg, #f3ead4) 0,
+		var(--pfbt-library-bg, #f3ead4) 1.6em,
+		var(--pfbt-library-rule, rgba(50, 30, 10, 0.2)) 1.6em,
+		var(--pfbt-library-rule, rgba(50, 30, 10, 0.2)) calc(1.6em + 1px)
+	);
 }
 
 @media print {
@@ -81,12 +96,15 @@
 		background: transparent;
 		box-shadow: none;
 		border: 1px solid currentColor;
-		padding-block-start: 1rem;
 	}
 	.wp-block-quote.is-style-library-card cite,
 	.wp-block-pullquote.is-style-library-card cite {
-		position: static;
+		background: transparent;
 		color: inherit;
-		margin-block-end: 1rem;
+		border-block-end: 1px solid currentColor;
+	}
+	.wp-block-quote.is-style-library-card p,
+	.wp-block-pullquote.is-style-library-card p {
+		background: transparent;
 	}
 }

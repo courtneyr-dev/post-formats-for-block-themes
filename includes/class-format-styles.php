@@ -406,6 +406,22 @@ class PFBT_Format_Styles {
 	 * Add format templates to the block templates list
 	 *
 	 * @since 1.0.0
+	 * @since 1.2.4 Added `pfbt_register_format_templates` filter for opt-out.
+	 *
+	 * Themes that ship their own `single` template + format-specific
+	 * styling can opt out by returning false:
+	 *
+	 *     add_filter( 'pfbt_register_format_templates', '__return_false' );
+	 *
+	 * Without opt-out this function does three things on every
+	 * `get_block_templates` query: (1) ensures `single` is in results
+	 * via `array_unshift` (which can outrank `front-page` / `page-X` /
+	 * `home` in the renderer's first-match resolution and cause non-post
+	 * URLs to render with `single.html`), (2) adds a "Default" pseudo-
+	 * template for the editor, and (3) registers the 9 `single-format-*`
+	 * templates. Heavily-themed sites that already cover these surfaces
+	 * see issues like the homepage rendering with `single` markup.
+	 *
 	 * @param WP_Block_Template[] $query_result Array of found block templates.
 	 * @param array               $query        Arguments to retrieve templates.
 	 * @param string              $template_type Template type: 'wp_template' or 'wp_template_part'.
@@ -413,6 +429,20 @@ class PFBT_Format_Styles {
 	 */
 	public static function add_block_templates( $query_result, $query, $template_type ) {
 		if ( 'wp_template' !== $template_type ) {
+			return $query_result;
+		}
+
+		/**
+		 * Whether to register the plugin's `single` + format-specific templates.
+		 *
+		 * @since 1.2.4
+		 *
+		 * @param bool $register Default true. Return false to skip the
+		 *                       entire add_block_templates() body so the
+		 *                       theme's own template hierarchy is used
+		 *                       unmodified.
+		 */
+		if ( ! apply_filters( 'pfbt_register_format_templates', true ) ) {
 			return $query_result;
 		}
 

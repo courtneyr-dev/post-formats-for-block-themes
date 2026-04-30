@@ -168,6 +168,11 @@ function pfbt_include_files() {
 	// Format Badge block (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'blocks/format-badge/format-badge.php';
 
+	// Format Icon block (v2.0+).
+	// Registration in index.php; render template in format-icon.php (loaded
+	// by WordPress per render via block.json's render directive).
+	require_once PFBT_PLUGIN_DIR . 'blocks/format-icon/index.php';
+
 	// Include Chat Log block (integrated).
 	// This provides the chatlog/conversation block for the Chat post format.
 	require_once PFBT_PLUGIN_DIR . 'blocks/chatlog/chatlog-block.php';
@@ -366,19 +371,37 @@ function pfbt_enqueue_frontend_assets() {
 	/**
 	 * Whether to enqueue the plugin's frontend format styles.
 	 *
+	 * Gates BOTH the legacy format-styles.css (1.x stock-color baseline)
+	 * AND the 2.0 format-tokens.css (contract-compliant tokens +
+	 * structural CSS). Themes that ship their own format styling end-to-end
+	 * can opt out of both with one filter.
+	 *
 	 * @since 1.2.3
 	 *
-	 * @param bool $enqueue Default true. Return false to skip the enqueue
+	 * @param bool $enqueue Default true. Return false to skip the enqueues
 	 *                      so a child theme's own format styles win.
 	 */
 	if ( ! apply_filters( 'pfbt_enqueue_format_styles', true ) ) {
 		return;
 	}
 
+	// 2.0 contract-compliant tokens + structural CSS. Wrapped in
+	// @layer pfbt-format-tokens so theme styles always win the cascade.
+	// Loads first so legacy format-styles.css can still override during
+	// the migration window — Session 5 will retire format-styles.css when
+	// patterns and the chatlog block have all migrated to the new tokens.
+	wp_enqueue_style(
+		'pfbt-format-tokens',
+		PFBT_PLUGIN_URL . 'styles/format-tokens.css',
+		array(),
+		PFBT_VERSION
+	);
+
+	// Legacy 1.x stock-color baseline. Marked for retirement in 2.0.
 	wp_enqueue_style(
 		'pfpu-format-styles',
 		PFBT_PLUGIN_URL . 'styles/format-styles.css',
-		array(),
+		array( 'pfbt-format-tokens' ),
 		PFBT_VERSION
 	);
 }

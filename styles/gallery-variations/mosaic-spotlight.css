@@ -1,0 +1,60 @@
+/**
+ * Gallery variation: Mosaic Spotlight
+ *
+ * CSS Grid with grid-template-areas: first child = hero (large),
+ * children 2–5 = small tiles. Reading order respects DOM order.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex {
+	display: grid;
+	gap: var(--pfbt-mosaic-gap, 0.5rem);
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-areas:
+		"hero hero a b"
+		"hero hero c d";
+}
+
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image {
+	margin: 0;
+	grid-area: a;
+}
+
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image:first-child { grid-area: hero; }
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image:nth-child(2) { grid-area: a; }
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image:nth-child(3) { grid-area: b; }
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image:nth-child(4) { grid-area: c; }
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image:nth-child(5) { grid-area: d; }
+
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image:nth-child(n+6) {
+	display: none;
+}
+
+.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+@media (max-width: 40rem) {
+	.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex {
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-areas:
+			"hero hero"
+			"a b"
+			"c d";
+	}
+}
+
+@media print {
+	.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex {
+		display: block;
+		grid-template-areas: none;
+	}
+	.wp-block-gallery.is-style-mosaic-spotlight.is-layout-flex .wp-block-image:nth-child(n+6) {
+		display: block;
+	}
+}

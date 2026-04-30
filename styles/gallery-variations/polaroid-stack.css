@@ -1,0 +1,68 @@
+/**
+ * Gallery variation: Polaroid Stack
+ *
+ * Grid layout where each child gets polaroid styling (white frame,
+ * shadow, asymmetric padding) plus randomized rotation via :nth-child.
+ * Reduced-motion zeros the rotation.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-polaroid-stack.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-polaroid-stack-min, 14rem), 1fr));
+	gap: var(--pfbt-polaroid-stack-gap, var(--wp--preset--spacing--medium, 1.5rem));
+}
+
+.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image {
+	margin: 0;
+	background: var(--wp--preset--color--base, #ffffff);
+	padding: 0.75rem;
+	padding-block-end: 2.5rem;
+	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
+	color: var(--wp--preset--color--main, #0a0a0a);
+}
+
+.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image figcaption {
+	margin-block-start: 0.75rem;
+	margin-block-end: 0;
+	margin-inline: 0;
+	padding: 0;
+	text-align: center;
+	font-family: var(--wp--preset--font-family--expanded, system-ui, sans-serif);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image:nth-child(3n+1) {
+		transform: rotate(-1.8deg);
+	}
+	.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image:nth-child(3n+2) {
+		transform: rotate(1.2deg);
+	}
+	.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image:nth-child(3n) {
+		transform: rotate(-0.4deg);
+	}
+	.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image:hover,
+	.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image:focus-within {
+		transform: rotate(0deg);
+		transition: transform 200ms ease-out;
+	}
+}
+
+@media print {
+	.wp-block-gallery.is-style-polaroid-stack.is-layout-flex {
+		display: block;
+	}
+	.wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image {
+		transform: none;
+		box-shadow: none;
+		border: 1px solid currentColor;
+	}
+}

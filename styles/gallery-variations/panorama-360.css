@@ -1,0 +1,56 @@
+/**
+ * Gallery variation: Panorama 360
+ *
+ * v2.1.0 ships the SSR flat-image fallback per Hard Rule 5 (no
+ * third-party JS libraries). Each image renders as a wide flat
+ * panorama with horizontal scroll-snap. Captions render as a
+ * "list of scenes" semantic alternative.
+ *
+ * WebGL panorama viewer is a v2.2 roadmap item.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-panorama-360.is-layout-flex {
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	gap: var(--pfbt-pano-gap, 0.5rem);
+	padding-block-end: var(--wp--preset--spacing--small, 0.75rem);
+	-webkit-overflow-scrolling: touch;
+}
+
+.wp-block-gallery.is-style-panorama-360.is-layout-flex .wp-block-image {
+	flex: 0 0 100%;
+	scroll-snap-align: start;
+	margin: 0;
+}
+
+.wp-block-gallery.is-style-panorama-360.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: var(--pfbt-pano-aspect, 21 / 9);
+	object-fit: cover;
+}
+
+.wp-block-gallery.is-style-panorama-360.is-layout-flex .wp-block-image figcaption {
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+	margin-block-end: 0;
+	margin-inline: 0;
+	padding: 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--secondary, #666666);
+	text-align: center;
+}
+
+@media print {
+	.wp-block-gallery.is-style-panorama-360.is-layout-flex {
+		flex-wrap: wrap;
+		overflow: visible;
+	}
+	.wp-block-gallery.is-style-panorama-360.is-layout-flex .wp-block-image img {
+		aspect-ratio: auto;
+	}
+}

@@ -1,0 +1,63 @@
+/**
+ * Gallery variation: Before/After Pairs
+ *
+ * Treats consecutive images in pairs (1=before, 2=after) and renders
+ * each pair as a draggable comparison slider. The IA view module
+ * builds the slider; this CSS lays out the pair container + handles
+ * the clip-path reveal that the slider's range input drives.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-before-after-pairs.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-ba-min, 18rem), 1fr));
+	gap: var(--pfbt-ba-gap, var(--wp--preset--spacing--medium, 1.5rem));
+}
+
+.wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair {
+	position: relative;
+	overflow: hidden;
+	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
+	background: var(--wp--preset--color--main, #0a0a0a);
+}
+
+.wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair .pfbt-ba-after {
+	position: absolute;
+	inset: 0;
+	clip-path: inset(0 calc(100% - var(--pfbt-ba-position, 50%)) 0 0);
+}
+
+.wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair input[type="range"] {
+	position: absolute;
+	inset-block-end: 0.5rem;
+	inset-inline: 0.5rem;
+	width: calc(100% - 1rem);
+}
+
+.wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair::after {
+	content: "";
+	position: absolute;
+	inset-block: 0;
+	inset-inline-start: var(--pfbt-ba-position, 50%);
+	width: 2px;
+	background: var(--wp--preset--color--base, #ffffff);
+	pointer-events: none;
+}
+
+@media print {
+	.wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair .pfbt-ba-after {
+		clip-path: none;
+		position: static;
+	}
+	.wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair::after {
+		display: none;
+	}
+}

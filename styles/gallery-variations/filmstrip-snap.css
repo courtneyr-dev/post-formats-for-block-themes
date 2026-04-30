@@ -1,0 +1,39 @@
+/**
+ * Gallery variation: Filmstrip Scroll Snap
+ *
+ * Single horizontal row with scroll-snap on each item. Native
+ * arrow-key tab order works because items remain in DOM order.
+ * Authors get the "filmstrip" feel without any JS.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-filmstrip-snap.is-layout-flex {
+	flex-wrap: nowrap;
+	overflow-x: auto;
+	scroll-snap-type: x mandatory;
+	gap: var(--pfbt-filmstrip-gap, 0.75rem);
+	padding-block-end: 0.5rem;
+	-webkit-overflow-scrolling: touch;
+}
+
+.wp-block-gallery.is-style-filmstrip-snap.is-layout-flex .wp-block-image {
+	flex: 0 0 auto;
+	scroll-snap-align: start;
+	width: var(--pfbt-filmstrip-item-width, 18rem);
+	margin: 0;
+}
+
+.wp-block-gallery.is-style-filmstrip-snap.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+@media print {
+	.wp-block-gallery.is-style-filmstrip-snap.is-layout-flex {
+		flex-wrap: wrap;
+		overflow: visible;
+	}
+}

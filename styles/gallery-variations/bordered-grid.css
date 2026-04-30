@@ -1,0 +1,48 @@
+/**
+ * Gallery variation: Bordered Grid
+ *
+ * Brutalist look: thick brand-colored borders between every cell.
+ * Border color is the theme's primary; falls back to admin blue.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-bordered-grid.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-bordered-grid-min, 12rem), 1fr));
+	gap: 0;
+	background: var(--wp--preset--color--primary, #2271b1);
+	padding: var(--pfbt-bordered-grid-border, 0.25rem);
+	border: var(--pfbt-bordered-grid-border, 0.25rem) solid var(--wp--preset--color--primary, #2271b1);
+}
+
+.wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image {
+	margin: 0;
+	outline: var(--pfbt-bordered-grid-border, 0.25rem) solid var(--wp--preset--color--primary, #2271b1);
+}
+
+.wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+}
+
+.wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image:focus-within {
+	outline-color: var(--wp--preset--color--primary-accent, #e8f0fa);
+}
+
+@media print {
+	.wp-block-gallery.is-style-bordered-grid.is-layout-flex {
+		background: transparent;
+		border-color: currentColor;
+		display: block;
+	}
+	.wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image {
+		outline-color: currentColor;
+	}
+	.wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image img {
+		aspect-ratio: auto;
+	}
+}

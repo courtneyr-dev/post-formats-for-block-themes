@@ -1,0 +1,55 @@
+/**
+ * Gallery variation: Dynamic Query
+ *
+ * Visual styling for galleries whose content comes from a Query Loop
+ * (Media Library by taxonomy/date/author). The variation just paints
+ * the surface; authors set up the actual core/query block separately.
+ *
+ * `data-pfbt-layout` attribute (set on the gallery via Advanced → HTML
+ * attribute or via Block Bindings) selects an inner layout: `grid`,
+ * `tile`, or `mosaic`. Each maps to a sibling-variation's grid rules.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-dynamic-min, 12rem), 1fr));
+	gap: var(--pfbt-dynamic-gap, 0.5rem);
+	position: relative;
+}
+
+.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex[data-pfbt-layout="tile"] {
+	grid-template-columns: repeat(auto-fill, minmax(8rem, 1fr));
+}
+
+.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex[data-pfbt-layout="mosaic"] {
+	grid-template-columns: repeat(4, 1fr);
+}
+
+.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex[data-pfbt-layout="mosaic"] .wp-block-image:nth-child(5n+1) {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+
+.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex .wp-block-image {
+	margin: 0;
+}
+
+.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+}
+
+@media print {
+	.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex {
+		display: block;
+	}
+	.wp-block-gallery.is-style-dynamic-query-gallery.is-layout-flex .wp-block-image img {
+		aspect-ratio: auto;
+	}
+}

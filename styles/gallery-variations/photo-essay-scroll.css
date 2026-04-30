@@ -1,0 +1,73 @@
+/**
+ * Gallery variation: Photo Essay Scroll
+ *
+ * Sticky media column synced to scroll-step text segments. Inside the
+ * gallery, even-indexed images are large media; odd-indexed images
+ * are paired text segments rendered as captions or paragraphs that
+ * scroll past while the media stays sticky.
+ *
+ * Implementation: CSS `position: sticky` does the heavy lifting.
+ * Optional IntersectionObserver in view.js bumps the active image
+ * to match the visible text segment.
+ *
+ * No scroll-jacking — page scroll is normal.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--pfbt-photo-essay-gap, var(--wp--preset--spacing--large, 3rem));
+	align-items: start;
+}
+
+.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex .wp-block-image {
+	margin: 0;
+	grid-column: 1;
+	position: sticky;
+	inset-block-start: var(--pfbt-photo-essay-sticky-top, 4rem);
+	max-height: var(--pfbt-photo-essay-sticky-height, calc(100vh - 6rem));
+	display: flex;
+	align-items: center;
+}
+
+.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex .wp-block-image img {
+	display: block;
+	max-width: 100%;
+	max-height: 100%;
+	width: 100%;
+	height: auto;
+}
+
+.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex .wp-block-image figcaption {
+	grid-column: 2;
+	margin: 0;
+	padding-block: var(--wp--preset--spacing--medium, 1.5rem);
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	line-height: 1.6;
+	min-height: 50vh;
+}
+
+@media (max-width: 50rem) {
+	.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex {
+		grid-template-columns: 1fr;
+	}
+	.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex .wp-block-image {
+		position: static;
+		max-height: none;
+	}
+}
+
+@media print {
+	.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex {
+		display: block;
+	}
+	.wp-block-gallery.is-style-photo-essay-scroll.is-layout-flex .wp-block-image {
+		position: static;
+		max-height: none;
+		page-break-inside: avoid;
+	}
+}

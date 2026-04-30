@@ -1,0 +1,77 @@
+/**
+ * Quote variation: Decorative Marks
+ *
+ * Oversized stylized opening quote mark in upper-inline-start corner,
+ * CSS-drawn (no font icon dependency). Body sits inline-end of the mark.
+ * Citation tucked under the body, italic.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-decorative-marks,
+.wp-block-pullquote.is-style-decorative-marks {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-decorative-marks cite,
+.wp-block-pullquote.is-style-decorative-marks cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-decorative-marks cite:empty,
+.wp-block-pullquote.is-style-decorative-marks cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-decorative-marks,
+.wp-block-pullquote.is-style-decorative-marks {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: var(--wp--preset--spacing--medium, 1.5rem);
+	align-items: start;
+	padding-block: var(--wp--preset--spacing--medium, 1.5rem);
+	max-inline-size: 36rem;
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+}
+
+.wp-block-quote.is-style-decorative-marks::before,
+.wp-block-pullquote.is-style-decorative-marks::before {
+	content: """;
+	font-family: var(--wp--preset--font-family--expanded, "Georgia", serif);
+	font-size: 5rem;
+	line-height: 0.8;
+	color: var(--wp--preset--color--primary, #2271b1);
+	opacity: 0.85;
+	font-weight: 700;
+	align-self: start;
+}
+
+.wp-block-quote.is-style-decorative-marks p,
+.wp-block-pullquote.is-style-decorative-marks p {
+	grid-column: 2;
+	margin: 0;
+	font-size: var(--wp--preset--font-size--medium, 1.125rem);
+	line-height: 1.5;
+}
+
+.wp-block-quote.is-style-decorative-marks cite,
+.wp-block-pullquote.is-style-decorative-marks cite {
+	grid-column: 2;
+	display: block;
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-style: italic;
+	color: var(--wp--preset--color--secondary, #666666);
+}
+
+.wp-block-quote.is-style-decorative-marks cite::before,
+.wp-block-pullquote.is-style-decorative-marks cite::before {
+	content: "— ";
+}

@@ -1,0 +1,46 @@
+/**
+ * Quote variation chrome reset.
+ *
+ * The hard rule from the v2.2.0 brief Section 1: variations apply to
+ * the quote block ITSELF, not to inner blocks. To make that durable,
+ * every variation starts by zeroing the default core chrome — left
+ * border, padding-inline-start, italic body, default cite font-style.
+ * Then the variation's own CSS draws its design.
+ *
+ * This file is the SHARED foundation. Each `quote-variations/{slug}.css`
+ * starts with these rules so the reset is consistent and isn't duplicated
+ * 16 times. Per the brief: prepend the reset to each file via the loader
+ * since WP doesn't concatenate `@import` server-side.
+ *
+ * Loader convention: each variation's CSS file leads with the literal
+ * comment `/* @reset */` so the build (or a future maintainer) can
+ * scan for variations missing the reset.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote[class*="is-style-"],
+.wp-block-pullquote[class*="is-style-"] {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+
+.wp-block-quote[class*="is-style-"] cite,
+.wp-block-pullquote[class*="is-style-"] cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+
+/* Citation-empty handling: when the <cite> is empty, drop the element
+   entirely so no leftover gap remains. The :has() variant catches the
+   "no cite at all" case for browsers that support it. */
+.wp-block-quote[class*="is-style-"] cite:empty,
+.wp-block-pullquote[class*="is-style-"] cite:empty {
+	display: none;
+}

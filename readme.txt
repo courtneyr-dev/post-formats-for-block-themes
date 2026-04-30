@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.0.1
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -346,6 +346,30 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 2.2.0 =
+
+**Added — 16 quote and pullquote block style variations.**
+
+* 16 quote variations registered on BOTH `core/quote` and `core/pullquote`: post-it, notebook-scrap, typewriter, napkin, library-card, chalkboard, whiteboard, postcard, magazine-pull, broadsheet, decorative-marks, side-rule-editorial, speech-bubble, message-bubble, comment-card, plaque.
+* Variations apply to the quote block ITSELF, not inner content. Each leads with a chrome-reset (zeroes default left border, padding, italic body) before drawing its own design — no inner Group/Paragraph wrapping needed.
+* Citation built into every variation: styled when present, hidden via `cite:empty { display: none; }` when empty.
+* New `quote_styles` feature flag, **default off** — independent of v2.1.0's `image_gallery_styles`. Flip via `add_filter( 'pfbt_feature_quote_styles', '__return_true' )`.
+* `patterns/quote.php` defaults to `is-style-side-rule-editorial` (the most minimal of the 16, intentionally chosen as the editor-default).
+* New `pfbt_quote_style_variations` filter for theme/plugin extension. Per-entry `block_names` field overrides the default dual-block registration.
+
+= 2.1.0 =
+
+**Added — 36 image and gallery block style variations.**
+
+* 16 image block style variations on `core/image`: rounded, circle, soft-shadow, tinted-border, caption-card, polaroid, postcard, photo-strip, magazine-cutout, index-card, headline-crop, duotone-mood, halftone, phone-frame, browser-window, code-editor.
+* 20 gallery block style variations on `core/gallery`: justified-rows, square-tile, polaroid-stack, filmstrip-snap, caption-prominent, duotone-mood-gallery, mosaic-spotlight, bordered-grid, masonry-cascade, headline-mosaic, lightbox-slideshow, before-after-pairs, filter-tags, lookbook-hotspots, card-deck-swipe, photo-essay-scroll, comparison-pairs, map-pinned-geo (SSR fallback), panorama-360 (SSR fallback), dynamic-query-gallery.
+* New `image_gallery_styles` feature flag, **default off** — opt-in for the first release. Flip via `add_filter( 'pfbt_feature_image_gallery_styles', '__return_true' )`.
+* Conditional CSS loading: each variation's stylesheet loads only on pages where the variation is rendered (WP 6.1+ `style_handle` mechanism).
+* Interactivity API view modules for the 7 interactive gallery variations are likewise registered conditionally — sites that don't use them ship zero JS from this PR.
+* New `pfbt_image_style_variations` and `pfbt_gallery_style_variations` filters let themes and other plugins extend the variation list.
+* `patterns/image.php` defaults to `is-style-caption-card`; `patterns/gallery.php` defaults to `is-style-justified-rows`.
+* New author docs: `docs/BLOCK-STYLE-VARIATIONS.md` (what each variation does, when to use) and `docs/ADDING-A-VARIATION.md` (how contributors add their own).
 
 = 2.0.1 =
 

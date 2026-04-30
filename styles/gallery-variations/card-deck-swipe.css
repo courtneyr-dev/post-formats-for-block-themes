@@ -1,0 +1,105 @@
+/**
+ * Gallery variation: Card Deck Swipe
+ *
+ * Stacked cards that the user navigates via prev/next buttons (or
+ * pointer drag). The IA view module manages the active index and
+ * applies a CSS class that drives translation transforms.
+ *
+ * Reduced-motion: no drag, no slide animation; chevrons-only nav.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex {
+	position: relative;
+	display: block;
+	max-width: var(--pfbt-card-deck-max, 32rem);
+	margin-inline: auto;
+	min-height: var(--pfbt-card-deck-min-height, 24rem);
+}
+
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image {
+	position: absolute;
+	inset: 0;
+	margin: 0;
+	background: var(--wp--preset--color--base, #ffffff);
+	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
+	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
+	overflow: hidden;
+}
+
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* Stack progression: active card front, next two behind it offset
+   slightly. Cards beyond +2 are hidden. */
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image[data-pfbt-deck-pos="0"] {
+	z-index: 3;
+}
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image[data-pfbt-deck-pos="1"] {
+	z-index: 2;
+	transform: translateY(0.5rem) scale(0.97);
+}
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image[data-pfbt-deck-pos="2"] {
+	z-index: 1;
+	transform: translateY(1rem) scale(0.94);
+}
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image[data-pfbt-deck-pos="-1"],
+.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image:not([data-pfbt-deck-pos]) {
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.pfbt-card-deck-controls {
+	display: flex;
+	justify-content: space-between;
+	gap: 0.5rem;
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+}
+
+.pfbt-card-deck-controls button {
+	background: var(--wp--preset--color--primary, #2271b1);
+	color: var(--wp--preset--color--base, #ffffff);
+	border: none;
+	border-radius: 50%;
+	width: 2.5rem;
+	height: 2.5rem;
+	cursor: pointer;
+	font-size: 1.25rem;
+}
+
+.pfbt-card-deck-controls button:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #2271b1);
+	outline-offset: 2px;
+}
+
+.pfbt-card-deck-status {
+	align-self: center;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--secondary, #666666);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image {
+		transition:
+			transform 200ms ease-out,
+			opacity 200ms ease-out;
+	}
+}
+
+@media print {
+	.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex {
+		min-height: auto;
+	}
+	.wp-block-gallery.is-style-card-deck-swipe.is-layout-flex .wp-block-image {
+		position: static;
+		visibility: visible;
+		transform: none;
+	}
+	.pfbt-card-deck-controls { display: none; }
+}

@@ -1,0 +1,38 @@
+/**
+ * Gallery variation: Square Tile
+ *
+ * CSS Grid with auto-fill responsive columns; each item has a 1:1
+ * aspect ratio and object-fit: cover. Subjects get cropped — best
+ * for icon/avatar grids and product tiles.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-square-tile.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-square-tile-min, 10rem), 1fr));
+	gap: var(--pfbt-square-tile-gap, 0.5rem);
+}
+
+.wp-block-gallery.is-style-square-tile.is-layout-flex .wp-block-image {
+	margin: 0;
+	width: 100%;
+}
+
+.wp-block-gallery.is-style-square-tile.is-layout-flex .wp-block-image img {
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	width: 100%;
+	height: auto;
+	display: block;
+}
+
+@media print {
+	.wp-block-gallery.is-style-square-tile.is-layout-flex {
+		display: block;
+	}
+	.wp-block-gallery.is-style-square-tile.is-layout-flex .wp-block-image img {
+		aspect-ratio: auto;
+	}
+}

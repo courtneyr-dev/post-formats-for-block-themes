@@ -1,0 +1,38 @@
+/**
+ * Gallery variation: Justified Rows
+ *
+ * Flex-wrap with per-item flex-grow so rows balance to a target height.
+ * Tab order = DOM order. Suggested default for the gallery format
+ * pattern (Phase 5 updates patterns/gallery.php).
+ *
+ * Layout override: core gallery is locked to `.is-layout-flex`. We
+ * keep flex-wrap and adjust the flex sizing only — no `display: grid`
+ * here, so no specificity fight.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-justified-rows.is-layout-flex {
+	gap: var(--pfbt-justified-rows-gap, 0.5rem);
+	align-items: stretch;
+}
+
+.wp-block-gallery.is-style-justified-rows.is-layout-flex .wp-block-image {
+	flex: 1 1 auto;
+	height: var(--pfbt-justified-rows-height, 16rem);
+	max-width: 100%;
+}
+
+.wp-block-gallery.is-style-justified-rows.is-layout-flex .wp-block-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+@media print {
+	.wp-block-gallery.is-style-justified-rows.is-layout-flex .wp-block-image {
+		height: auto;
+	}
+}

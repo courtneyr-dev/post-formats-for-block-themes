@@ -1,0 +1,35 @@
+/**
+ * Image variation: Headline Crop
+ *
+ * Cinematic 21:9 strip. Caption renders below as small overline-style
+ * uppercase text. Image content gets cropped — the variation is for
+ * hero/banner-style imagery where the crop is intentional.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-headline-crop img {
+	aspect-ratio: 21 / 9;
+	object-fit: cover;
+	display: block;
+	width: 100%;
+}
+
+.wp-block-image.is-style-headline-crop figcaption {
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+	margin-block-end: 0;
+	margin-inline: 0;
+	padding: 0;
+	font-size: var(--wp--preset--font-size--x-small, 0.75rem);
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: var(--wp--preset--color--secondary, #666666);
+}
+
+@media print {
+	.wp-block-image.is-style-headline-crop img {
+		aspect-ratio: auto;
+	}
+}

@@ -1,0 +1,68 @@
+/**
+ * Quote variation: Typewriter
+ *
+ * Monospace font, pale paper-tone background, faint ink-bleed shadow
+ * via text-shadow. Citation prefixed with two hyphens "-- ".
+ * No rotation.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-typewriter,
+.wp-block-pullquote.is-style-typewriter {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-typewriter cite,
+.wp-block-pullquote.is-style-typewriter cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-typewriter cite:empty,
+.wp-block-pullquote.is-style-typewriter cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-typewriter,
+.wp-block-pullquote.is-style-typewriter {
+	background: var(--pfbt-typewriter-bg, #f6f1e4);
+	color: var(--pfbt-typewriter-fg, #1a1a1a);
+	font-family: var(--wp--preset--font-family--monospace, ui-monospace, "Courier New", monospace);
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	max-inline-size: 36rem;
+	text-shadow: 0 0 0.4px var(--pfbt-typewriter-fg, #1a1a1a);
+}
+
+.wp-block-quote.is-style-typewriter p,
+.wp-block-pullquote.is-style-typewriter p {
+	margin: 0;
+	line-height: 1.6;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+}
+
+.wp-block-quote.is-style-typewriter cite,
+.wp-block-pullquote.is-style-typewriter cite {
+	display: block;
+	margin-block-start: 1.6em;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+.wp-block-quote.is-style-typewriter cite::before,
+.wp-block-pullquote.is-style-typewriter cite::before {
+	content: "-- ";
+}
+
+@media print {
+	.wp-block-quote.is-style-typewriter,
+	.wp-block-pullquote.is-style-typewriter {
+		background: transparent;
+		text-shadow: none;
+	}
+}

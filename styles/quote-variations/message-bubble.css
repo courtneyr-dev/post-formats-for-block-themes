@@ -1,0 +1,71 @@
+/**
+ * Quote variation: Message Bubble
+ *
+ * SMS-style rounded rectangle with strong border-radius, accent
+ * background. Citation below as the sender label with timestamp slot.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-message-bubble,
+.wp-block-pullquote.is-style-message-bubble {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-message-bubble cite,
+.wp-block-pullquote.is-style-message-bubble cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-message-bubble cite:empty,
+.wp-block-pullquote.is-style-message-bubble cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-message-bubble,
+.wp-block-pullquote.is-style-message-bubble {
+	display: block;
+	max-inline-size: 24rem;
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+	margin-block: var(--wp--preset--spacing--medium, 1.5rem);
+}
+
+.wp-block-quote.is-style-message-bubble p,
+.wp-block-pullquote.is-style-message-bubble p {
+	margin: 0;
+	background: var(--pfbt-message-bg, var(--wp--preset--color--primary, #2271b1));
+	color: var(--pfbt-message-fg, var(--wp--preset--color--base, #ffffff));
+	padding-block: var(--wp--preset--spacing--small, 0.75rem);
+	padding-inline: var(--wp--preset--spacing--medium, 1.25rem);
+	border-radius: 1.25rem;
+	border-end-start-radius: 0.25rem;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	line-height: 1.4;
+	display: inline-block;
+}
+
+.wp-block-quote.is-style-message-bubble cite,
+.wp-block-pullquote.is-style-message-bubble cite {
+	display: block;
+	margin-block-start: 0.5rem;
+	margin-inline-start: 0.5rem;
+	font-size: var(--wp--preset--font-size--x-small, 0.75rem);
+	color: var(--wp--preset--color--secondary, #666666);
+	font-style: normal;
+}
+
+@media print {
+	.wp-block-quote.is-style-message-bubble p,
+	.wp-block-pullquote.is-style-message-bubble p {
+		background: transparent;
+		color: currentColor;
+		border: 1px solid currentColor;
+	}
+}

@@ -1,0 +1,63 @@
+/**
+ * Gallery variation: Masonry Cascade
+ *
+ * CSS multi-column masonry as the baseline. When the browser
+ * supports `grid-template-rows: masonry`, native masonry takes over
+ * via @supports. No JS — pure CSS.
+ *
+ * Note: multi-column flow breaks visual reading order (top-to-bottom
+ * within each column rather than left-to-right across rows). DOM order
+ * is preserved for screen readers and tab navigation, but documents
+ * for sighted readers should not depend on a specific visual order.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-masonry-cascade.is-layout-flex {
+	display: block;
+	column-count: var(--pfbt-masonry-columns, 3);
+	column-gap: var(--pfbt-masonry-gap, 0.5rem);
+}
+
+.wp-block-gallery.is-style-masonry-cascade.is-layout-flex .wp-block-image {
+	break-inside: avoid;
+	margin: 0 0 var(--pfbt-masonry-gap, 0.5rem) 0;
+	display: block;
+}
+
+.wp-block-gallery.is-style-masonry-cascade.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+@supports (grid-template-rows: masonry) {
+	.wp-block-gallery.is-style-masonry-cascade.is-layout-flex {
+		display: grid;
+		grid-template-columns: repeat(var(--pfbt-masonry-columns, 3), 1fr);
+		grid-template-rows: masonry;
+		gap: var(--pfbt-masonry-gap, 0.5rem);
+		column-count: auto;
+	}
+	.wp-block-gallery.is-style-masonry-cascade.is-layout-flex .wp-block-image {
+		margin: 0;
+	}
+}
+
+@media (max-width: 50rem) {
+	.wp-block-gallery.is-style-masonry-cascade.is-layout-flex {
+		column-count: var(--pfbt-masonry-columns-md, 2);
+	}
+	@supports (grid-template-rows: masonry) {
+		.wp-block-gallery.is-style-masonry-cascade.is-layout-flex {
+			grid-template-columns: repeat(var(--pfbt-masonry-columns-md, 2), 1fr);
+		}
+	}
+}
+
+@media print {
+	.wp-block-gallery.is-style-masonry-cascade.is-layout-flex {
+		column-count: 1;
+	}
+}

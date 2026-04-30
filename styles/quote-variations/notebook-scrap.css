@@ -1,0 +1,104 @@
+/**
+ * Quote variation: Notebook Scrap
+ *
+ * Torn-edge top via SVG mask, ruled horizontal lines, optional red
+ * margin line on inline-start, handwriting-friendly serif, citation
+ * as a signature at the bottom in italic.
+ *
+ * Reduced-motion: rotation = 0; straightens on hover when motion allowed.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-notebook-scrap,
+.wp-block-pullquote.is-style-notebook-scrap {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-notebook-scrap cite,
+.wp-block-pullquote.is-style-notebook-scrap cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-notebook-scrap cite:empty,
+.wp-block-pullquote.is-style-notebook-scrap cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-notebook-scrap,
+.wp-block-pullquote.is-style-notebook-scrap {
+	background:
+		linear-gradient(to right,
+			var(--pfbt-notebook-margin, #d44) 2.25rem,
+			transparent 2.25rem,
+			transparent calc(2.25rem + 1px),
+			var(--pfbt-notebook-margin-line-fade, transparent) calc(2.25rem + 1px)),
+		repeating-linear-gradient(
+			to bottom,
+			var(--pfbt-notebook-bg, #fdfaf2) 0,
+			var(--pfbt-notebook-bg, #fdfaf2) 1.6em,
+			var(--pfbt-notebook-rule, rgba(50, 90, 200, 0.15)) 1.6em,
+			var(--pfbt-notebook-rule, rgba(50, 90, 200, 0.15)) calc(1.6em + 1px)
+		);
+	color: var(--pfbt-notebook-fg, #1a1a1a);
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	padding-inline-start: var(--pfbt-notebook-margin-padding, 3rem);
+	font-family: var(--wp--preset--font-family--primary, "Georgia", serif);
+	max-inline-size: 32rem;
+	mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path fill='%23000' d='M0,4 L8,2 L16,5 L24,1 L32,4 L40,2 L48,5 L56,1 L64,4 L72,2 L80,5 L88,2 L96,4 L100,2 L100,100 L0,100 Z'/></svg>");
+	-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path fill='%23000' d='M0,4 L8,2 L16,5 L24,1 L32,4 L40,2 L48,5 L56,1 L64,4 L72,2 L80,5 L88,2 L96,4 L100,2 L100,100 L0,100 Z'/></svg>");
+	mask-size: 100% 100%;
+	-webkit-mask-size: 100% 100%;
+	transform: rotate(0deg);
+}
+
+.wp-block-quote.is-style-notebook-scrap p,
+.wp-block-pullquote.is-style-notebook-scrap p {
+	margin: 0;
+	line-height: 1.6em;
+}
+
+.wp-block-quote.is-style-notebook-scrap cite,
+.wp-block-pullquote.is-style-notebook-scrap cite {
+	display: block;
+	margin-block-start: 1.6em;
+	font-style: italic;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+}
+
+.wp-block-quote.is-style-notebook-scrap cite::before,
+.wp-block-pullquote.is-style-notebook-scrap cite::before {
+	content: "~ ";
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-quote.is-style-notebook-scrap,
+	.wp-block-pullquote.is-style-notebook-scrap {
+		transform: rotate(-1deg);
+		transition: transform 200ms ease-out;
+	}
+	.wp-block-quote.is-style-notebook-scrap:hover,
+	.wp-block-quote.is-style-notebook-scrap:focus-within,
+	.wp-block-pullquote.is-style-notebook-scrap:hover,
+	.wp-block-pullquote.is-style-notebook-scrap:focus-within {
+		transform: rotate(0deg);
+	}
+}
+
+@media print {
+	.wp-block-quote.is-style-notebook-scrap,
+	.wp-block-pullquote.is-style-notebook-scrap {
+		background: transparent;
+		mask-image: none;
+		-webkit-mask-image: none;
+		transform: none;
+		border: 1px solid currentColor;
+	}
+}

@@ -1,0 +1,103 @@
+/**
+ * Quote variation: Post-it Note
+ *
+ * Square card in warm yellow, soft shadow, 1.5deg static rotation,
+ * folded triangle on the bottom-end corner via clip-path pseudo-element.
+ * Body italic. Citation rendered inside the card at the bottom-end with
+ * em-dash prefix.
+ *
+ * Reduced-motion: rotation = 0.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-post-it,
+.wp-block-pullquote.is-style-post-it {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-post-it cite,
+.wp-block-pullquote.is-style-post-it cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-post-it cite:empty,
+.wp-block-pullquote.is-style-post-it cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-post-it,
+.wp-block-pullquote.is-style-post-it {
+	background: var(--pfbt-postit-bg, #fff7a8);
+	color: var(--pfbt-postit-fg, #1a1a1a);
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+	font-style: italic;
+	max-inline-size: var(--pfbt-postit-size, 18rem);
+	display: inline-block;
+	position: relative;
+	transform: rotate(0deg);
+}
+
+.wp-block-quote.is-style-post-it p,
+.wp-block-pullquote.is-style-post-it p {
+	margin: 0;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	line-height: 1.5;
+}
+
+.wp-block-quote.is-style-post-it cite,
+.wp-block-pullquote.is-style-post-it cite {
+	display: block;
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+	text-align: end;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-style: normal;
+}
+
+.wp-block-quote.is-style-post-it cite::before,
+.wp-block-pullquote.is-style-post-it cite::before {
+	content: "— ";
+}
+
+/* Folded corner */
+.wp-block-quote.is-style-post-it::after,
+.wp-block-pullquote.is-style-post-it::after {
+	content: "";
+	position: absolute;
+	inset-block-end: 0;
+	inset-inline-end: 0;
+	width: 1.5rem;
+	height: 1.5rem;
+	background: var(--pfbt-postit-fold, rgba(0, 0, 0, 0.08));
+	clip-path: polygon(100% 0, 0 100%, 100% 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-quote.is-style-post-it,
+	.wp-block-pullquote.is-style-post-it {
+		transform: rotate(-1.5deg);
+	}
+}
+
+@media print {
+	.wp-block-quote.is-style-post-it,
+	.wp-block-pullquote.is-style-post-it {
+		transform: none;
+		background: transparent;
+		box-shadow: none;
+		border: 1px solid currentColor;
+	}
+	.wp-block-quote.is-style-post-it::after,
+	.wp-block-pullquote.is-style-post-it::after {
+		display: none;
+	}
+}

@@ -1,0 +1,41 @@
+/**
+ * Gallery variation: Duotone Mood (Gallery)
+ *
+ * Grid layout where every child gets the same duotone filter chain
+ * as the image variation `is-style-duotone-mood`. Decorative.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-duotone-mood-gallery.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-duotone-gallery-min, 12rem), 1fr));
+	gap: var(--pfbt-duotone-gallery-gap, 0.5rem);
+}
+
+.wp-block-gallery.is-style-duotone-mood-gallery.is-layout-flex .wp-block-image {
+	margin: 0;
+}
+
+.wp-block-gallery.is-style-duotone-mood-gallery.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1 / 1;
+	object-fit: cover;
+	filter:
+		grayscale(1)
+		sepia(0.6)
+		hue-rotate( var(--pfbt-duotone-hue, 200deg) )
+		contrast(1.1);
+}
+
+@media print {
+	.wp-block-gallery.is-style-duotone-mood-gallery.is-layout-flex {
+		display: block;
+	}
+	.wp-block-gallery.is-style-duotone-mood-gallery.is-layout-flex .wp-block-image img {
+		filter: grayscale(1);
+		aspect-ratio: auto;
+	}
+}

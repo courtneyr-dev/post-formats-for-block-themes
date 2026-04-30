@@ -1,0 +1,81 @@
+/**
+ * Quote variation: Chalkboard
+ *
+ * Dark slate background, off-white "chalk" text via text-shadow dust,
+ * decorative chalk underline on citation, subtle vignette on edges,
+ * wooden-frame border via gradient. Print stylesheet inverts to black-on-white.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-chalkboard,
+.wp-block-pullquote.is-style-chalkboard {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-chalkboard cite,
+.wp-block-pullquote.is-style-chalkboard cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-chalkboard cite:empty,
+.wp-block-pullquote.is-style-chalkboard cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-chalkboard,
+.wp-block-pullquote.is-style-chalkboard {
+	background:
+		radial-gradient(
+			ellipse at center,
+			var(--pfbt-chalkboard-bg, #2a3a2a) 60%,
+			var(--pfbt-chalkboard-vignette, #1a2a1a) 100%
+		);
+	color: var(--pfbt-chalkboard-fg, #f0ede4);
+	padding: var(--wp--preset--spacing--large, 3rem);
+	border: 0.75rem solid var(--pfbt-chalkboard-frame, #6b4423);
+	border-radius: var(--pfbt-chalkboard-radius, 0.25rem);
+	font-family: var(--wp--preset--font-family--primary, "Caveat", cursive);
+	font-size: var(--wp--preset--font-size--medium, 1.25rem);
+	max-inline-size: 36rem;
+	text-shadow:
+		0.5px 0.5px 0 rgba(255, 255, 255, 0.1),
+		-0.5px -0.5px 0 rgba(0, 0, 0, 0.1);
+}
+
+.wp-block-quote.is-style-chalkboard p,
+.wp-block-pullquote.is-style-chalkboard p {
+	margin: 0;
+	line-height: 1.5;
+}
+
+.wp-block-quote.is-style-chalkboard cite,
+.wp-block-pullquote.is-style-chalkboard cite {
+	display: inline-block;
+	margin-block-start: 1.5em;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	border-bottom: 2px dotted var(--pfbt-chalkboard-fg, #f0ede4);
+	padding-block-end: 0.15em;
+	font-style: normal;
+}
+
+@media print {
+	.wp-block-quote.is-style-chalkboard,
+	.wp-block-pullquote.is-style-chalkboard {
+		background: transparent;
+		color: currentColor;
+		border: 1px solid currentColor;
+		text-shadow: none;
+	}
+	.wp-block-quote.is-style-chalkboard cite,
+	.wp-block-pullquote.is-style-chalkboard cite {
+		border-bottom-color: currentColor;
+	}
+}

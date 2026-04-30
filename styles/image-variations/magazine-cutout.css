@@ -1,0 +1,31 @@
+/**
+ * Image variation: Magazine Cutout
+ *
+ * Torn-paper effect via mask-image SVG pattern. The mask creates an
+ * uneven edge that reads like a hand-torn magazine clipping. Soft
+ * drop shadow underneath.
+ *
+ * SVG mask is inlined as a data URL so no extra HTTP request fires.
+ * Edge irregularity is decorative only — alt text carries the image
+ * meaning.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-magazine-cutout img {
+	display: block;
+	mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path fill='%23000' d='M2,4 L8,2 L14,5 L20,1 L28,4 L36,2 L44,5 L52,1 L60,4 L68,2 L76,5 L84,2 L92,4 L98,2 L98,96 L92,98 L84,95 L76,98 L68,95 L60,98 L52,95 L44,98 L36,95 L28,98 L20,95 L14,98 L8,95 L2,98 Z'/></svg>");
+	-webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'><path fill='%23000' d='M2,4 L8,2 L14,5 L20,1 L28,4 L36,2 L44,5 L52,1 L60,4 L68,2 L76,5 L84,2 L92,4 L98,2 L98,96 L92,98 L84,95 L76,98 L68,95 L60,98 L52,95 L44,98 L36,95 L28,98 L20,95 L14,98 L8,95 L2,98 Z'/></svg>");
+	mask-size: 100% 100%;
+	-webkit-mask-size: 100% 100%;
+	filter: drop-shadow( var(--wp--preset--shadow--small, 0 2px 4px rgba(0, 0, 0, 0.06)) );
+}
+
+@media print {
+	.wp-block-image.is-style-magazine-cutout img {
+		mask-image: none;
+		-webkit-mask-image: none;
+		filter: none;
+	}
+}

@@ -1,0 +1,88 @@
+/**
+ * Quote variation: Speech Bubble
+ *
+ * Rounded card with a tail pointing down-inline-start. Drawn entirely
+ * with border-radius and a clip-path pseudo-element. Citation rendered
+ * BELOW the bubble as the speaker (not inside).
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-speech-bubble,
+.wp-block-pullquote.is-style-speech-bubble {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-speech-bubble cite,
+.wp-block-pullquote.is-style-speech-bubble cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-speech-bubble cite:empty,
+.wp-block-pullquote.is-style-speech-bubble cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-speech-bubble,
+.wp-block-pullquote.is-style-speech-bubble {
+	display: block;
+	max-inline-size: 28rem;
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+	margin-block: var(--wp--preset--spacing--medium, 1.5rem);
+	margin-block-end: var(--pfbt-speech-bubble-bottom-gap, 2.5rem);
+	position: relative;
+}
+
+.wp-block-quote.is-style-speech-bubble p,
+.wp-block-pullquote.is-style-speech-bubble p {
+	margin: 0;
+	background: var(--pfbt-speech-bubble-bg, var(--wp--preset--color--tertiary, #f5f5f5));
+	color: var(--wp--preset--color--main, #0a0a0a);
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	border-radius: 1.25rem;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	line-height: 1.5;
+	position: relative;
+}
+
+/* Tail pointing down-inline-start */
+.wp-block-quote.is-style-speech-bubble p::after,
+.wp-block-pullquote.is-style-speech-bubble p::after {
+	content: "";
+	position: absolute;
+	inset-block-end: -0.75rem;
+	inset-inline-start: 1.5rem;
+	width: 1.25rem;
+	height: 1rem;
+	background: var(--pfbt-speech-bubble-bg, var(--wp--preset--color--tertiary, #f5f5f5));
+	clip-path: polygon(0 0, 100% 0, 30% 100%);
+}
+
+.wp-block-quote.is-style-speech-bubble cite,
+.wp-block-pullquote.is-style-speech-bubble cite {
+	display: block;
+	margin-block-start: 1.5rem;
+	margin-inline-start: 2rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--secondary, #666666);
+	font-style: normal;
+}
+
+.wp-block-quote.is-style-speech-bubble cite::before,
+.wp-block-pullquote.is-style-speech-bubble cite::before {
+	content: "— ";
+}
+
+@media print {
+	.wp-block-quote.is-style-speech-bubble p::after,
+	.wp-block-pullquote.is-style-speech-bubble p::after {
+		display: none;
+	}
+}

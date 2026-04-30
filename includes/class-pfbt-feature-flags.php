@@ -38,6 +38,8 @@ class PFBT_Feature_Flags {
 		'federation_preview'      => false, // Federation preview panel - OFF by default.
 		'abilities_api'           => true,  // WordPress Abilities API - ON by default.
 		'block_bindings'          => true,  // Block Bindings + Block Hooks - ON by default.
+		'image_gallery_styles'    => false, // 16 image + 20 gallery block style variations (v2.1.0). OFF by default — opt-in for first release.
+		'quote_styles'            => false, // 16 quote/pullquote block style variations (v2.2.0). OFF by default — opt-in for first release.
 	);
 
 	/**
@@ -207,6 +209,34 @@ class PFBT_Feature_Flags {
 	 */
 	public static function has_block_bindings() {
 		return self::is_enabled( 'block_bindings' ) && function_exists( 'register_block_bindings_source' );
+	}
+
+	/**
+	 * Check if Image and Gallery block style variations should be registered
+	 *
+	 * Adds 16 image and 20 gallery block style variations introduced in
+	 * v2.1.0. Defaults to false so existing installs opt in deliberately.
+	 *
+	 * @since 2.1.0
+	 *
+	 * @return bool Whether the variations should register.
+	 */
+	public static function has_image_gallery_styles() {
+		return self::is_enabled( 'image_gallery_styles' );
+	}
+
+	/**
+	 * Check if Quote and Pullquote block style variations should be registered
+	 *
+	 * Adds 16 quote/pullquote block style variations introduced in v2.2.0.
+	 * Defaults to false so existing installs opt in deliberately.
+	 *
+	 * @since 2.2.0
+	 *
+	 * @return bool Whether the variations should register.
+	 */
+	public static function has_quote_styles() {
+		return self::is_enabled( 'quote_styles' );
 	}
 
 	/**

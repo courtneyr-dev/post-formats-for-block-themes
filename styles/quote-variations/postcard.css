@@ -1,0 +1,106 @@
+/**
+ * Quote variation: Postcard
+ *
+ * Landscape card with vertical divider — quote on inline-start, citation
+ * block on inline-end with a stamp ornament. Aged-paper background.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-postcard,
+.wp-block-pullquote.is-style-postcard {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-postcard cite,
+.wp-block-pullquote.is-style-postcard cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-postcard cite:empty,
+.wp-block-pullquote.is-style-postcard cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-postcard,
+.wp-block-pullquote.is-style-postcard {
+	display: grid;
+	grid-template-columns: 1fr auto 0.5fr;
+	gap: var(--wp--preset--spacing--medium, 1.5rem);
+	align-items: center;
+	background: var(--pfbt-postcard-bg, #f3e9d2);
+	color: var(--pfbt-postcard-fg, #2a1f0e);
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	border: 1px solid var(--pfbt-postcard-edge, #c9b78a);
+	border-radius: var(--wp--preset--border-radius--sm, 0.375rem);
+	font-family: var(--wp--preset--font-family--primary, "Georgia", serif);
+	max-inline-size: 40rem;
+	box-shadow: var(--wp--preset--shadow--small, 0 2px 4px rgba(0, 0, 0, 0.06));
+}
+
+.wp-block-quote.is-style-postcard p,
+.wp-block-pullquote.is-style-postcard p {
+	grid-column: 1;
+	margin: 0;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	line-height: 1.5;
+}
+
+/* Vertical divider */
+.wp-block-quote.is-style-postcard::before,
+.wp-block-pullquote.is-style-postcard::before {
+	content: "";
+	grid-column: 2;
+	grid-row: 1 / -1;
+	width: 1px;
+	background: var(--pfbt-postcard-divider, #c9b78a);
+	height: 80%;
+	align-self: center;
+}
+
+.wp-block-quote.is-style-postcard cite,
+.wp-block-pullquote.is-style-postcard cite {
+	grid-column: 3;
+	grid-row: 1;
+	display: block;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-style: italic;
+	text-align: center;
+	position: relative;
+}
+
+/* Stamp ornament */
+.wp-block-quote.is-style-postcard cite::after,
+.wp-block-pullquote.is-style-postcard cite::after {
+	content: "★";
+	display: block;
+	margin-block-start: 0.5rem;
+	font-size: 1.25rem;
+	color: var(--pfbt-postcard-stamp, #b8540f);
+}
+
+@media (max-width: 30rem) {
+	.wp-block-quote.is-style-postcard,
+	.wp-block-pullquote.is-style-postcard {
+		grid-template-columns: 1fr;
+	}
+	.wp-block-quote.is-style-postcard::before,
+	.wp-block-pullquote.is-style-postcard::before {
+		display: none;
+	}
+}
+
+@media print {
+	.wp-block-quote.is-style-postcard,
+	.wp-block-pullquote.is-style-postcard {
+		background: transparent;
+		box-shadow: none;
+	}
+}

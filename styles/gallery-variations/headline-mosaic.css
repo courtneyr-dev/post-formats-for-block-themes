@@ -1,0 +1,82 @@
+/**
+ * Gallery variation: Headline Mosaic
+ *
+ * Asymmetric grid with several preset shapes. Authors set
+ * `data-shape="A|B|C"` on the gallery via Advanced → HTML attribute
+ * (or via Block Bindings later) to pick the shape; CSS handles layout.
+ * DOM order never changes.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex {
+	display: grid;
+	gap: var(--pfbt-headline-mosaic-gap, 0.5rem);
+	grid-template-columns: repeat(6, 1fr);
+	grid-auto-rows: minmax(8rem, 1fr);
+}
+
+/* Shape A (default): wide hero + 4 quarters */
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image:nth-child(1) {
+	grid-column: span 4;
+	grid-row: span 2;
+}
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image:nth-child(2),
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image:nth-child(3),
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image:nth-child(4),
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image:nth-child(5) {
+	grid-column: span 2;
+	grid-row: span 1;
+}
+
+/* Shape B: vertical hero + horizontal strip */
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="B"] .wp-block-image:nth-child(1) {
+	grid-column: span 2;
+	grid-row: span 2;
+}
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="B"] .wp-block-image:nth-child(2),
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="B"] .wp-block-image:nth-child(3),
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="B"] .wp-block-image:nth-child(4),
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="B"] .wp-block-image:nth-child(5) {
+	grid-column: span 4;
+	grid-row: span 1;
+}
+
+/* Shape C: triptych — three equal large columns */
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="C"] {
+	grid-template-columns: repeat(3, 1fr);
+}
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="C"] .wp-block-image {
+	grid-column: span 1;
+	grid-row: span 1;
+}
+
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image {
+	margin: 0;
+}
+
+.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+@media (max-width: 40rem) {
+	.wp-block-gallery.is-style-headline-mosaic.is-layout-flex,
+	.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="B"],
+	.wp-block-gallery.is-style-headline-mosaic.is-layout-flex[data-shape="C"] {
+		grid-template-columns: repeat(2, 1fr);
+	}
+	.wp-block-gallery.is-style-headline-mosaic.is-layout-flex .wp-block-image {
+		grid-column: span 1;
+		grid-row: span 1;
+	}
+}
+
+@media print {
+	.wp-block-gallery.is-style-headline-mosaic.is-layout-flex {
+		display: block;
+	}
+}

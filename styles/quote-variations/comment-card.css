@@ -1,0 +1,91 @@
+/**
+ * Quote variation: Comment Card
+ *
+ * Card with a small decorative avatar circle in the upper inline-start
+ * (CSS-only — initial taken from the citation's first character via
+ * a data-pfbt-avatar attribute set by the pattern), citation as the
+ * username on a metadata line, body below.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.2.0
+ */
+
+/* @reset */
+.wp-block-quote.is-style-comment-card,
+.wp-block-pullquote.is-style-comment-card {
+	border: 0;
+	padding: 0;
+	margin-inline-start: 0;
+	font-style: inherit;
+	background: transparent;
+	color: inherit;
+}
+.wp-block-quote.is-style-comment-card cite,
+.wp-block-pullquote.is-style-comment-card cite {
+	font-style: inherit;
+	text-align: inherit;
+}
+.wp-block-quote.is-style-comment-card cite:empty,
+.wp-block-pullquote.is-style-comment-card cite:empty {
+	display: none;
+}
+
+/* Variation */
+.wp-block-quote.is-style-comment-card,
+.wp-block-pullquote.is-style-comment-card {
+	display: grid;
+	grid-template-columns: 2.5rem 1fr;
+	gap: var(--wp--preset--spacing--medium, 1rem);
+	align-items: start;
+	background: var(--wp--preset--color--tertiary, #f5f5f5);
+	color: var(--wp--preset--color--main, #0a0a0a);
+	padding: var(--wp--preset--spacing--medium, 1rem);
+	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
+	max-inline-size: 36rem;
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+}
+
+.wp-block-quote.is-style-comment-card::before,
+.wp-block-pullquote.is-style-comment-card::before {
+	content: attr(data-pfbt-avatar);
+	width: 2.5rem;
+	height: 2.5rem;
+	border-radius: 50%;
+	background: var(--pfbt-comment-avatar-bg, var(--wp--preset--color--primary, #2271b1));
+	color: var(--pfbt-comment-avatar-fg, var(--wp--preset--color--base, #ffffff));
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	font-weight: 700;
+	text-transform: uppercase;
+	grid-row: 1 / span 2;
+}
+
+.wp-block-quote.is-style-comment-card cite,
+.wp-block-pullquote.is-style-comment-card cite {
+	grid-column: 2;
+	grid-row: 1;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	font-weight: 700;
+	font-style: normal;
+	color: var(--wp--preset--color--secondary, #666666);
+	margin: 0;
+}
+
+.wp-block-quote.is-style-comment-card p,
+.wp-block-pullquote.is-style-comment-card p {
+	grid-column: 2;
+	grid-row: 2;
+	margin: 0;
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	line-height: 1.5;
+}
+
+@media print {
+	.wp-block-quote.is-style-comment-card,
+	.wp-block-pullquote.is-style-comment-card {
+		background: transparent;
+		border: 1px solid currentColor;
+	}
+}

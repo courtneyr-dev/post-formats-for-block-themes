@@ -1,0 +1,59 @@
+/**
+ * Gallery variation: Comparison Pairs
+ *
+ * Side-by-side image pairs (consecutive items grouped). Optional
+ * synced hover crosshair via the IA view module — when the user
+ * hovers one image, a crosshair appears at the same relative
+ * position on its pair. Crosshair disabled under reduced-motion.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-comparison-pairs.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(var(--pfbt-comparison-min, 16rem), 1fr));
+	gap: var(--pfbt-comparison-gap, 0.5rem);
+}
+
+.wp-block-gallery.is-style-comparison-pairs.is-layout-flex .wp-block-image {
+	position: relative;
+	margin: 0;
+}
+
+.wp-block-gallery.is-style-comparison-pairs.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	height: auto;
+}
+
+.wp-block-gallery.is-style-comparison-pairs.is-layout-flex .wp-block-image figcaption {
+	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
+	margin-block-end: 0;
+	margin-inline: 0;
+	padding: 0;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--wp--preset--color--secondary, #666666);
+	text-align: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-gallery.is-style-comparison-pairs.is-layout-flex .pfbt-comparison-crosshair {
+		position: absolute;
+		width: 1.5rem;
+		height: 1.5rem;
+		border: 2px solid var(--wp--preset--color--primary, #2271b1);
+		border-radius: 50%;
+		pointer-events: none;
+		transform: translate(-50%, -50%);
+		opacity: 0;
+		transition: opacity 100ms ease-out;
+	}
+	.wp-block-gallery.is-style-comparison-pairs.is-layout-flex .wp-block-image:hover .pfbt-comparison-crosshair {
+		opacity: 1;
+	}
+}
+
+@media print {
+	.pfbt-comparison-crosshair { display: none; }
+}

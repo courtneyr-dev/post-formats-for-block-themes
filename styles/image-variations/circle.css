@@ -1,0 +1,25 @@
+/**
+ * Image variation: Circle
+ *
+ * Forces a 1:1 aspect ratio and circular clip. Use for portraits and
+ * avatar-style images. Authors should be aware that subject content
+ * outside the inscribed circle will be cropped — alt text matters
+ * doubly here since visual context is lost at the edges.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-circle img {
+	aspect-ratio: 1 / 1;
+	border-radius: 50%;
+	object-fit: cover;
+	display: block;
+}
+
+@media print {
+	.wp-block-image.is-style-circle img {
+		border-radius: 0;
+		aspect-ratio: auto;
+	}
+}

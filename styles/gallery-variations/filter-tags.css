@@ -1,0 +1,68 @@
+/**
+ * Gallery variation: Filter Tags
+ *
+ * Renders a row of chip buttons above the gallery; each chip filters
+ * visible items based on per-image tag data. Tags come from a Block
+ * Bindings source (`pfbt_filter_tags`) authors set per-image via the
+ * inspector. The IA view module updates the gallery's
+ * `data-pfbt-active-filter` attribute; CSS attribute selectors hide
+ * non-matching items.
+ *
+ * "Data binding required" — when the binding is unset, all images show
+ * and the filter row is empty (treated as decorative).
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-filter-tags.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-filter-tags-min, 12rem), 1fr));
+	gap: var(--pfbt-filter-tags-gap, 0.5rem);
+	position: relative;
+}
+
+.pfbt-filter-tags-bar {
+	grid-column: 1 / -1;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	padding-block-end: var(--wp--preset--spacing--small, 0.75rem);
+	border-block-end: 1px solid var(--wp--preset--color--border-light, #e5e5e5);
+	margin-block-end: var(--wp--preset--spacing--small, 0.75rem);
+}
+
+.pfbt-filter-tags-bar__chip {
+	background: var(--wp--preset--color--tertiary, #f5f5f5);
+	color: var(--wp--preset--color--main, #0a0a0a);
+	border: 1px solid var(--wp--preset--color--border-light, #e5e5e5);
+	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
+	padding-block: 0.25rem;
+	padding-inline: 0.75rem;
+	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	cursor: pointer;
+}
+
+.pfbt-filter-tags-bar__chip[aria-pressed="true"] {
+	background: var(--wp--preset--color--primary, #2271b1);
+	color: var(--wp--preset--color--base, #ffffff);
+	border-color: var(--wp--preset--color--primary, #2271b1);
+}
+
+.pfbt-filter-tags-bar__chip:focus-visible {
+	outline: 2px solid var(--wp--preset--color--primary, #2271b1);
+	outline-offset: 2px;
+}
+
+.wp-block-gallery.is-style-filter-tags[data-pfbt-active-filter] .wp-block-image[data-pfbt-tags]:not([data-pfbt-tags*=" "]) {
+	display: none;
+}
+
+.wp-block-gallery.is-style-filter-tags[data-pfbt-active-filter=""] .wp-block-image {
+	display: block;
+}
+
+@media print {
+	.pfbt-filter-tags-bar { display: none; }
+	.wp-block-gallery.is-style-filter-tags .wp-block-image { display: block; }
+}

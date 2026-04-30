@@ -1,0 +1,47 @@
+/**
+ * Gallery variation: Caption Prominent
+ *
+ * Grid where each item is a card with image plus larger, real-text
+ * caption below. Caption uses theme body font; image is contained
+ * to a fixed aspect so cards align cleanly.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-gallery.is-style-caption-prominent.is-layout-flex {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-caption-prominent-min, 16rem), 1fr));
+	gap: var(--pfbt-caption-prominent-gap, var(--wp--preset--spacing--medium, 1.5rem));
+}
+
+.wp-block-gallery.is-style-caption-prominent.is-layout-flex .wp-block-image {
+	margin: 0;
+	background: var(--wp--preset--color--tertiary, #f5f5f5);
+	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
+	overflow: hidden;
+}
+
+.wp-block-gallery.is-style-caption-prominent.is-layout-flex .wp-block-image img {
+	display: block;
+	width: 100%;
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+}
+
+.wp-block-gallery.is-style-caption-prominent.is-layout-flex .wp-block-image figcaption {
+	padding: var(--wp--preset--spacing--medium, 1.5rem);
+	margin: 0;
+	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
+	font-size: var(--wp--preset--font-size--medium, 1rem);
+	color: var(--wp--preset--color--main, #0a0a0a);
+}
+
+@media print {
+	.wp-block-gallery.is-style-caption-prominent.is-layout-flex {
+		display: block;
+	}
+	.wp-block-gallery.is-style-caption-prominent.is-layout-flex .wp-block-image img {
+		aspect-ratio: auto;
+	}
+}

@@ -1,0 +1,61 @@
+/**
+ * Image variation: Polaroid
+ *
+ * White card frame, asymmetric padding (narrow top/sides, wide bottom
+ * for caption), soft drop shadow, slight static rotation. The rotation
+ * straightens on hover/focus to make the image easier to read.
+ *
+ * Reduced motion: rotation set to 0 always; hover does nothing.
+ *
+ * @package PostFormatsBlockThemes
+ * @since 2.1.0
+ */
+
+.wp-block-image.is-style-polaroid {
+	background: var(--wp--preset--color--base, #ffffff);
+	padding: 0.75rem;
+	padding-block-end: 3rem;
+	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
+	display: inline-block;
+	max-width: 100%;
+	transform: rotate(0deg);
+	color: var(--wp--preset--color--main, #0a0a0a);
+}
+
+.wp-block-image.is-style-polaroid img {
+	display: block;
+	width: 100%;
+}
+
+.wp-block-image.is-style-polaroid figcaption {
+	margin-block-start: 0.75rem;
+	margin-block-end: 0;
+	margin-inline: 0;
+	padding: 0;
+	text-align: center;
+	font-family: var(--wp--preset--font-family--expanded, system-ui, sans-serif);
+	color: inherit;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+	.wp-block-image.is-style-polaroid {
+		transform: rotate(-1.5deg);
+		transition:
+			transform 200ms ease-out,
+			box-shadow 200ms ease-out;
+	}
+
+	.wp-block-image.is-style-polaroid:hover,
+	.wp-block-image.is-style-polaroid:focus-within {
+		transform: rotate(0deg);
+		box-shadow: var(--wp--preset--shadow--large, 0 10px 30px rgba(0, 0, 0, 0.12));
+	}
+}
+
+@media print {
+	.wp-block-image.is-style-polaroid {
+		transform: none;
+		box-shadow: none;
+		border: 1px solid currentColor;
+	}
+}

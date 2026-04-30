@@ -67,6 +67,97 @@ class PFBT_Pattern_Manager {
 	private function __construct() {
 		// Register custom pattern category.
 		add_action( 'init', array( $this, 'register_pattern_category' ), 9 );
+
+		// 2.0: register the new display patterns (archive + single
+		// flavors per format) using the pfbt/ namespace. Late priority
+		// so the format registry has populated by the time we read it.
+		add_action( 'init', array( $this, 'register_v2_display_patterns' ), 11 );
+	}
+
+	/**
+	 * Register the 2.0 display patterns.
+	 *
+	 * Each format gets two patterns sharing one PHP base file:
+	 *
+	 *   pfbt/{slug}-archive — emits Post Excerpt; for use inside Query
+	 *                          Loop post-templates
+	 *   pfbt/{slug}-single  — emits Post Content; for use inside single
+	 *                          post templates
+	 *
+	 * The base file branches on $pfbt_pattern_variant which the
+	 * registrar sets before include. Visual DNA stays identical between
+	 * variants; only the content depth differs.
+	 *
+	 * @since 2.0.0
+	 */
+	public function register_v2_display_patterns() {
+		$formats = PFBT_Format_Registry::get_all_formats();
+
+		foreach ( $formats as $slug => $format ) {
+			$base_file = PFBT_PLUGIN_DIR . 'patterns/display/' . $slug . '.php';
+			if ( ! file_exists( $base_file ) ) {
+				continue;
+			}
+
+			foreach ( array( 'archive', 'single' ) as $variant ) {
+				$content = $this->load_v2_pattern_file( $base_file, $variant );
+				if ( '' === trim( $content ) ) {
+					continue;
+				}
+
+				$pattern_slug = "pfbt/{$slug}-{$variant}";
+
+				$title = sprintf(
+					/* translators: 1: format name (e.g., "Aside"), 2: variant (Archive or Single) */
+					__( '%1$s — %2$s', 'post-formats-for-block-themes' ),
+					$format['name'],
+					'archive' === $variant ? __( 'Archive', 'post-formats-for-block-themes' ) : __( 'Single', 'post-formats-for-block-themes' )
+				);
+
+				register_block_pattern(
+					$pattern_slug,
+					array(
+						'title'       => $title,
+						'description' => $format['description'],
+						'content'     => $content,
+						'categories'  => array( 'post-formats' ),
+						'postTypes'   => array( 'post' ),
+						'postFormats' => 'standard' === $slug ? array() : array( $slug ),
+						'keywords'    => array(
+							$slug,
+							$variant,
+							'post-format',
+							'pfbt',
+							$format['name'],
+						),
+					)
+				);
+			}
+		}
+	}
+
+	/**
+	 * Load a 2.0 display pattern file with a variant variable.
+	 *
+	 * Includes the file inside an output buffer with $pfbt_pattern_variant
+	 * set so the file can branch on archive vs single. Wrapped in a
+	 * scope-isolating closure so the included file does not leak local
+	 * variables into the calling scope.
+	 *
+	 * @since 2.0.0
+	 *
+	 * @param string $file_path Absolute path to the pattern PHP file.
+	 * @param string $variant   'archive' or 'single'.
+	 * @return string Rendered pattern markup (block grammar).
+	 */
+	private function load_v2_pattern_file( $file_path, $variant ) {
+		$render = static function () use ( $file_path, $variant ) {
+			$pfbt_pattern_variant = $variant; // phpcs:ignore VariableAnalysis.CodeAnalysis.VariableAnalysis.UnusedVariable
+			ob_start();
+			include $file_path;
+			return ob_get_clean();
+		};
+		return $render();
 	}
 
 	/**

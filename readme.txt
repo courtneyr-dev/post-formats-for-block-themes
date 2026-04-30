@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.2.1
+Stable tag: 1.2.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -347,6 +347,40 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 
 == Changelog ==
 
+= 1.2.5 =
+
+**Fixed**
+
+* **Root-cause fix for homepage / page / archive resolution rendering with `single.html` markup** on heavily-themed sites. `add_block_templates()` (registered on the `get_block_templates` filter) was running `array_unshift($single_template, $query_result)` on every `wp_template` query, which placed `single` at the front of the result array even for queries asking about other slugs (`front-page`, `page-home`, `page`, `singular`, `index`). The block-template renderer's first-match resolution then picked `single` for the front page, leaking post-title, author byline, related-posts, and reading-progress markup onto pages that had their own templates resolved correctly.
+* The single-template injection is now scoped to queries that actually want it: empty `slug__in` (editor's full-template list), `slug__in` containing `single`, or `post_type === 'post'` (editor querying templates assignable to a post). For all other queries the result order is preserved.
+* The `pfbt_register_format_templates` opt-out filter from 1.2.4 is still honored as a complete bypass; this fix narrows the failure mode for themes that haven't opted out.
+
+= 1.2.4 =
+
+**Added**
+
+* New filter `pfbt_register_format_templates` (default `true`) lets themes opt out of the entire `add_block_templates()` body — the `single` injection, the "Default" pseudo-template, and the nine `single-format-*` registrations. Useful for themes that ship their own template hierarchy and don't want the plugin to interfere. Stop-gap for the underlying bug fixed properly in 1.2.5.
+
+`add_filter( 'pfbt_register_format_templates', '__return_false' );`
+
+= 1.2.3 =
+
+**Added**
+
+* New filter `pfbt_enqueue_format_styles` (default `true`) lets themes opt out of enqueueing `styles/format-styles.css`. The plugin's stylesheet ships with stock WordPress fallback colors (`#0073aa`, `#f0f0f1`, `#cccccc`, etc.) that override branded child-theme palettes when both target the same `.format-X` body-class selectors.
+
+`add_filter( 'pfbt_enqueue_format_styles', '__return_false' );`
+
+* New filter `pfbt_merge_format_palette` (default `true`) lets themes opt out of merging the plugin's `theme.json` palette additions (12 `format-X-bg` / `format-X-border` entries with stock Gutenberg defaults) into the resolved `theme.json`. Useful for themes whose palette is fully bespoke.
+
+`add_filter( 'pfbt_merge_format_palette', '__return_false' );`
+
+= 1.2.2 =
+
+**Fixed**
+
+* Bumped version header so Git Updater detects an update on installs that pulled the v1.2.1 release before commit `8daf545` ("fix: add missing activitypub and post-kinds include files") landed. Those installs were missing `includes/activitypub/class-pfbt-activitypub-transformer.php` and `includes/post-kinds/class-pfbt-post-kinds-integration.php`, causing a fatal in `pfbt_include_files()` during `plugins_loaded`. No code changes — release marker only.
+
 = 1.2.1 =
 
 **Fixed**
@@ -559,6 +593,18 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 * **Privacy:** No data collection, external API calls, cookies, or user tracking
 
 == Upgrade Notice ==
+
+= 1.2.5 =
+Important fix: Resolves homepage / page / archive resolution rendering with `single.html` markup on heavily-themed sites. Recommended for any site that has its own front-page or page templates and saw post-title, author byline, or related-posts sections leaking onto non-post pages.
+
+= 1.2.4 =
+Adds `pfbt_register_format_templates` opt-out filter for themes that ship their own template hierarchy. Stop-gap for the bug fixed properly in 1.2.5.
+
+= 1.2.3 =
+Adds `pfbt_enqueue_format_styles` and `pfbt_merge_format_palette` opt-out filters. Useful for themes with bespoke palettes that don't want the plugin's stock Gutenberg defaults appearing in the color picker or fighting `.format-X` body-class styling.
+
+= 1.2.2 =
+Release marker: forces Git Updater to detect an update on installs that pulled v1.2.1 before commit 8daf545 added the activitypub and post-kinds include files. Resolves a fatal in `pfbt_include_files()` for affected installs.
 
 = 1.2.0 =
 Major feature release: Adds WordPress Abilities API integration for machine-readable post format operations. Requires WordPress 6.9+. Includes feature flags system for future IndieWeb, MCP, and ActivityPub integrations.

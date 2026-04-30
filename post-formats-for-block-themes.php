@@ -145,6 +145,7 @@ function pfbt_include_files() {
 	require_once PFBT_PLUGIN_DIR . 'includes/class-media-player-integration.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-styles.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-classes.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-link-meta.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-block-templates.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-admin-columns.php';
 
@@ -232,6 +233,11 @@ function pfbt_init() {
 	// 2.0: post + body class additions (replaces the body_class filter
 	// in PFBT_Format_Styles::init(), which is now a deprecated stub).
 	PFBT_Format_Classes::instance();
+
+	// 2.0: register _pfbt_link_url post meta + Bookmark Card fallback.
+	// Wires the external-URL meta that the link display pattern's
+	// post-title binds to via Block Bindings (key: link_url).
+	PFBT_Link_Meta::instance();
 
 	// 2.0: opt-in single + archive block templates per format. Gated
 	// behind the pfbt_use_block_templates option (default false) +

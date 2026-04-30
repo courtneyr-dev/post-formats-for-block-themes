@@ -189,6 +189,28 @@ class PFBT_Block_Bindings_Formats {
 					esc_attr( $symbol_id )
 				);
 
+			case 'link_url':
+				/*
+				 * External URL for link-format posts. Reads
+				 * PFBT_Link_Meta::get_link_url() which checks the
+				 * `_pfbt_link_url` post meta first, falls back to the
+				 * Bookmark Card plugin's first bookmark URL, returns
+				 * empty string if neither.
+				 *
+				 * For non-link-format posts this returns empty so
+				 * blocks bound to link_url on a non-link post don't
+				 * render a misleading anchor.
+				 *
+				 * @since 2.0.0
+				 */
+				if ( 'link' !== $format ) {
+					return '';
+				}
+				if ( ! class_exists( 'PFBT_Link_Meta' ) ) {
+					return '';
+				}
+				return PFBT_Link_Meta::get_link_url( $post_id );
+
 			case 'format_permalink_archive':
 				/*
 				 * Return the URL to the post-format taxonomy archive

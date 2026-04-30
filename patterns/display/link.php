@@ -3,11 +3,19 @@
  * Link display pattern (archive + single share this file).
  *
  * Twenty Thirteen rendered link posts with the title as an anchor to
- * the external URL stored in post meta `_pfbt_link_url` (registered in
- * Session 8). This pattern uses `wp:post-title {"isLink":true}` for now
- * and Session 8 will rewire the title's href via Block Bindings to the
- * meta value. The original (local) permalink shows as a "Discuss on this
- * site" secondary link below.
+ * an external URL. PFBT 2.0 stores that URL in post meta `_pfbt_link_url`
+ * (registered by PFBT_Link_Meta in Session 8) and the post-title block
+ * uses Block Bindings to bind its `url` attribute to the
+ * post-formats/format-data binding source's `link_url` key.
+ *
+ * Lookup order for the external URL (handled by PFBT_Link_Meta::get_link_url()):
+ *   1. _pfbt_link_url meta value (user-set)
+ *   2. First Bookmark Card block's url attribute in post content
+ *   3. Falls back to the post permalink (since isLink stays true)
+ *
+ * The original (local) permalink can show as a "Discuss on this site"
+ * secondary link via a separate <wp:read-more> or paragraph block in
+ * post content.
  *
  * @package PostFormatsBlockThemes
  * @since 2.0.0
@@ -25,7 +33,7 @@ $pfbt_variant = $pfbt_pattern_variant ?? 'archive';
 	<!-- wp:group {"tagName":"header","className":"pfbt-format-card__head","layout":{"type":"flex","flexWrap":"nowrap"}} -->
 	<header class="wp-block-group pfbt-format-card__head">
 		<!-- wp:post-formats/format-icon {"lock":{"move":false,"remove":true}} /-->
-		<!-- wp:post-title {"level":<?php echo 'single' === $pfbt_variant ? 1 : 2; ?>,"isLink":true} /-->
+		<!-- wp:post-title {"level":<?php echo 'single' === $pfbt_variant ? 1 : 2; ?>,"isLink":true,"metadata":{"bindings":{"url":{"source":"post-formats/format-data","args":{"key":"link_url"}}}}} /-->
 	</header>
 	<!-- /wp:group -->
 

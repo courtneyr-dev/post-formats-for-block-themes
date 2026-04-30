@@ -15,6 +15,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interactivity API integration for Chat Log block with thread grouping and frontend interactivity
 - `block_bindings` feature flag in `PFBT_Feature_Flags`
 
+## [2.3.0] - 2026-04-30
+
+### Added — Icon set picker
+
+- New `Settings → Post Formats` admin page (capability: `manage_options`).
+- New `pfbt_icon_set` option lets site admins pick which sprite the Format Icon block renders. Default value `hand-drawn` matches the v2.0–v2.2 icon design (no behavior change for existing installs).
+- Two bundled icon sets:
+  - `hand-drawn` — original line/stroke icons with rounded linecaps (default).
+  - `filled` — solid-silhouette variants of the same nine format symbols, using `currentColor` and `fill-rule="evenodd"` for negative-space details.
+- Sprite files now live under `img/icon-sets/{slug}/format-icons.svg`. The legacy `img/format-icons.svg` path stays in place for backwards compatibility.
+- New filter `pfbt_available_icon_sets` lets themes / extender plugins register additional bundled sets.
+- New filter `pfbt_icon_set_sprite_url` lets themes ship sprites at custom paths without filtering the per-render `pfbt_format_icon_sprite_url`.
+- New class `PFBT_Icon_Set` handles set resolution + option sanitization. Hooks into the existing `pfbt_format_icon_sprite_url` filter at priority **5** so theme overrides at priority 10+ continue to win — picker controls plugin defaults, themes still get final say.
+- Settings page picker is built on the WP Settings API: fieldset/legend + radio inputs, each label containing both the set name and a visible 9-symbol preview. ARIA-hidden previews avoid double-announcement; accessible name comes from the visible label text. `prefers-contrast: more` widens the selected-state border; `prefers-reduced-motion` honored on hover transitions.
+- 11 unit tests covering default resolution, sanitization rejecting unknown slugs, filter priority, third-party set registration, and `pfbt_icon_set_sprite_url` URL override.
+
+### Fixed — v2.2.0 polish patch (carried into v2.3.0)
+
+- Library Card: replaced absolute-positioned citation with deterministic flex column + `cite { order: -1 }` so the author name sits inside the dark header bar, not below it.
+- Plaque: lightened metallic gradient palette (`#b8b3a4 → #c4bfae`, `#8e8a7d → #aea99b`) so dark engraved text passes WCAG AA at ≥6.4:1 across the gradient (was ~4.17:1 at the original mid-tone).
+- Chalkboard + Plaque: explicit `cite a { color: inherit; text-decoration-color: currentColor }` to prevent theme link color leakage into citation text.
+- Defensive cite-link inheritance applied to all 13 remaining quote variations so the link-color leak can't recur for any future cite-link use case.
+
 ## [2.2.0] - 2026-04-30
 
 ### Added — 16 quote and pullquote block style variations

@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 2.2.0
+ * Version: 2.3.0
  * Requires at least: 6.9
  * Tested up to: 6.9
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '2.2.0' );
+define( 'PFBT_VERSION', '2.3.0' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -172,6 +172,10 @@ function pfbt_include_files() {
 	// Image + Gallery block style variations (v2.1.0+, opt-in).
 	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-block-style-registry.php';
 
+	// Icon set picker (v2.3.0+).
+	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-icon-set.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-settings-page.php';
+
 	// Format Badge block (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'blocks/format-badge/format-badge.php';
 
@@ -283,6 +287,13 @@ function pfbt_init() {
 	// Initialize Post Kinds integration (v1.2.0+).
 	// Works when Post Kinds plugin is installed.
 	PFBT_Post_Kinds_Integration::instance();
+
+	// Icon set picker (v2.3.0+). Hooks the active set into the existing
+	// pfbt_format_icon_sprite_url filter at priority 5 so theme overrides
+	// at priority 10+ continue to win. Settings page registers under
+	// Settings → Post Formats.
+	PFBT_Icon_Set::register_filter();
+	PFBT_Settings_Page::init();
 
 	// Register patterns after WordPress is fully loaded.
 	add_action( 'init', array( 'PFBT_Pattern_Manager', 'register_all_patterns' ) );

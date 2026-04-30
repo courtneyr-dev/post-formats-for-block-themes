@@ -44,16 +44,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $pfbt_post_id = $block->context['postId'] ?? get_the_ID();
 if ( ! $pfbt_post_id ) {
-	return '';
+	return;
 }
 
 $pfbt_format = get_post_format( $pfbt_post_id );
 
 // Standard-format posts (false from get_post_format, or explicit "standard")
-// have no icon. Bail with an empty string so the block doesn't emit an
-// empty wrapper that would still take up space in the layout.
+// have no icon. Bail without echoing so the block doesn't emit an empty
+// wrapper that would still take up space in the layout.
 if ( ! $pfbt_format || 'standard' === $pfbt_format ) {
-	return '';
+	return;
 }
 
 /**
@@ -104,7 +104,7 @@ if ( null !== $pfbt_short_circuit ) {
 	$pfbt_symbol_id = $pfbt_icon_map[ $pfbt_format ] ?? null;
 	if ( ! $pfbt_symbol_id ) {
 		// Format has no mapped icon — bail rather than emit a broken use href.
-		return '';
+		return;
 	}
 
 	/**
@@ -156,18 +156,19 @@ $pfbt_wrapper_attributes = get_block_wrapper_attributes(
 
 if ( $pfbt_show_label ) {
 	// Visible label — icon + text both shown.
-	return sprintf(
+	printf(
 		'<span %1$s>%2$s<span class="pfbt-format-icon__label">%3$s</span></span>',
-		$pfbt_wrapper_attributes,
-		$pfbt_svg,
+		$pfbt_wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wrapper attributes are pre-escaped by get_block_wrapper_attributes()
+		$pfbt_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SVG markup is built from esc_url + esc_attr
 		esc_html( $pfbt_label )
 	);
+	return;
 }
 
 // Default: icon visible, label for screen readers only.
-return sprintf(
+printf(
 	'<span %1$s>%2$s<span class="screen-reader-text">%3$s</span></span>',
-	$pfbt_wrapper_attributes,
-	$pfbt_svg,
+	$pfbt_wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wrapper attributes are pre-escaped by get_block_wrapper_attributes()
+	$pfbt_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SVG markup is built from esc_url + esc_attr
 	esc_html( $pfbt_label )
 );

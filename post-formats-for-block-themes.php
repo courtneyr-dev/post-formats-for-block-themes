@@ -144,6 +144,7 @@ function pfbt_include_files() {
 	require_once PFBT_PLUGIN_DIR . 'includes/class-repair-tool.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-media-player-integration.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-styles.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-format-classes.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-admin-columns.php';
 
 	// Feature flags and Abilities API (v1.2.0+).
@@ -226,6 +227,10 @@ function pfbt_init() {
 	PFBT_Pattern_Manager::instance();
 	PFBT_Block_Locker::instance();
 	PFBT_Admin_Columns::instance();
+
+	// 2.0: post + body class additions (replaces the body_class filter
+	// in PFBT_Format_Styles::init(), which is now a deprecated stub).
+	PFBT_Format_Classes::instance();
 
 	// Initialize Block Bindings source (v1.2.0+).
 	if ( PFBT_Feature_Flags::has_block_bindings() ) {

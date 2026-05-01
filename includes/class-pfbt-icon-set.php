@@ -140,13 +140,16 @@ class PFBT_Icon_Set {
 	/**
 	 * Filter callback — replaces the default sprite URL with the active set's URL.
 	 *
-	 * @param string $url Default sprite URL passed in by the format-icon block.
+	 * The incoming $url is the format-icon block's hard-coded
+	 * `img/format-icons.svg` default. We discard it and return the
+	 * active-set URL. Themes filtering at higher priority (10+) run
+	 * after this and still win on the cascade.
+	 *
+	 * @param string $url Default sprite URL passed in by the format-icon block. Discarded.
 	 * @return string Active set sprite URL.
 	 */
 	public static function filter_sprite_url( $url ) {
-		// The block hard-codes 'img/format-icons.svg' as its filter input default.
-		// We replace that with the active-set URL. Themes filtering at higher
-		// priority (10+) still win.
+		unset( $url );
 		return self::get_sprite_url();
 	}
 

@@ -29,6 +29,15 @@
 	display: none;
 }
 
+/* Cite-link color inheritance — prevents theme link color from
+   bleeding into citation text. Underline preserved as the
+   standard interactive cue. */
+.wp-block-quote.is-style-speech-bubble cite a,
+.wp-block-pullquote.is-style-speech-bubble cite a {
+	color: inherit;
+	text-decoration-color: currentColor;
+}
+
 /* Variation */
 .wp-block-quote.is-style-speech-bubble,
 .wp-block-pullquote.is-style-speech-bubble {

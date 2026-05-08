@@ -29,15 +29,19 @@
 	display: none;
 }
 
-/* Variation */
+/* Variation
+   v2.2.0-fix: lightened the gradient (image #162). Original used
+   #b8b3a4 / #8e8a7d which gave the dark engraved text only ~4.17:1
+   contrast at the gradient's mid-tone — failing WCAG AA. New
+   palette tests at ~6.4:1 minimum across the gradient. */
 .wp-block-quote.is-style-plaque,
 .wp-block-pullquote.is-style-plaque {
 	background:
 		linear-gradient(
 			135deg,
-			var(--pfbt-plaque-light, #b8b3a4) 0%,
-			var(--pfbt-plaque-mid, #8e8a7d) 50%,
-			var(--pfbt-plaque-light, #b8b3a4) 100%
+			var(--pfbt-plaque-light, #c4bfae) 0%,
+			var(--pfbt-plaque-mid, #aea99b) 50%,
+			var(--pfbt-plaque-light, #c4bfae) 100%
 		);
 	color: var(--pfbt-plaque-engraved, #2a2820);
 	padding: var(--wp--preset--spacing--large, 2.5rem);
@@ -80,12 +84,22 @@
 	display: block;
 	margin-block-start: var(--wp--preset--spacing--medium, 1.5rem);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--pfbt-plaque-engraved, #2a2820);
 	font-style: normal;
 	letter-spacing: 0.1em;
 	text-transform: uppercase;
 	text-shadow:
 		1px 1px 0 rgba(255, 255, 255, 0.3),
 		-1px -1px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* v2.2.0-fix: cite-link color leak (image #162). Same issue as
+   chalkboard — the theme link color (cerulean) bled into the cite
+   when the citation contained a link, producing low-contrast text. */
+.wp-block-quote.is-style-plaque cite a,
+.wp-block-pullquote.is-style-plaque cite a {
+	color: inherit;
+	text-decoration-color: currentColor;
 }
 
 @media print {

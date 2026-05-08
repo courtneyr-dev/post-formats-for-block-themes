@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	Post Formats for Block Themes — Icon sprite (FILLED set).
+
+	Solid-silhouette variant of the post-format icons. Each symbol is a
+	filled shape using `currentColor`, with negative-space details
+	(stripes, cutouts) achieved via `fill-rule="evenodd"`. Sized for
+	the same 24x24 viewBox as the hand-drawn set so themes can swap
+	sets without re-tuning.
+
+	Design rules:
+	  - viewBox 0 0 24 24
+	  - All shapes use class="pfbt-icon-fill" → fill: currentColor
+	  - No strokes (the default styles in the <defs> below ensure this)
+	  - Internal detail via fill-rule="evenodd" subpaths
+	  - Symbols share IDs with the hand-drawn set so consumers don't need
+	    a different `<use href="#…">` reference per active set
+
+	Accessibility: each symbol has a <title> matching the format slug.
+	Authors using the Format Icon block get an accessible name from the
+	block (aria-label / sr-only text). The sprite-internal title is a
+	defensive fallback for direct <use> consumers.
+
+	@since 2.3.0
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+	<defs>
+		<style>
+			symbol path,
+			symbol rect,
+			symbol circle {
+				fill: currentColor;
+				stroke: none;
+			}
+			symbol .pfbt-icon-fill {
+				fill: currentColor;
+				stroke: none;
+			}
+		</style>
+	</defs>
+
+	<!-- Aside: filled sticky note silhouette with a darker label bar. -->
+	<symbol id="pfbt-format-icon-aside" viewBox="0 0 24 24">
+		<title>Aside</title>
+		<path class="pfbt-icon-fill" fill-rule="evenodd" d="M3 3h18v3.5H3zM5 7h14v13H5z"></path>
+		<path class="pfbt-icon-fill" d="M16.5 17l3.5-3v6h-3.5z" fill-opacity="0.55"></path>
+	</symbol>
+
+	<!-- Audio: filled speaker silhouette with two filled wave dots. -->
+	<symbol id="pfbt-format-icon-audio" viewBox="0 0 24 24">
+		<title>Audio</title>
+		<path class="pfbt-icon-fill" d="M4 9 V15 H8 L13 19 V5 L8 9 Z"></path>
+		<circle class="pfbt-icon-fill" cx="16.5" cy="12" r="1.4"></circle>
+		<circle class="pfbt-icon-fill" cx="20" cy="12" r="1.4"></circle>
+	</symbol>
+
+	<!-- Chat: filled speech bubble with negative-space message stripes. -->
+	<symbol id="pfbt-format-icon-chat" viewBox="0 0 24 24">
+		<title>Chat</title>
+		<path class="pfbt-icon-fill" fill-rule="evenodd" d="M4 5h16v11h-10l-4 4v-4H4Zm3 4h10v1.4H7Zm0 3h7v1.4H7Z"></path>
+	</symbol>
+
+	<!-- Gallery: three overlapping filled rectangles, foreground-on-top stack. -->
+	<symbol id="pfbt-format-icon-gallery" viewBox="0 0 24 24">
+		<title>Gallery</title>
+		<rect class="pfbt-icon-fill" x="3" y="7" width="13" height="13" fill-opacity="0.45"></rect>
+		<rect class="pfbt-icon-fill" x="6" y="5" width="13" height="13" fill-opacity="0.7"></rect>
+		<rect class="pfbt-icon-fill" x="9" y="3" width="12" height="12"></rect>
+	</symbol>
+
+	<!-- Image: filled photo frame with sun + horizon as negative-space cutouts. -->
+	<symbol id="pfbt-format-icon-image" viewBox="0 0 24 24">
+		<title>Image</title>
+		<path class="pfbt-icon-fill" fill-rule="evenodd" d="M3 4h18v16H3Zm15.7 12L15 13l-2.5 2-3.5-2.5-6 4.5V18.5h15Zm-9.7-7a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 1 0 0-3.2Z"></path>
+	</symbol>
+
+	<!-- Link: bold filled chain double-loop (two interlocked rounded rectangles). -->
+	<symbol id="pfbt-format-icon-link" viewBox="0 0 24 24">
+		<title>Link</title>
+		<path class="pfbt-icon-fill" fill-rule="evenodd" d="M14.6 4.6a4.4 4.4 0 0 1 4.8 7.2l-2 2-1.6-1.6 2-2a2.1 2.1 0 0 0-3-3l-2 2-1.6-1.6Zm-5.2 14.8a4.4 4.4 0 0 1-4.8-7.2l2-2 1.6 1.6-2 2a2.1 2.1 0 0 0 3 3l2-2 1.6 1.6Zm-1-4.6 5.6-5.6 1.4 1.4-5.6 5.6Z"></path>
+	</symbol>
+
+	<!-- Quote: filled large open quotes with a citation rule below. -->
+	<symbol id="pfbt-format-icon-quote" viewBox="0 0 24 24">
+		<title>Quote</title>
+		<path class="pfbt-icon-fill" d="M5 5h5v5q0 4-4.5 6L4 13.2q2.5-.8 2.5-2.2H5Zm9 0h5v5q0 4-4.5 6L13 13.2q2.5-.8 2.5-2.2H14Z"></path>
+		<rect class="pfbt-icon-fill" x="4" y="19.2" width="16" height="1.4" rx="0.7"></rect>
+	</symbol>
+
+	<!-- Status: filled center dot with two thin negative-space rings (pulse). -->
+	<symbol id="pfbt-format-icon-status" viewBox="0 0 24 24">
+		<title>Status</title>
+		<path class="pfbt-icon-fill" fill-rule="evenodd" d="M12 2.5a9.5 9.5 0 1 1 0 19 9.5 9.5 0 1 1 0-19Zm0 1.6a7.9 7.9 0 1 0 0 15.8 7.9 7.9 0 1 0 0-15.8Zm0 2.4a5.5 5.5 0 1 1 0 11 5.5 5.5 0 1 1 0-11Zm0 1.6a3.9 3.9 0 1 0 0 7.8 3.9 3.9 0 1 0 0-7.8Z"></path>
+		<circle class="pfbt-icon-fill" cx="12" cy="12" r="1.8"></circle>
+	</symbol>
+
+	<!-- Video: filled film frame with negative-space play triangle + sprocket holes. -->
+	<symbol id="pfbt-format-icon-video" viewBox="0 0 24 24">
+		<title>Video</title>
+		<path class="pfbt-icon-fill" fill-rule="evenodd" d="M3 5h18v14H3Zm7.8 4.4v5.2L15.2 12Z"></path>
+		<rect class="pfbt-icon-fill" x="3" y="9" width="2.5" height="1.4" fill-opacity="0.4"></rect>
+		<rect class="pfbt-icon-fill" x="3" y="13.6" width="2.5" height="1.4" fill-opacity="0.4"></rect>
+		<rect class="pfbt-icon-fill" x="18.5" y="9" width="2.5" height="1.4" fill-opacity="0.4"></rect>
+		<rect class="pfbt-icon-fill" x="18.5" y="13.6" width="2.5" height="1.4" fill-opacity="0.4"></rect>
+	</symbol>
+</svg>

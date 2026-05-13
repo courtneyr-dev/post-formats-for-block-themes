@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Seven bindable keys: `format_name`, `format_label`, `format_icon`, `has_format`, `char_count`, `media_url`, `quote_attribution`
 - Interactivity API integration for Chat Log block with thread grouping and frontend interactivity
 - `block_bindings` feature flag in `PFBT_Feature_Flags`
+- `PFBT_Format_Detector::META_KEY_APPLIED` (`_pfbt_format_applied`) post-meta key — guards against the reclassification loop that motivated the v1.1.2 disable, so auto-detection applies a format once and leaves user edits alone on subsequent saves
+
+### Changed
+
+- Re-enabled auto-detection on `save_post` and `rest_after_insert_post`. The hooks were disabled in v1.1.2 (commit `d01027f`) because the detector kept reverting user-changed formats on every save. The new design separates audit from apply: detection always runs and writes `_pfbt_format_detected` for downstream consumers (e.g., Outpost's Micropub bridge C1 coordination contract), but `set_post_format()` is called only when no manual flag is present AND `_pfbt_format_applied` is empty (first save only).
 
 ## [2.2.0] - 2026-04-30
 

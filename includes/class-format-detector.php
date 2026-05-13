@@ -56,6 +56,19 @@ class PFBT_Format_Detector {
 	const META_KEY_DETECTED = '_pfbt_format_detected';
 
 	/**
+	 * Meta key for tracking whether auto-detection has already applied a format.
+	 *
+	 * Detection applies the post format ONCE per post (on first save where no
+	 * manual flag exists). This guard prevents the v1.1.2 regression where
+	 * subsequent saves kept reclassifying user-edited posts based on first-block
+	 * heuristics, silently reverting manual format choices made in the UI.
+	 *
+	 * @since 2.3.0
+	 * @var string
+	 */
+	const META_KEY_APPLIED = '_pfbt_format_applied';
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @since 1.0.0
@@ -76,16 +89,25 @@ class PFBT_Format_Detector {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
-		// Temporarily disabled — causes format override issues.
-		// add_action( 'save_post', array( $this, 'detect_and_set_format' ), 10, 3 );
-		// add_action( 'rest_after_insert_post', array( $this, 'detect_format_rest' ), 10, 2 ).
+		add_action( 'save_post', array( $this, 'detect_and_set_format' ), 10, 3 );
+		add_action( 'rest_after_insert_post', array( $this, 'detect_format_rest' ), 10, 2 );
 	}
 
 	/**
 	 * Detect and set post format on save
 	 *
-	 * Analyzes post content on save and sets the appropriate format
-	 * unless the user has explicitly set a format.
+	 * Always runs detection and writes the audit meta (`_pfbt_format_detected`),
+	 * so downstream consumers (e.g., Outpost's Micropub bridge) can read what
+	 * detection would have produced regardless of whether it was applied.
+	 *
+	 * Only APPLIES the detected format when:
+	 *   1. The post has no manual-flag meta (`_pfbt_format_manual`), AND
+	 *   2. Auto-detection has not previously applied to this post
+	 *      (`_pfbt_format_applied`).
+	 *
+	 * The second guard prevents the v1.1.2 regression: prior to this, the
+	 * detector ran on every save and reclassified posts whose first block
+	 * happened to be a video/gallery/etc., silently reverting manual choices.
 	 *
 	 * @since 1.0.0
 	 *
@@ -94,6 +116,8 @@ class PFBT_Format_Detector {
 	 * @param bool    $update  Whether this is an existing post being updated.
 	 */
 	public function detect_and_set_format( $post_id, $post, $update ) {
+		unset( $update );
+
 		// Skip autosaves.
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
@@ -114,32 +138,34 @@ class PFBT_Format_Detector {
 			return;
 		}
 
-		// Check if format was manually set.
-		$manual_format = get_post_meta( $post_id, self::META_KEY_MANUAL, true );
+		// Always run detection and write audit meta, even when format will not be
+		// applied — downstream consumers (Outpost C1 coordination contract) read
+		// this to know what detection would have produced.
+		$detected_format = $this->detect_format_from_content( $post->post_content );
+		update_post_meta( $post_id, self::META_KEY_DETECTED, $detected_format );
 
-		// If user explicitly set format via UI, respect it.
-		if ( $manual_format ) {
-			// User has taken control, don't auto-detect.
+		// Respect manual format selection (UI choice OR upstream client mark_as_manual).
+		if ( get_post_meta( $post_id, self::META_KEY_MANUAL, true ) ) {
 			return;
 		}
 
-		// Detect format from content.
-		$detected_format = $this->detect_format_from_content( $post->post_content );
+		// Apply detection only once per post. Subsequent saves leave the format
+		// alone so users can change it manually in the editor without reverts.
+		if ( get_post_meta( $post_id, self::META_KEY_APPLIED, true ) ) {
+			return;
+		}
 
-		// Store detected format for reference.
-		update_post_meta( $post_id, self::META_KEY_DETECTED, $detected_format );
-
-		// Set the post format.
 		set_post_format( $post_id, $detected_format );
+		update_post_meta( $post_id, self::META_KEY_APPLIED, '1' );
 
 		/**
 		 * Fires after format is auto-detected and set
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param int    $post_id         Post ID.
-		 * @param string $detected_format Detected format slug.
-		 * @param WP_Post $post           Post object.
+		 * @param int     $post_id         Post ID.
+		 * @param string  $detected_format Detected format slug.
+		 * @param WP_Post $post            Post object.
 		 */
 		do_action( 'pfbt_format_detected', $post_id, $detected_format, $post );
 	}
@@ -147,8 +173,13 @@ class PFBT_Format_Detector {
 	/**
 	 * Detect format for REST API saves
 	 *
-	 * Handles format detection when posts are saved via the REST API
-	 * (which includes the block editor).
+	 * When a REST request explicitly includes a `format` param, the user has
+	 * taken control — set the manual flag so future detector runs (and the
+	 * Outpost C1 coordination contract) honor that choice.
+	 *
+	 * Then run `detect_and_set_format` so audit meta is always refreshed.
+	 * The internal applied/manual guards in `detect_and_set_format` handle
+	 * the actual apply-or-skip decision.
 	 *
 	 * @since 1.0.0
 	 *
@@ -161,14 +192,11 @@ class PFBT_Format_Detector {
 			return;
 		}
 
-		// Check if format parameter was sent in the request.
+		// User explicitly sent format → preserve their choice on future saves.
 		if ( $request->has_param( 'format' ) ) {
-			// User explicitly set format, mark as manual.
 			update_post_meta( $post->ID, self::META_KEY_MANUAL, true );
-			return;
 		}
 
-		// Otherwise, run standard detection.
 		$this->detect_and_set_format( $post->ID, $post, true );
 	}
 

@@ -33,7 +33,7 @@
 	margin-inline: 0;
 	padding: 0;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-comparison-caption, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 	text-align: center;
 }
 
@@ -42,7 +42,7 @@
 		position: absolute;
 		width: 1.5rem;
 		height: 1.5rem;
-		border: 2px solid var(--wp--preset--color--primary, #2271b1);
+		border: 2px solid var(--pfbt-comparison-crosshair, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 		border-radius: 50%;
 		pointer-events: none;
 		transform: translate(-50%, -50%);

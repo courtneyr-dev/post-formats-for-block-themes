@@ -11,11 +11,11 @@
 
 .wp-block-image.is-style-tinted-border img {
 	border-style: solid;
-	border-color: var(--wp--preset--color--primary, #2271b1);
+	border-color: var(--pfbt-tinted-border-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 	border-width: var(--pfbt-tinted-border-width, 3px);
 	box-shadow:
-		0 0 0 var(--pfbt-tinted-border-mat, 4px) var(--wp--preset--color--base, #ffffff),
-		0 0 0 var(--pfbt-tinted-border-outer, 5px) var(--wp--preset--color--primary, #2271b1);
+		0 0 0 var(--pfbt-tinted-border-mat, 4px) var(--pfbt-tinted-border-mat-color, var(--wp--preset--color--base, #ffffff)),
+		0 0 0 var(--pfbt-tinted-border-outer, 5px) var(--pfbt-tinted-border-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 	display: block;
 }
 

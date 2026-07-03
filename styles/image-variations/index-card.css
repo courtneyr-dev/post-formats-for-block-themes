@@ -5,6 +5,9 @@
  * repeating-linear-gradient), plus a small "tab" decoration on the
  * top inline-start corner. Decorative only.
  *
+ * Skeuomorph paper + rules stay fixed on any palette; the corner tab
+ * follows the theme accent.
+ *
  * @package PostFormatsBlockThemes
  * @since 2.1.0
  */
@@ -13,13 +16,13 @@
 	background:
 		repeating-linear-gradient(
 			to bottom,
-			var(--wp--preset--color--base, #ffffff) 0,
-			var(--wp--preset--color--base, #ffffff) 1.4em,
-			var(--wp--preset--color--border-light, #e5e5e5) 1.4em,
-			var(--wp--preset--color--border-light, #e5e5e5) calc(1.4em + 1px)
+			var(--pfbt-index-card-paper, #ffffff) 0,
+			var(--pfbt-index-card-paper, #ffffff) 1.4em,
+			var(--pfbt-index-card-rule, #e5e5e5) 1.4em,
+			var(--pfbt-index-card-rule, #e5e5e5) calc(1.4em + 1px)
 		);
 	padding: var(--wp--preset--spacing--medium, 1.5rem);
-	border: 1px solid var(--wp--preset--color--border-light, #e5e5e5);
+	border: 1px solid var(--pfbt-index-card-rule, #e5e5e5);
 	display: inline-block;
 	max-width: 100%;
 	position: relative;
@@ -32,7 +35,7 @@
 	inset-inline-start: var(--wp--preset--spacing--medium, 1.5rem);
 	width: 3rem;
 	height: 0.5rem;
-	background: var(--wp--preset--color--primary, #2271b1);
+	background: var(--pfbt-index-card-tab, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 	border-radius: var(--wp--preset--border-radius--sm, 0.375rem) var(--wp--preset--border-radius--sm, 0.375rem) 0 0;
 }
 
@@ -47,7 +50,7 @@
 	margin-inline: 0;
 	padding: 0;
 	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-index-card-caption, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 }
 
 @media print {

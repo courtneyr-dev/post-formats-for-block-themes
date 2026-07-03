@@ -11,15 +11,16 @@
  * @since 2.1.0
  */
 
+/* Skeuomorph: photo paper stays white/dark-ink on any palette. */
 .wp-block-image.is-style-polaroid {
-	background: var(--wp--preset--color--base, #ffffff);
+	background: var(--pfbt-polaroid-paper, #ffffff);
 	padding: 0.75rem;
 	padding-block-end: 3rem;
 	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
 	display: inline-block;
 	max-width: 100%;
 	transform: rotate(0deg);
-	color: var(--wp--preset--color--main, #0a0a0a);
+	color: var(--pfbt-polaroid-ink, #0a0a0a);
 }
 
 .wp-block-image.is-style-polaroid img {

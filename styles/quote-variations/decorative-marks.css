@@ -56,7 +56,7 @@
 	font-family: var(--wp--preset--font-family--expanded, "Georgia", serif);
 	font-size: 5rem;
 	line-height: 0.8;
-	color: var(--wp--preset--color--primary, #2271b1);
+	color: var(--pfbt-decorative-marks-mark, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 	opacity: 0.85;
 	font-weight: 700;
 	align-self: start;
@@ -77,7 +77,7 @@
 	margin-block-start: var(--wp--preset--spacing--small, 0.75rem);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 	font-style: italic;
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-decorative-marks-cite, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 }
 
 .wp-block-quote.is-style-decorative-marks cite::before,

@@ -17,11 +17,12 @@
 
 .wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image {
 	margin: 0;
-	background: var(--wp--preset--color--base, #ffffff);
+	/* Skeuomorph: shares --pfbt-polaroid-* photo-paper tokens with the image polaroid variation. */
+	background: var(--pfbt-polaroid-paper, #ffffff);
 	padding: 0.75rem;
 	padding-block-end: 2.5rem;
 	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
-	color: var(--wp--preset--color--main, #0a0a0a);
+	color: var(--pfbt-polaroid-ink, #0a0a0a);
 }
 
 .wp-block-gallery.is-style-polaroid-stack.is-layout-flex .wp-block-image img {

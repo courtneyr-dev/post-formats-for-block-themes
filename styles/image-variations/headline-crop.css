@@ -25,7 +25,7 @@
 	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-headline-crop-caption, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 }
 
 @media print {

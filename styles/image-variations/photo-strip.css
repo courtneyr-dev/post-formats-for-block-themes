@@ -20,7 +20,7 @@
 .wp-block-image.is-style-photo-strip {
 	display: inline-block;
 	max-width: 100%;
-	background: var(--wp--preset--color--base, #ffffff);
+	background: var(--pfbt-photo-strip-paper, #ffffff);
 	padding: 0.5rem;
 	box-shadow: var(--wp--preset--shadow--small, 0 2px 4px rgba(0, 0, 0, 0.06));
 }
@@ -41,7 +41,7 @@
 	position: absolute;
 	inset-inline: 0.5rem;
 	height: 0.5rem;
-	background: var(--wp--preset--color--base, #ffffff);
+	background: var(--pfbt-photo-strip-paper, #ffffff);
 	pointer-events: none;
 }
 
@@ -51,7 +51,7 @@
 
 .wp-block-image.is-style-photo-strip::after {
 	inset-block-start: 50%;
-	box-shadow: 0 calc(25% + 0.25rem) 0 var(--wp--preset--color--base, #ffffff);
+	box-shadow: 0 calc(25% + 0.25rem) 0 var(--pfbt-photo-strip-paper, #ffffff);
 }
 
 .wp-block-image.is-style-photo-strip figcaption {
@@ -61,7 +61,7 @@
 	padding: 0;
 	text-align: center;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-photo-strip-caption, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 }
 
 @media print {

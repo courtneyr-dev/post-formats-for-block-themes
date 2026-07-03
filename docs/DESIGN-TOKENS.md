@@ -230,6 +230,8 @@ The contract excludes:
 
 The test `tests/unit/test-no-color-leakage.php` enforces this rule. Any commit that adds a forbidden value to plugin CSS or pattern markup fails CI.
 
+Opt-in block style variations (`styles/{quote,image,gallery}-variations/`) are excluded — they follow their own three-level token contract (`--pfbt-*` override → theme palette preset → fixed default), documented in [`BLOCK-STYLE-VARIATIONS.md`](./BLOCK-STYLE-VARIATIONS.md#color-the---pfbt--token-contract).
+
 ---
 
 ## Migration from 1.x → 2.0

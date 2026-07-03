@@ -23,7 +23,7 @@
 	position: absolute;
 	inset: 0;
 	margin: 0;
-	background: var(--wp--preset--color--base, #ffffff);
+	background: var(--pfbt-card-deck-bg, var(--wp--preset--color--base, #ffffff));
 	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
 	box-shadow: var(--wp--preset--shadow--medium, 0 4px 12px rgba(0, 0, 0, 0.08));
 	overflow: hidden;
@@ -63,8 +63,8 @@
 }
 
 .pfbt-card-deck-controls button {
-	background: var(--wp--preset--color--primary, #2271b1);
-	color: var(--wp--preset--color--base, #ffffff);
+	background: var(--pfbt-card-deck-accent, var(--wp--preset--color--primary, var(--wp--preset--color--contrast, #2271b1)));
+	color: var(--pfbt-card-deck-accent-fg, var(--wp--preset--color--base, #ffffff));
 	border: none;
 	border-radius: 50%;
 	width: 2.5rem;
@@ -74,14 +74,14 @@
 }
 
 .pfbt-card-deck-controls button:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary, #2271b1);
+	outline: 2px solid var(--pfbt-card-deck-accent, var(--wp--preset--color--primary, var(--wp--preset--color--contrast, #2271b1)));
 	outline-offset: 2px;
 }
 
 .pfbt-card-deck-status {
 	align-self: center;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-card-deck-status, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 }
 
 @media (prefers-reduced-motion: no-preference) {

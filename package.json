@@ -24,15 +24,8 @@
     "test:all": "composer test && npm run test:a11y && npm run test:e2e"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.8.2",
-    "@playwright/test": "^1.40.1",
-    "@wordpress/scripts": "^27.0.0",
-    "axe-core": "^4.8.3",
-    "axe-playwright": "^1.2.3",
-    "dotenv": "^17.2.3",
-    "playwright": "^1.40.1"
-  },
-  "dependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "@playwright/test": "^1.61.1",
     "@wordpress/a11y": "^3.0.0",
     "@wordpress/block-editor": "^12.0.0",
     "@wordpress/blocks": "^12.0.0",
@@ -44,7 +37,12 @@
     "@wordpress/hooks": "^3.0.0",
     "@wordpress/i18n": "^4.0.0",
     "@wordpress/interactivity": "^5.0.0",
-    "@wordpress/plugins": "^6.0.0"
+    "@wordpress/plugins": "^6.0.0",
+    "@wordpress/scripts": "^32.6.0",
+    "axe-core": "^4.8.3",
+    "axe-playwright": "^1.2.3",
+    "dotenv": "^17.2.3",
+    "playwright": "^1.40.1"
   },
   "keywords": [
     "wordpress",

@@ -143,7 +143,13 @@ jobs:
       - name: npm audit
         id: npm-audit
         continue-on-error: true
-        run: npm audit --audit-level=moderate
+        # Nothing in node_modules ships to users — @wordpress/* imports are
+        # externalized to core at build time — so shipped (prod) deps gate at
+        # moderate while the dev toolchain gates at critical (upstream
+        # @wordpress/scripts carries advisories with no fixed release).
+        run: |
+          npm audit --omit=dev --audit-level=moderate
+          npm audit --audit-level=critical
 
       - name: Check audit results
         if: steps.composer-audit.outcome == 'failure' || steps.npm-audit.outcome == 'failure'

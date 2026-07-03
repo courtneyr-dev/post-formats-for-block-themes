@@ -25,7 +25,9 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Run PHPCS
-        run: composer phpcs -- --report=checkstyle | cs2pr
+        # --graceful-warnings matches the ruleset's ignore_warnings_on_exit:
+        # errors fail the build, warnings surface as annotations only.
+        run: composer phpcs -- --report=checkstyle | cs2pr --graceful-warnings
 
       - name: Run PHPStan
         run: composer phpstan

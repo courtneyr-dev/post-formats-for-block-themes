@@ -272,6 +272,45 @@ class PFBT_Format_Registry {
 			}
 		}
 
+		// Post Kinds for IndieWeb kind-card blocks. These are dynamic
+		// blocks, so they never match a format's first_block (all core
+		// block names); map each card to the format matching its kind.
+		$kind_card_map = array(
+			'post-kinds-indieweb/listen-card'      => 'audio',
+			'post-kinds-indieweb/watch-card'       => 'video',
+			'post-kinds-indieweb/checkin-card'     => 'status',
+			'post-kinds-indieweb/eat-card'         => 'status',
+			'post-kinds-indieweb/drink-card'       => 'status',
+			'post-kinds-indieweb/mood-card'        => 'status',
+			'post-kinds-indieweb/play-card'        => 'status',
+			'post-kinds-indieweb/read-card'        => 'status',
+			'post-kinds-indieweb/jam-card'         => 'status',
+			'post-kinds-indieweb/wish-card'        => 'status',
+			'post-kinds-indieweb/acquisition-card' => 'status',
+			'post-kinds-indieweb/rsvp-card'        => 'aside',
+			'post-kinds-indieweb/favorite-card'    => 'aside',
+			'post-kinds-indieweb/like-card'        => 'aside',
+			'post-kinds-indieweb/repost-card'      => 'aside',
+			'post-kinds-indieweb/reply-card'       => 'aside',
+			'post-kinds-indieweb/bookmark-card'    => 'link',
+		);
+
+		/**
+		 * Filter the kind-card block to format mapping.
+		 *
+		 * Maps Post Kinds for IndieWeb card blocks (and any other dynamic
+		 * first blocks) to the post format the detector should apply.
+		 *
+		 * @since 2.4.0
+		 *
+		 * @param array $kind_card_map Block name to format slug mapping.
+		 */
+		$kind_card_map = apply_filters( 'pfbt_kind_card_format_map', $kind_card_map );
+
+		if ( isset( $kind_card_map[ $block_name ] ) ) {
+			return $kind_card_map[ $block_name ];
+		}
+
 		// Fallback to standard.
 		return 'standard';
 	}

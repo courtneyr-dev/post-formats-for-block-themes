@@ -31,7 +31,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- wp:paragraph -->
 <p></p>
 <!-- /wp:paragraph -->
-<cite></cite></blockquote>
+</blockquote>
 <!-- /wp:quote -->
 
 <!-- wp:paragraph -->

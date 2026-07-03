@@ -33,7 +33,7 @@ if ( $pfbt_has_watch_card ) {
 } else {
 	?>
 <!-- wp:video -->
-<figure class="wp-block-video"><video controls></video></figure>
+<figure class="wp-block-video"></figure>
 <!-- /wp:video -->
 
 <!-- wp:paragraph -->

@@ -1,0 +1,13 @@
+includes:
+	- vendor/szepeviktor/phpstan-wordpress/extension.neon
+
+parameters:
+	level: 2
+	bootstrapFiles:
+		- tests/phpstan/bootstrap.php
+	paths:
+		- includes/
+		- blocks/
+		- post-formats-for-block-themes.php
+	excludePaths:
+		- blocks/*/build/*

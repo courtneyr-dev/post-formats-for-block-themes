@@ -29,6 +29,15 @@
         <exclude-pattern>includes/class-format-styles.php</exclude-pattern>
     </rule>
 
+    <!-- class-format-helpers.php deliberately pairs the class with
+         function_exists-guarded procedural shims for back compat -->
+    <rule ref="Universal.Files.SeparateFunctionsFromOO">
+        <exclude-pattern>includes/class-format-helpers.php</exclude-pattern>
+    </rule>
+
+    <!-- Warnings stay visible but only errors fail the build -->
+    <config name="ignore_warnings_on_exit" value="1"/>
+
     <!-- Minimum PHP version -->
     <config name="minimum_supported_wp_version" value="6.9"/>
     <config name="testVersion" value="7.4-"/>

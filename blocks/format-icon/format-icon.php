@@ -140,11 +140,11 @@ if ( null !== $pfbt_short_circuit ) {
  * @param string $label  Default label (from registry).
  * @param string $format Post format slug.
  */
-$pfbt_format_def = class_exists( 'PFBT_Format_Registry' )
+$pfbt_format_def    = class_exists( 'PFBT_Format_Registry' )
 	? PFBT_Format_Registry::get_format( $pfbt_format )
 	: null;
 $pfbt_default_label = $pfbt_format_def['name'] ?? ucfirst( $pfbt_format );
-$pfbt_label = apply_filters( 'pfbt_format_icon_label', $pfbt_default_label, $pfbt_format );
+$pfbt_label         = apply_filters( 'pfbt_format_icon_label', $pfbt_default_label, $pfbt_format );
 
 $pfbt_show_label = ! empty( $attributes['showLabel'] );
 
@@ -158,8 +158,8 @@ if ( $pfbt_show_label ) {
 	// Visible label — icon + text both shown.
 	printf(
 		'<span %1$s>%2$s<span class="pfbt-format-icon__label">%3$s</span></span>',
-		$pfbt_wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wrapper attributes are pre-escaped by get_block_wrapper_attributes()
-		$pfbt_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SVG markup is built from esc_url + esc_attr
+		$pfbt_wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wrapper attributes are pre-escaped by get_block_wrapper_attributes()
+		$pfbt_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG markup is built from esc_url + esc_attr
 		esc_html( $pfbt_label )
 	);
 	return;
@@ -168,7 +168,7 @@ if ( $pfbt_show_label ) {
 // Default: icon visible, label for screen readers only.
 printf(
 	'<span %1$s>%2$s<span class="screen-reader-text">%3$s</span></span>',
-	$pfbt_wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — wrapper attributes are pre-escaped by get_block_wrapper_attributes()
-	$pfbt_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped — SVG markup is built from esc_url + esc_attr
+	$pfbt_wrapper_attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- wrapper attributes are pre-escaped by get_block_wrapper_attributes()
+	$pfbt_svg, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- SVG markup is built from esc_url + esc_attr
 	esc_html( $pfbt_label )
 );

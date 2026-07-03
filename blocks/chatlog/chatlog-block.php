@@ -1178,18 +1178,18 @@ function chatlog_render_callback( $attributes, $content, $block ) { // phpcs:ign
 		'<div %s>%s</div>',
 		$wrapper_attributes,
 		chatlog_render_messages(
-		$messages,
-		array(
-			'display_style'          => $display_style,
-			'show_avatars'           => $show_avatars,
-			'show_timestamps'        => $show_timestamps,
-			'timestamp_format'       => $timestamp_format,
-			'collapse_threads'       => $collapse_threads,
-			'show_participant_list'  => $show_participant_list,
-			'highlight_current_user' => $highlight_current_user,
-			'device_frame'           => $device_frame,
-			'platform'               => $source,
-		)
+			$messages,
+			array(
+				'display_style'          => $display_style,
+				'show_avatars'           => $show_avatars,
+				'show_timestamps'        => $show_timestamps,
+				'timestamp_format'       => $timestamp_format,
+				'collapse_threads'       => $collapse_threads,
+				'show_participant_list'  => $show_participant_list,
+				'highlight_current_user' => $highlight_current_user,
+				'device_frame'           => $device_frame,
+				'platform'               => $source,
+			)
 		)
 	);
 }

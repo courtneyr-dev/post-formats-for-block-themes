@@ -61,9 +61,19 @@
 	display: inline-block;
 	margin-block-start: 1.5em;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
+	color: var(--pfbt-chalkboard-fg, #f0ede4);
 	border-bottom: 2px dotted var(--pfbt-chalkboard-fg, #f0ede4);
 	padding-block-end: 0.15em;
 	font-style: normal;
+}
+
+/* v2.2.0-fix: cite-link color leak (image #161). Without this rule
+   the theme's default link color (cerulean blue) wins inside cite,
+   producing low-contrast blue underlined text on the dark slate. */
+.wp-block-quote.is-style-chalkboard cite a,
+.wp-block-pullquote.is-style-chalkboard cite a {
+	color: inherit;
+	text-decoration-color: currentColor;
 }
 
 @media print {

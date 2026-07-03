@@ -45,7 +45,7 @@ class PFBT_Format_Styles {
 		add_filter( 'rest_wp_template_query', array( __CLASS__, 'filter_rest_template_query' ), 10, 2 );
 		add_filter( 'rest_prepare_wp_template', array( __CLASS__, 'hide_format_templates_from_rest' ), 10, 3 );
 		add_filter( 'rest_prepare_post', array( __CLASS__, 'filter_post_rest_response' ), 10, 3 );
-		add_filter( 'default_page_template_title', array( __CLASS__, 'fix_template_display_name' ), 10, 3 );
+		add_filter( 'default_page_template_title', array( __CLASS__, 'fix_template_display_name' ), 10, 2 );
 		add_action( 'updated_post_meta', array( __CLASS__, 'watch_template_meta_changes' ), 10, 4 );
 	}
 

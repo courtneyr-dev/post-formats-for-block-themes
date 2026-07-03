@@ -72,3 +72,4 @@ languages/*.mo
 # Keep these
 !languages/.gitkeep
 !build/.gitkeep
+.phpunit.result.cache

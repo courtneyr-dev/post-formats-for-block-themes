@@ -77,6 +77,22 @@ class PFBT_Block_Style_Registry {
 	private $loaded = false;
 
 	/**
+	 * Front-end enqueue map: block name → `is-style-{slug}` class → assets.
+	 *
+	 * Block themes render the template HTML before `wp_head`
+	 * (template-canvas.php), but core only attaches its `style_handle`
+	 * loaders on `enqueue_block_assets` — after every content block has
+	 * already rendered, so the handles never enqueue on the front end.
+	 * This map backs our own `render_block` filter, attached at `init`
+	 * (before template render), which enqueues a variation's stylesheet
+	 * and optional view module when a rendered block actually uses it.
+	 *
+	 * @since 2.3.0
+	 * @var array<string, array<string, array{style: string, module: string}>>
+	 */
+	private $frontend_map = array();
+
+	/**
 	 * Get the singleton instance.
 	 *
 	 * @since 2.1.0
@@ -158,6 +174,48 @@ class PFBT_Block_Style_Registry {
 				}
 			}
 		}
+
+		// Front-end conditional loading — see $frontend_map docblock for
+		// why core's style_handle mechanism can't do this on block themes.
+		if ( ! is_admin() && ! empty( $this->frontend_map ) ) {
+			add_filter( 'render_block', array( $this, 'enqueue_variation_assets' ), 10, 2 );
+		}
+	}
+
+	/**
+	 * Enqueue a variation's stylesheet (and view module) when a rendered
+	 * block uses it. Runs on `render_block`; enqueued styles print via
+	 * `wp_footer`, matching core's own on-demand block-style behavior.
+	 *
+	 * @since 2.3.0
+	 *
+	 * @param string               $html  Rendered block HTML.
+	 * @param array<string, mixed> $block Parsed block.
+	 * @return string Unchanged block HTML.
+	 */
+	public function enqueue_variation_assets( $html, $block ) {
+		if ( empty( $block['blockName'] ) || ! isset( $this->frontend_map[ $block['blockName'] ] ) ) {
+			return $html;
+		}
+
+		$class_attr = isset( $block['attrs']['className'] ) && is_string( $block['attrs']['className'] )
+			? $block['attrs']['className']
+			: '';
+		if ( '' === $class_attr ) {
+			return $html;
+		}
+
+		$map = $this->frontend_map[ $block['blockName'] ];
+		foreach ( preg_split( '/\s+/', $class_attr ) as $class ) {
+			if ( isset( $map[ $class ] ) ) {
+				wp_enqueue_style( $map[ $class ]['style'] );
+				if ( '' !== $map[ $class ]['module'] && function_exists( 'wp_enqueue_script_module' ) ) {
+					wp_enqueue_script_module( $map[ $class ]['module'] );
+				}
+			}
+		}
+
+		return $html;
 	}
 
 	/**
@@ -324,6 +382,11 @@ class PFBT_Block_Style_Registry {
 				'label'        => $variation['label'],
 				'style_handle' => $handle,
 			)
+		);
+
+		$this->frontend_map[ $block_name ][ 'is-style-' . $variation['slug'] ] = array(
+			'style'  => $handle,
+			'module' => ! empty( $variation['view_module_id'] ) ? (string) $variation['view_module_id'] : '',
 		);
 
 		// Optional: register an Interactivity API view module for

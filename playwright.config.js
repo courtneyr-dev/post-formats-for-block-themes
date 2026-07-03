@@ -12,6 +12,11 @@ const { defineConfig, devices } = require('@playwright/test');
 module.exports = defineConfig({
 	testDir: './tests',
 
+	// Log in as admin once and share the authenticated state with every
+	// project: parallel logins as the same user make WordPress drop each
+	// other's session tokens (reauth bounce → flaky beforeEach timeouts).
+	globalSetup: require.resolve('./tests/global-setup.js'),
+
 	// Maximum time one test can run
 	timeout: 60 * 1000,
 
@@ -39,6 +44,9 @@ module.exports = defineConfig({
 	use: {
 		// Base URL for navigation
 		baseURL: process.env.WP_BASE_URL || 'http://localhost:8888',
+
+		// Authenticated admin session saved by tests/global-setup.js
+		storageState: require('path').join(__dirname, 'tests', '.auth', 'admin.json'),
 
 		// Collect trace on failure
 		trace: 'on-first-retry',

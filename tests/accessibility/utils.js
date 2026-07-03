@@ -7,18 +7,41 @@
  */
 
 /**
+ * Where global setup saves the authenticated storage state.
+ */
+export const STORAGE_STATE_PATH = require('path').join(
+	__dirname,
+	'..',
+	'.auth',
+	'admin.json'
+);
+
+/**
  * Login to WordPress admin
  *
  * @param {import('@playwright/test').Page} page
  */
 export async function loginToWordPress(page) {
-	await page.goto('/wp-login.php');
-
-	// Check if already logged in
-	const isLoggedIn = await page.locator('body.wp-admin').count() > 0;
-	if (isLoggedIn) {
+	// Contexts start authenticated via the storage state saved by global
+	// setup (see tests/global-setup.js). Skip the form when the auth
+	// cookie is already present — concurrent logins as the same user make
+	// WordPress drop each other's session tokens (reauth bounce).
+	const cookies = await page.context().cookies();
+	if (cookies.some((cookie) => cookie.name.startsWith('wordpress_logged_in'))) {
 		return;
 	}
+
+	await page.goto('/wp-login.php');
+
+	// wp-login.php schedules wp_attempt_focus() 200ms after load, which
+	// focuses AND selects #user_login. Filling before it fires lets it
+	// clobber the form mid-fill (the password text can replace the selected
+	// username). Wait for that focus to land before typing; the bounded
+	// catch falls through if core ever drops the script.
+	await page.waitForFunction(
+		() => document.activeElement && document.activeElement.id === 'user_login',
+		{ timeout: 1000 }
+	).catch(() => {});
 
 	// Fill in credentials
 	await page.fill('#user_login', process.env.WP_USERNAME || 'admin');
@@ -40,16 +63,20 @@ export async function goToNewPost(page) {
 	// Wait for editor to load
 	await page.waitForSelector('.edit-post-layout', { timeout: 10000 });
 
-	// Close the welcome guide if present. Scope to the guide's own dialog:
-	// a bare [aria-label="Close"] can resolve to a button in a stacked
-	// modal (the plugin's format modal opens at the same time) whose
-	// overlay then intercepts the click. CI seeds the preference off, so
-	// this is a fallback for fresh local environments.
-	const guide = page.getByRole('dialog', { name: /welcome/i });
-	if (await guide.isVisible().catch(() => false)) {
-		await guide.getByRole('button', { name: 'Close' }).click();
-		await guide.waitFor({ state: 'hidden' }).catch(() => {});
-	}
+	// Turn the welcome guide off through the preferences store instead of
+	// clicking its Close button: the plugin's format modal mounts ~500ms
+	// after the editor and its screen overlay intercepts pointer events
+	// aimed at the guide (stacked modals). A store dispatch needs no
+	// pointer, so nothing can intercept it. Set both scopes to match CI's
+	// seeding ('core/edit-post' pre-6.5, 'core' after).
+	await page.evaluate(() => {
+		const { dispatch } = window.wp.data;
+		dispatch('core/preferences').set('core/edit-post', 'welcomeGuide', false);
+		dispatch('core/preferences').set('core', 'welcomeGuide', false);
+	});
+	await page.getByRole('dialog', { name: /welcome/i })
+		.waitFor({ state: 'hidden' })
+		.catch(() => {});
 }
 
 /**

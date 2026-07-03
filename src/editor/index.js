@@ -184,15 +184,25 @@ const FormatSelectionModal = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [hasShown, setHasShown] = useState(false);
 
-	const { isNewPost, currentFormat, postType, postId } = useSelect((select) => {
+	const { isNewPost, currentFormat, postType, postId, isWelcomeGuideActive } = useSelect((select) => {
 		const editor = select('core/editor');
 		const post = editor.getCurrentPost();
+		const editPostStore = select('core/edit-post');
 
 		return {
 			isNewPost: ! post.id || post.status === 'auto-draft',
 			currentFormat: editor.getEditedPostAttribute('format') || 'standard',
 			postType: post.type,
 			postId: post.id,
+			// isFeatureActive resolves the guide's default (ON for fresh
+			// users with no saved preference) and the scope the guide
+			// actually writes on dismissal. Reading raw preferences.get
+			// misses both: undefined for fresh users (modal would stack
+			// under the guide) and a stale value in the scope the guide
+			// didn't write (modal would never show after dismissal).
+			isWelcomeGuideActive: editPostStore
+				? !! editPostStore.isFeatureActive('welcomeGuide')
+				: false,
 		};
 	}, []);
 
@@ -202,16 +212,18 @@ const FormatSelectionModal = () => {
 	// Check if Post Kinds is active
 	const postKindsActive = window.pfbtData?.postKinds?.active || false;
 
-	// Show modal on new post (only once)
+	// Show modal on new post (only once), waiting until the Welcome Guide
+	// is dismissed so the two dialogs never stack
 	useEffect(() => {
-		if (isNewPost && postType === 'post' && !hasShown && window.pfbtData) {
+		if (isNewPost && postType === 'post' && !hasShown && !isWelcomeGuideActive && window.pfbtData) {
 			// Small delay to ensure editor is fully loaded
-			setTimeout(() => {
+			const timeoutId = setTimeout(() => {
 				setIsOpen(true);
 				setHasShown(true);
 			}, 500);
+			return () => clearTimeout(timeoutId);
 		}
-	}, [isNewPost, postType, hasShown]);
+	}, [isNewPost, postType, hasShown, isWelcomeGuideActive]);
 
 	const handleFormatSelect = (formatSlug) => {
 		// Get suggested Post Kind if Post Kinds plugin is active

@@ -24,6 +24,11 @@ test.describe("WP 7.0 Features", () => {
   test.beforeAll(async ({ playwright }) => {
     apiContext = await playwright.request.newContext({
       baseURL: process.env.WP_BASE_URL || "http://localhost:8888",
+      // Start with NO cookies: the config-level storageState (saved by
+      // global setup) rides along otherwise, and WordPress REST rejects
+      // a logged-in cookie without a nonce even when valid Basic auth
+      // is present (cookie auth is checked first).
+      storageState: { cookies: [], origins: [] },
       extraHTTPHeaders: {
         // Core only accepts application passwords over Basic auth; CI
         // mints one after wp-env start and passes it via WP_APP_PASSWORD.

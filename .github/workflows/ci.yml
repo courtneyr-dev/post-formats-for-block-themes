@@ -25,7 +25,9 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Run PHPCS
-        run: composer phpcs -- --report=checkstyle | cs2pr
+        # --graceful-warnings matches the ruleset's ignore_warnings_on_exit:
+        # errors fail the build, warnings surface as annotations only.
+        run: composer phpcs -- --report=checkstyle | cs2pr --graceful-warnings
 
       - name: Run PHPStan
         run: composer phpstan
@@ -46,10 +48,11 @@ jobs:
         image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: wordpress_test
+          # No MYSQL_DATABASE here: install-wp-tests.sh runs mysqladmin
+          # create itself and hard-fails if the database already exists.
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3 --default-authentication-plugin=mysql_native_password
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout code
@@ -65,6 +68,11 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
+
+      - name: Install Subversion
+        # install-wp-tests.sh checks out the WP test library via svn,
+        # which GitHub removed from ubuntu runners in 2024.
+        run: sudo apt-get update && sudo apt-get install -y subversion
 
       - name: Install WordPress test suite
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wordpress }}
@@ -92,6 +100,17 @@ jobs:
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
+
+      - name: Start WordPress (wp-env)
+        run: npx --yes @wordpress/env@latest start
+
+      - name: Prepare WordPress for E2E
+        # Disable the editor welcome guide (it stacks above the plugin's
+        # format modal and intercepts clicks) and mint an application
+        # password — core only accepts app passwords over Basic auth.
+        run: |
+          npx --yes @wordpress/env@latest run cli wp user meta update admin wp_persisted_preferences '{"core/edit-post":{"welcomeGuide":false,"fullscreenMode":false},"core":{"welcomeGuide":false,"fullscreenMode":false}}' --format=json
+          echo "WP_APP_PASSWORD=$(npx --yes @wordpress/env@latest run cli wp user application-password create admin e2e --porcelain)" >> "$GITHUB_ENV"
 
       - name: Run E2E tests
         run: npm run test:e2e
@@ -141,7 +160,13 @@ jobs:
       - name: npm audit
         id: npm-audit
         continue-on-error: true
-        run: npm audit --audit-level=moderate
+        # Nothing in node_modules ships to users — @wordpress/* imports are
+        # externalized to core at build time — so shipped (prod) deps gate at
+        # moderate while the dev toolchain gates at critical (upstream
+        # @wordpress/scripts carries advisories with no fixed release).
+        run: |
+          npm audit --omit=dev --audit-level=moderate
+          npm audit --audit-level=critical
 
       - name: Check audit results
         if: steps.composer-audit.outcome == 'failure' || steps.npm-audit.outcome == 'failure'

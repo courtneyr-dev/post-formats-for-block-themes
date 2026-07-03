@@ -40,10 +40,15 @@ export async function goToNewPost(page) {
 	// Wait for editor to load
 	await page.waitForSelector('.edit-post-layout', { timeout: 10000 });
 
-	// Close welcome guide if present
-	const welcomeGuide = page.locator('[aria-label="Close"]').first();
-	if (await welcomeGuide.isVisible()) {
-		await welcomeGuide.click();
+	// Close the welcome guide if present. Scope to the guide's own dialog:
+	// a bare [aria-label="Close"] can resolve to a button in a stacked
+	// modal (the plugin's format modal opens at the same time) whose
+	// overlay then intercepts the click. CI seeds the preference off, so
+	// this is a fallback for fresh local environments.
+	const guide = page.getByRole('dialog', { name: /welcome/i });
+	if (await guide.isVisible().catch(() => false)) {
+		await guide.getByRole('button', { name: 'Close' }).click();
+		await guide.waitFor({ state: 'hidden' }).catch(() => {});
 	}
 }
 

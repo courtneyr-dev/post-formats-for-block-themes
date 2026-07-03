@@ -159,7 +159,25 @@ class PFBT_Format_Analyzer {
 		arsort( $scores );
 
 		$suggested_format = array_key_first( $scores );
-		$max_score        = $scores[ $suggested_format ];
+
+		// Status/aside are length-shape formats: they only apply when no
+		// structural format is clearly signaled. A short post whose content
+		// is an explicit quote, link, gallery, etc. takes that format even
+		// though brevity also scores highly. 60 = the weight each structural
+		// format assigns its defining signal.
+		if ( in_array( $suggested_format, array( 'status', 'aside' ), true ) ) {
+			foreach ( $scores as $format => $score ) {
+				if ( in_array( $format, array( 'status', 'aside', 'standard' ), true ) ) {
+					continue;
+				}
+				if ( $score >= 60 ) {
+					$suggested_format = $format;
+				}
+				break;
+			}
+		}
+
+		$max_score = $scores[ $suggested_format ];
 
 		// Calculate confidence (0-100).
 		$total_possible = $this->get_max_possible_score( $suggested_format );
@@ -204,7 +222,9 @@ class PFBT_Format_Analyzer {
 	 * @return array Detected signals.
 	 */
 	private function detect_signals( $content, $title ) {
-		$plain_content = wp_strip_all_tags( $content );
+		// Turn block/paragraph boundaries into newlines before stripping so
+		// line-anchored patterns (speaker labels, chat lines) still see them.
+		$plain_content = wp_strip_all_tags( preg_replace( '/<\/(p|div|li|h[1-6])>|<br\s*\/?>/i', "\n", $content ) );
 		$char_count    = mb_strlen( $plain_content );
 		$word_count    = str_word_count( $plain_content );
 
@@ -254,7 +274,7 @@ class PFBT_Format_Analyzer {
 			'podcast_link'      => $this->has_podcast_link( $content ),
 
 			// Chat signals.
-			'chat_pattern'      => $this->has_chat_pattern( $content ),
+			'chat_pattern'      => $this->has_chat_pattern( $plain_content ),
 			'dialogue_markers'  => $this->has_dialogue_markers( $plain_content ),
 			'speaker_labels'    => $this->has_speaker_labels( $plain_content ),
 			'alternating_lines' => $this->has_alternating_lines( $content ),

@@ -25,6 +25,9 @@
  *   - Block declarations marked with `@pfbt-allow-color brand-replica`
  *     — device-frame brand replicas (Slack, Discord, IRC, iPhone, macOS)
  *     where the literal color IS the platform identity
+ *   - styles/{image,gallery,quote}-variations/ — user-selected block
+ *     style variations behind opt-in feature flags; the palette is the
+ *     style's identity, not default format paint
  *
  * The test fails with a list of every violation site so a maintainer
  * can fix and re-run.
@@ -184,6 +187,13 @@ class Test_No_Color_Leakage extends WP_UnitTestCase {
 			'/tests/fixtures/',
 			'/build/',
 			'/img/',
+			// User-selected block style variations (v2.1.0/v2.2.0): the
+			// palette IS the style the user explicitly chose, and the
+			// stylesheets only load behind opt-in feature flags — the
+			// no-default-paint contract for formats is unaffected.
+			'/styles/image-variations/',
+			'/styles/gallery-variations/',
+			'/styles/quote-variations/',
 		);
 
 		foreach ( $iterator as $path => $info ) {

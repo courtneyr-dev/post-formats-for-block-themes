@@ -250,25 +250,33 @@ class PFBT_Block_Templates {
 		}
 
 		foreach ( self::FORMATS as $format ) {
-			$this->register_one( "single-post-{$format}", sprintf(
+			$this->register_one(
+				"single-post-{$format}",
+				sprintf(
 				/* translators: %s: format name */
-				__( 'Single Post — %s', 'post-formats-for-block-themes' ),
-				ucfirst( $format )
-			), sprintf(
+					__( 'Single Post — %s', 'post-formats-for-block-themes' ),
+					ucfirst( $format )
+				),
+				sprintf(
 				/* translators: %s: format name */
-				__( 'Single-post template for the %s post format.', 'post-formats-for-block-themes' ),
-				ucfirst( $format )
-			) );
+					__( 'Single-post template for the %s post format.', 'post-formats-for-block-themes' ),
+					ucfirst( $format )
+				)
+			);
 
-			$this->register_one( "archive-post-format-{$format}", sprintf(
+			$this->register_one(
+				"archive-post-format-{$format}",
+				sprintf(
 				/* translators: %s: format name */
-				__( 'Archive — %s', 'post-formats-for-block-themes' ),
-				ucfirst( $format )
-			), sprintf(
+					__( 'Archive — %s', 'post-formats-for-block-themes' ),
+					ucfirst( $format )
+				),
+				sprintf(
 				/* translators: %s: format name */
-				__( 'Archive template for the %s post format taxonomy.', 'post-formats-for-block-themes' ),
-				ucfirst( $format )
-			) );
+					__( 'Archive template for the %s post format taxonomy.', 'post-formats-for-block-themes' ),
+					ucfirst( $format )
+				)
+			);
 		}
 	}
 

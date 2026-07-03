@@ -1,4 +1,9 @@
 <?php
+/**
+ * Audio format block pattern.
+ *
+ * @package post-formats-for-block-themes
+ */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;

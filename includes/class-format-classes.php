@@ -122,9 +122,9 @@ class PFBT_Format_Classes {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param string[]      $classes          Existing post classes.
-	 * @param string[]      $additional_class Classes passed to post_class().
-	 * @param int|WP_Post   $post_id          Post ID or object.
+	 * @param string[]    $classes          Existing post classes.
+	 * @param string[]    $additional_class Classes passed to post_class().
+	 * @param int|WP_Post $post_id          Post ID or object.
 	 * @return string[] Filtered classes.
 	 */
 	public function filter_post_class( $classes, $additional_class, $post_id ) {

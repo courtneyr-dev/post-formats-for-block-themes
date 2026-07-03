@@ -298,6 +298,7 @@ const FormatSelectionModal = () => {
 								onClick={() => handleFormatSelect(slug)}
 								className="pfpu-format-button"
 								variant={slug === 'standard' ? 'primary' : 'secondary'}
+								data-format={slug}
 							>
 								<span className={`dashicons dashicons-${format.icon}`} aria-hidden="true"></span>
 								<span className="pfpu-format-name">{format.name}</span>

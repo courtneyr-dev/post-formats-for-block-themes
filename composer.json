@@ -17,9 +17,9 @@
     "wp-coding-standards/wpcs": "^3.0",
     "dealerdirect/phpcodesniffer-composer-installer": "^1.0",
     "phpcompatibility/phpcompatibility-wp": "*",
-    "phpstan/phpstan": "^1.10",
+    "phpstan/phpstan": "^2.0",
     "szepeviktor/phpstan-wordpress": "^2.0",
-    "phpunit/phpunit": "^10.5",
+    "phpunit/phpunit": "^9.6",
     "yoast/phpunit-polyfills": "^3.0"
   },
   "scripts": {
@@ -30,7 +30,7 @@
     ],
     "phpcs": "phpcs -d memory_limit=512M --extensions=php --colors .",
     "phpcbf": "phpcbf -d memory_limit=512M --extensions=php .",
-    "phpstan": "phpstan analyse --memory-limit=1G includes/ blocks/ post-formats-for-block-themes.php",
+    "phpstan": "phpstan analyse --memory-limit=2G",
     "phpunit": "phpunit",
     "i18n": "wp i18n make-pot . languages/post-formats-for-block-themes.pot --exclude=node_modules,vendor,tests",
     "build": [

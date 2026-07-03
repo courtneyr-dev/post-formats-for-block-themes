@@ -56,14 +56,9 @@ class PFBT_Format_Detector {
 	const META_KEY_DETECTED = '_pfbt_format_detected';
 
 	/**
-	 * Meta key for tracking whether auto-detection has already applied a format.
+	 * Meta key marking that the detector has applied a format once
 	 *
-	 * Detection applies the post format ONCE per post (on first save where no
-	 * manual flag exists). This guard prevents the v1.1.2 regression where
-	 * subsequent saves kept reclassifying user-edited posts based on first-block
-	 * heuristics, silently reverting manual format choices made in the UI.
-	 *
-	 * @since 2.3.0
+	 * @since 1.2.0
 	 * @var string
 	 */
 	const META_KEY_APPLIED = '_pfbt_format_applied';
@@ -89,25 +84,18 @@ class PFBT_Format_Detector {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
+		// Re-enabled in 1.2.0 with apply-once semantics; the reclassify bug
+		// that forced the disable is guarded by META_KEY_APPLIED.
 		add_action( 'save_post', array( $this, 'detect_and_set_format' ), 10, 3 );
-		add_action( 'rest_after_insert_post', array( $this, 'detect_format_rest' ), 10, 2 );
+		// rest_after_insert_post stays unhooked: save_post already fires
+		// during REST inserts, so hooking both would double-process.
 	}
 
 	/**
 	 * Detect and set post format on save
 	 *
-	 * Always runs detection and writes the audit meta (`_pfbt_format_detected`),
-	 * so downstream consumers (e.g., Outpost's Micropub bridge) can read what
-	 * detection would have produced regardless of whether it was applied.
-	 *
-	 * Only APPLIES the detected format when:
-	 *   1. The post has no manual-flag meta (`_pfbt_format_manual`), AND
-	 *   2. Auto-detection has not previously applied to this post
-	 *      (`_pfbt_format_applied`).
-	 *
-	 * The second guard prevents the v1.1.2 regression: prior to this, the
-	 * detector ran on every save and reclassified posts whose first block
-	 * happened to be a video/gallery/etc., silently reverting manual choices.
+	 * Analyzes post content on save and sets the appropriate format
+	 * unless the user has explicitly set a format.
 	 *
 	 * @since 1.0.0
 	 *
@@ -116,8 +104,6 @@ class PFBT_Format_Detector {
 	 * @param bool    $update  Whether this is an existing post being updated.
 	 */
 	public function detect_and_set_format( $post_id, $post, $update ) {
-		unset( $update );
-
 		// Skip autosaves.
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
@@ -133,24 +119,24 @@ class PFBT_Format_Detector {
 			return;
 		}
 
-		// Check user capability.
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			return;
-		}
+		// No capability check: by the time save_post fires the write has
+		// already been authorized, and server-side clients (Micropub, CLI,
+		// cron) legitimately save without a user context.
 
-		// Always run detection and write audit meta, even when format will not be
-		// applied — downstream consumers (Outpost C1 coordination contract) read
-		// this to know what detection would have produced.
+		// Always run detection and record the result — the audit meta feeds
+		// the repair tool and divergence telemetry even when application is
+		// blocked below.
 		$detected_format = $this->detect_format_from_content( $post->post_content );
 		update_post_meta( $post_id, self::META_KEY_DETECTED, $detected_format );
 
-		// Respect manual format selection (UI choice OR upstream client mark_as_manual).
-		if ( get_post_meta( $post_id, self::META_KEY_MANUAL, true ) ) {
+		// Respect an explicit user/client format choice.
+		if ( self::is_manual( $post_id ) ) {
 			return;
 		}
 
-		// Apply detection only once per post. Subsequent saves leave the format
-		// alone so users can change it manually in the editor without reverts.
+		// Apply-once: after the detector has classified a post, later saves
+		// never reclassify. Gutenberg omits the format param when unchanged,
+		// so re-detection would silently revert a user's format edit.
 		if ( get_post_meta( $post_id, self::META_KEY_APPLIED, true ) ) {
 			return;
 		}
@@ -163,9 +149,9 @@ class PFBT_Format_Detector {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param int     $post_id         Post ID.
-		 * @param string  $detected_format Detected format slug.
-		 * @param WP_Post $post            Post object.
+		 * @param int    $post_id         Post ID.
+		 * @param string $detected_format Detected format slug.
+		 * @param WP_Post $post           Post object.
 		 */
 		do_action( 'pfbt_format_detected', $post_id, $detected_format, $post );
 	}
@@ -173,13 +159,8 @@ class PFBT_Format_Detector {
 	/**
 	 * Detect format for REST API saves
 	 *
-	 * When a REST request explicitly includes a `format` param, the user has
-	 * taken control — set the manual flag so future detector runs (and the
-	 * Outpost C1 coordination contract) honor that choice.
-	 *
-	 * Then run `detect_and_set_format` so audit meta is always refreshed.
-	 * The internal applied/manual guards in `detect_and_set_format` handle
-	 * the actual apply-or-skip decision.
+	 * Handles format detection when posts are saved via the REST API
+	 * (which includes the block editor).
 	 *
 	 * @since 1.0.0
 	 *
@@ -192,11 +173,14 @@ class PFBT_Format_Detector {
 			return;
 		}
 
-		// User explicitly sent format → preserve their choice on future saves.
+		// Check if format parameter was sent in the request.
 		if ( $request->has_param( 'format' ) ) {
+			// User explicitly set format, mark as manual.
 			update_post_meta( $post->ID, self::META_KEY_MANUAL, true );
+			return;
 		}
 
+		// Otherwise, run standard detection.
 		$this->detect_and_set_format( $post->ID, $post, true );
 	}
 
@@ -294,6 +278,9 @@ class PFBT_Format_Detector {
 	 */
 	public static function mark_as_manual( $post_id ) {
 		update_post_meta( $post_id, self::META_KEY_MANUAL, true );
+		// The user/client now owns the format, so any earlier detector
+		// application no longer describes the current format.
+		delete_post_meta( $post_id, self::META_KEY_APPLIED );
 	}
 
 	/**

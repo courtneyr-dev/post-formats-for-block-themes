@@ -40,8 +40,9 @@ class Test_Feature_Flags extends WP_UnitTestCase {
 	 * Test option override for feature flags
 	 */
 	public function test_option_override() {
-		// Set option to disable IndieWeb.
-		update_option( 'pfbt_feature_indieweb_integration', false );
+		// Set option to disable IndieWeb ('0' as a settings form would store;
+		// a raw false is indistinguishable from a missing option in WP).
+		update_option( 'pfbt_feature_indieweb_integration', '0' );
 
 		$this->assertFalse( PFBT_Feature_Flags::is_enabled( 'indieweb_integration' ) );
 
@@ -185,6 +186,10 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 	 */
 	public function set_up() {
 		parent::set_up();
+		// The plugin only loads abilities classes when wp_register_ability
+		// exists (see PFBT_Feature_Flags::has_abilities_api()); load directly
+		// here like test-mcp-abilities.php does so the class under test exists.
+		require_once PFBT_PLUGIN_DIR . 'includes/abilities/class-pfbt-core-abilities.php';
 		$this->abilities = PFBT_Core_Abilities::instance();
 	}
 

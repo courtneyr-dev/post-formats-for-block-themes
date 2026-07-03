@@ -72,3 +72,7 @@ languages/*.mo
 # Keep these
 !languages/.gitkeep
 !build/.gitkeep
+.phpunit.result.cache
+
+# wp-env local overrides (ports differ per machine)
+.wp-env.override.json

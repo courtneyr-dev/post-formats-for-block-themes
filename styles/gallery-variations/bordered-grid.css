@@ -12,14 +12,14 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-bordered-grid-min, 12rem), 1fr));
 	gap: 0;
-	background: var(--wp--preset--color--primary, #2271b1);
+	background: var(--pfbt-bordered-grid-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 	padding: var(--pfbt-bordered-grid-border, 0.25rem);
-	border: var(--pfbt-bordered-grid-border, 0.25rem) solid var(--wp--preset--color--primary, #2271b1);
+	border: var(--pfbt-bordered-grid-border, 0.25rem) solid var(--pfbt-bordered-grid-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 }
 
 .wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image {
 	margin: 0;
-	outline: var(--pfbt-bordered-grid-border, 0.25rem) solid var(--wp--preset--color--primary, #2271b1);
+	outline: var(--pfbt-bordered-grid-border, 0.25rem) solid var(--pfbt-bordered-grid-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 }
 
 .wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image img {
@@ -30,7 +30,7 @@
 }
 
 .wp-block-gallery.is-style-bordered-grid.is-layout-flex .wp-block-image:focus-within {
-	outline-color: var(--wp--preset--color--primary-accent, #e8f0fa);
+	outline-color: var(--pfbt-bordered-grid-focus, var(--wp--preset--color--primary-accent, var(--wp--preset--color--base, #e8f0fa)));
 }
 
 @media print {

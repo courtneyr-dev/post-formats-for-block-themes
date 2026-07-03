@@ -41,7 +41,7 @@
 	margin-inline: 0;
 	padding: 0;
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-panorama-caption, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 	text-align: center;
 }
 

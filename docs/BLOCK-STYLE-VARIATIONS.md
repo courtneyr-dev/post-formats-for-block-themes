@@ -148,27 +148,160 @@ Variations register on **both** `core/quote` and `core/pullquote`. Each one rese
 |---|---|
 | `plaque` | Award-style quotes, dedication blocks. Engraved metal plaque with ornamental border and embossed text. |
 
-## Customization
+## Color: the `--pfbt-*` token contract
 
-Every aesthetic value in every variation routes through a CSS custom property with a sensible fallback:
+Every color in every variation resolves through the same three-level chain:
+
+```
+--pfbt-{variation}-{role}          ← site/theme override token (always wins)
+  → theme palette preset(s)        ← palette-mapped colors only
+    → fixed default                 ← skeuomorphic colors, and the last resort
+```
+
+In CSS that looks like:
 
 ```css
+/* Palette-mapped: follows the active theme's palette by default */
 .wp-block-image.is-style-tinted-border img {
-	border-color: var(--wp--preset--color--primary, #2271b1);
-	border-width: var(--pfbt-tinted-border-width, 3px);
+	border-color: var(--pfbt-tinted-border-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
+}
+
+/* Fixed skeuomorph: photo paper is white on any palette */
+.wp-block-image.is-style-polaroid {
+	background: var(--pfbt-polaroid-paper, #ffffff);
 }
 ```
 
-To override per-site, set the variable in your theme's stylesheet, theme.json (custom block-styles), or a child theme:
+### Palette-mapped vs. fixed
+
+**Palette-mapped variations** pick up the active theme's colors with no configuration. Each color role tries two common palette slug conventions before falling back:
+
+| Role | Preset chain | Fallback |
+|---|---|---|
+| Accent, decorative (rules, borders — nothing sits on it) | `primary` → `accent-1` | `#2271b1` |
+| Accent, solid fill carrying text (bubbles, chips, buttons) | `primary` → `contrast` | `#2271b1` |
+| Body ink | `main` → `contrast` | `#0a0a0a` |
+| Muted text / captions | `secondary` → `contrast` | `#666666` |
+| Card / surface bg | `tertiary` → `base` | `#f5f5f5` |
+| Paper / page bg | `base` | `#ffffff` |
+| Hairline borders | `border-light` → `tertiary` | `#e5e5e5` |
+| Focus ring on accent | `primary-accent` → `base` | `#e8f0fa` |
+
+The first slug set matches themes like Ollie (`primary`, `main`, `secondary`, `tertiary`, `base`); the second matches the Twenty Twenty-Four/Five convention (`contrast`, `base`, `accent-1`). Themes using other slug names should set the `--pfbt-*` tokens directly (see below).
+
+Solid fills that carry text fall back to `contrast` rather than `accent-1` on purpose: `accent-N` slugs make no promise about what text color is readable on them (Twenty Twenty-Five's `accent-1` is a pale highlight yellow), while `contrast`-filled elements are always readable with `base` text — in light and dark palettes alike.
+
+Palette-mapped: **quote** magazine-pull, broadsheet, decorative-marks, side-rule-editorial, speech-bubble, message-bubble, comment-card · **image** caption-card, tinted-border, headline-crop, browser-window (chrome only) · **gallery** caption-prominent, bordered-grid, filter-tags, lookbook-hotspots, card-deck-swipe, before-after-pairs, comparison-pairs, map-pinned-geo, panorama-360.
+
+**Fixed skeuomorphs** deliberately ignore the palette — their colors are physical materials (paper, slate, brass, device hardware) that would break if a dark or brand-heavy palette leaked in. They stay put on every theme, and every one of their colors still has a `--pfbt-*` token if you want to retint them:
+
+Fixed: **quote** post-it, notebook-scrap, typewriter, napkin, library-card, chalkboard, whiteboard, postcard, plaque · **image** polaroid, postcard, photo-strip, index-card (paper/rules; the corner tab follows the accent), phone-frame, code-editor, browser-window traffic-light dots · **gallery** polaroid-stack, lightbox-slideshow (fixed dark overlay, light controls).
+
+Variations not listed in either group (rounded, circle, soft-shadow, justified-rows, masonry-cascade, …) paint no colors of their own — they inherit the theme completely.
+
+### Overriding tokens
+
+Set tokens from a block theme's `theme.json`:
+
+```json
+{
+	"styles": {
+		"css": ":root { --pfbt-side-rule-color: var(--wp--preset--color--brand); --pfbt-postit-bg: #ffe98a; }"
+	}
+}
+```
+
+…or from any stylesheet that loads on the front end:
 
 ```css
 :root {
 	--pfbt-tinted-border-width: 5px;
 	--pfbt-window-dot-close: var(--cr-orange);
+	--pfbt-code-editor-bg: #0d1117;
 }
 ```
 
 For per-block overrides, use the block's Advanced → Additional CSS Class field and apply a custom selector via your theme.
+
+### Color token reference
+
+Defaults shown as `slug chain → fallback` for palette-mapped tokens, or a literal value for fixed tokens.
+
+**Quote / pullquote**
+
+| Token | Paints | Default |
+|---|---|---|
+| `--pfbt-magazine-pull-ink` | Body text | `main` → `contrast` → `#0a0a0a` |
+| `--pfbt-magazine-pull-accent` | Big quote mark, divider rule | `primary` → `accent-1` → `#2271b1` |
+| `--pfbt-magazine-pull-cite` | Citation | `secondary` → `contrast` → `#666666` |
+| `--pfbt-broadsheet-ink` | Body text | `main` → `contrast` → `#0a0a0a` |
+| `--pfbt-broadsheet-rule` | Double rules top/bottom | `main` → `contrast` → `#0a0a0a` |
+| `--pfbt-broadsheet-cite` | Citation + its rule | `secondary` → `contrast` → `#666666` |
+| `--pfbt-decorative-marks-mark` | Oversized quote mark | `primary` → `accent-1` → `#2271b1` |
+| `--pfbt-decorative-marks-cite` | Citation | `secondary` → `contrast` → `#666666` |
+| `--pfbt-side-rule-color` | Inline-start rule | `primary` → `accent-1` → `#2271b1` |
+| `--pfbt-side-rule-cite` | Citation | `secondary` → `contrast` → `#666666` |
+| `--pfbt-speech-bubble-bg` | Bubble + tail | `tertiary` → `base` → `#f5f5f5` |
+| `--pfbt-speech-bubble-fg` | Bubble text | `main` → `contrast` → `#0a0a0a` |
+| `--pfbt-speech-bubble-cite` | Speaker line | `secondary` → `contrast` → `#666666` |
+| `--pfbt-message-bg` | Bubble | `primary` → `contrast` → `#2271b1` |
+| `--pfbt-message-fg` | Bubble text | `base` → `#ffffff` |
+| `--pfbt-message-cite` | Sender label | `secondary` → `contrast` → `#666666` |
+| `--pfbt-comment-card-bg` | Card | `tertiary` → `base` → `#f5f5f5` |
+| `--pfbt-comment-card-fg` | Card text | `main` → `contrast` → `#0a0a0a` |
+| `--pfbt-comment-card-meta` | Username | `secondary` → `contrast` → `#666666` |
+| `--pfbt-comment-avatar-bg` / `-fg` | Initial avatar | `primary` → `contrast` → `#2271b1` / `base` → `#ffffff` |
+| `--pfbt-postit-bg` / `-fg` / `-fold` | Post-it (fixed) | `#fff7a8` / `#1a1a1a` / `rgba(0,0,0,0.08)` |
+| `--pfbt-notebook-bg` / `-fg` / `-rule` / `-margin` | Notebook scrap (fixed) | `#fdfaf2` / `#1a1a1a` / blue rule / `#d44` |
+| `--pfbt-typewriter-bg` / `-fg` | Typewriter (fixed) | `#f6f1e4` / `#1a1a1a` |
+| `--pfbt-napkin-bg` / `-fg` / `-stain` | Napkin (fixed) | `#fdfdfa` / `#1a1a1a` / coffee ring |
+| `--pfbt-library-bg` / `-fg` / `-header` / `-header-fg` / `-rule` | Library card (fixed) | cream / ink / dark wood / cream / ruled line |
+| `--pfbt-chalkboard-bg` / `-fg` / `-vignette` / `-frame` | Chalkboard (fixed) | slate / chalk / darker slate / wood |
+| `--pfbt-whiteboard-bg` / `-marker` / `-cite-marker` | Whiteboard (fixed) | `#fefefe` / blue / red |
+| `--pfbt-postcard-bg` / `-fg` / `-edge` / `-divider` / `-stamp` | Quote postcard (fixed) | aged cream set |
+| `--pfbt-plaque-light` / `-mid` / `-engraved` / `-frame` | Plaque (fixed) | brass set |
+
+**Image**
+
+| Token | Paints | Default |
+|---|---|---|
+| `--pfbt-caption-card-bg` / `-fg` | Card / caption | `tertiary` → `base` → `#f5f5f5` / `main` → `contrast` → `#0a0a0a` |
+| `--pfbt-tinted-border-color` | Border + outer ring | `primary` → `accent-1` → `#2271b1` |
+| `--pfbt-tinted-border-mat-color` | Inner mat | `base` → `#ffffff` |
+| `--pfbt-headline-crop-caption` | Caption | `secondary` → `contrast` → `#666666` |
+| `--pfbt-browser-window-bg` / `-chrome` / `-border` / `-caption` | Window chrome | `base` / `tertiary` → `base` / `border-light` → `tertiary` / `secondary` → `contrast` |
+| `--pfbt-window-dot-close` / `-min` / `-max` | Traffic lights (fixed) | `#fc625d` / `#fdbc40` / `#34c84a` |
+| `--pfbt-polaroid-paper` / `-ink` | Polaroid (fixed; shared with gallery polaroid-stack) | `#ffffff` / `#0a0a0a` |
+| `--pfbt-image-postcard-tint` / `-edge` / `-caption` | Image postcard (fixed) | `#f5f5f5` / `#666666` / `#666666` |
+| `--pfbt-photo-strip-paper` | Strip paper + divider bars (fixed) | `#ffffff` |
+| `--pfbt-photo-strip-caption` | Caption | `secondary` → `contrast` → `#666666` |
+| `--pfbt-index-card-paper` / `-rule` | Card + ruled lines (fixed) | `#ffffff` / `#e5e5e5` |
+| `--pfbt-index-card-tab` | Corner tab | `primary` → `accent-1` → `#2271b1` |
+| `--pfbt-index-card-caption` | Caption | `secondary` → `contrast` → `#666666` |
+| `--pfbt-phone-frame-bezel` / `-notch` / `-caption` | Device hardware (fixed) | `#0a0a0a` / `#ffffff` / `#fafafa` |
+| `--pfbt-code-editor-bg` / `-fg` | Editor chrome (fixed) | `#1e1e1e` / `#fafafa` |
+
+**Gallery**
+
+| Token | Paints | Default |
+|---|---|---|
+| `--pfbt-caption-prominent-bg` / `-fg` | Card / caption | `tertiary` → `base` / `main` → `contrast` |
+| `--pfbt-bordered-grid-color` | Borders + gutter | `primary` → `accent-1` → `#2271b1` |
+| `--pfbt-bordered-grid-focus` | Focus outline | `primary-accent` → `base` → `#e8f0fa` |
+| `--pfbt-filter-tags-chip-bg` / `-chip-fg` / `-border` | Chips at rest | `tertiary` → `base` / `main` → `contrast` / `border-light` → `tertiary` |
+| `--pfbt-filter-tags-accent` / `-accent-fg` | Active chip + focus | `primary` → `contrast` / `base` → `#ffffff` |
+| `--pfbt-lookbook-accent` / `-accent-fg` / `-focus` | Hotspot buttons | `primary` → `contrast` / `base` / `primary-accent` → `base` |
+| `--pfbt-lookbook-popover-bg` / `-fg` / `-border` | Hotspot popover | `base` / `main` → `contrast` / `border-light` → `tertiary` |
+| `--pfbt-card-deck-bg` | Card surface | `base` → `#ffffff` |
+| `--pfbt-card-deck-accent` / `-accent-fg` / `-status` | Controls + counter | `primary` → `contrast` / `base` / `secondary` → `contrast` |
+| `--pfbt-ba-mat` / `--pfbt-ba-divider` | Comparison mat / slider line | `main` → `contrast` / `base` |
+| `--pfbt-comparison-caption` / `--pfbt-comparison-crosshair` | Caption / hover ring | `secondary` → `contrast` / `primary` → `accent-1` |
+| `--pfbt-geo-bg` / `-card-bg` / `-card-fg` | Map list surfaces | `tertiary` → `base` / `base` / `main` → `contrast` |
+| `--pfbt-panorama-caption` | Caption | `secondary` → `contrast` → `#666666` |
+| `--pfbt-polaroid-paper` / `-ink` | Polaroid stack (fixed; shared with image polaroid) | `#ffffff` / `#0a0a0a` |
+| `--pfbt-lightbox-overlay` / `-fg` / `-focus` | Lightbox (fixed dark) | `rgba(0,0,0,0.92)` / `#fafafa` / `#e8f0fa` |
+
+These tokens are distinct from the per-format `--pfbt-format-*` tokens documented in [`DESIGN-TOKENS.md`](./DESIGN-TOKENS.md) — those paint the format containers, these paint user-selected block style variations.
 
 ## Accessibility
 

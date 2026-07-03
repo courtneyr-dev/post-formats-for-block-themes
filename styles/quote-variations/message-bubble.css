@@ -49,7 +49,7 @@
 .wp-block-quote.is-style-message-bubble p,
 .wp-block-pullquote.is-style-message-bubble p {
 	margin: 0;
-	background: var(--pfbt-message-bg, var(--wp--preset--color--primary, #2271b1));
+	background: var(--pfbt-message-bg, var(--wp--preset--color--primary, var(--wp--preset--color--contrast, #2271b1)));
 	color: var(--pfbt-message-fg, var(--wp--preset--color--base, #ffffff));
 	padding-block: var(--wp--preset--spacing--small, 0.75rem);
 	padding-inline: var(--wp--preset--spacing--medium, 1.25rem);
@@ -66,7 +66,7 @@
 	margin-block-start: 0.5rem;
 	margin-inline-start: 0.5rem;
 	font-size: var(--wp--preset--font-size--x-small, 0.75rem);
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-message-cite, var(--wp--preset--color--secondary, var(--wp--preset--color--contrast, #666666)));
 	font-style: normal;
 }
 

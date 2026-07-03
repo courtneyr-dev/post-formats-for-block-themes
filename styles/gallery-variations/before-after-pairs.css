@@ -20,7 +20,7 @@
 	position: relative;
 	overflow: hidden;
 	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
-	background: var(--wp--preset--color--main, #0a0a0a);
+	background: var(--pfbt-ba-mat, var(--wp--preset--color--main, var(--wp--preset--color--contrast, #0a0a0a)));
 }
 
 .wp-block-gallery.is-style-before-after-pairs.is-layout-flex .pfbt-ba-pair img {
@@ -48,7 +48,7 @@
 	inset-block: 0;
 	inset-inline-start: var(--pfbt-ba-position, 50%);
 	width: 2px;
-	background: var(--wp--preset--color--base, #ffffff);
+	background: var(--pfbt-ba-divider, var(--wp--preset--color--base, #ffffff));
 	pointer-events: none;
 }
 

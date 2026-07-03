@@ -29,7 +29,8 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: rgba(0, 0, 0, 0.92);
+	/* Overlay is fixed dark by convention; controls stay light on any palette. */
+	background: var(--pfbt-lightbox-overlay, rgba(0, 0, 0, 0.92));
 	padding: var(--wp--preset--spacing--medium, 1.5rem);
 }
 
@@ -44,7 +45,7 @@
 .pfbt-lightbox-dialog__next {
 	position: absolute;
 	background: transparent;
-	color: var(--wp--preset--color--main-accent, #fafafa);
+	color: var(--pfbt-lightbox-fg, #fafafa);
 	border: 1px solid currentColor;
 	padding: var(--wp--preset--spacing--small, 0.75rem);
 	border-radius: 50%;
@@ -62,14 +63,14 @@
 	inset-block-end: 1rem;
 	inset-inline-start: 50%;
 	transform: translateX(-50%);
-	color: var(--wp--preset--color--main-accent, #fafafa);
+	color: var(--pfbt-lightbox-fg, #fafafa);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
 }
 
 .pfbt-lightbox-dialog__close:focus-visible,
 .pfbt-lightbox-dialog__prev:focus-visible,
 .pfbt-lightbox-dialog__next:focus-visible {
-	outline: 2px solid var(--wp--preset--color--primary-accent, #e8f0fa);
+	outline: 2px solid var(--pfbt-lightbox-focus, #e8f0fa);
 	outline-offset: 2px;
 }
 

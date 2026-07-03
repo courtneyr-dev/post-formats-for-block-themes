@@ -9,10 +9,11 @@
  * @since 2.1.0
  */
 
+/* Skeuomorph: aged-paper tint stays fixed on any palette. */
 .wp-block-image.is-style-postcard {
-	background: var(--wp--preset--color--tertiary, #f5f5f5);
+	background: var(--pfbt-image-postcard-tint, #f5f5f5);
 	padding: var(--wp--preset--spacing--small, 0.75rem);
-	border-inline-end: 3px dashed var(--wp--preset--color--secondary, #666666);
+	border-inline-end: 3px dashed var(--pfbt-image-postcard-edge, #666666);
 	display: inline-block;
 	max-width: 100%;
 }
@@ -31,7 +32,7 @@
 	padding: 0;
 	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
 	font-style: italic;
-	color: var(--wp--preset--color--secondary, #666666);
+	color: var(--pfbt-image-postcard-caption, #666666);
 }
 
 @media print {

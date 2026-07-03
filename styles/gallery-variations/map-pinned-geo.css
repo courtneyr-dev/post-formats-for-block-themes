@@ -17,14 +17,14 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(var(--pfbt-geo-min, 14rem), 1fr));
 	gap: var(--pfbt-geo-gap, 0.5rem);
-	background: var(--wp--preset--color--tertiary, #f5f5f5);
+	background: var(--pfbt-geo-bg, var(--wp--preset--color--tertiary, var(--wp--preset--color--base, #f5f5f5)));
 	padding: var(--wp--preset--spacing--medium, 1.5rem);
 	border-radius: var(--wp--preset--border-radius--lg, 0.75rem);
 }
 
 .wp-block-gallery.is-style-map-pinned-geo.is-layout-flex .wp-block-image {
 	margin: 0;
-	background: var(--wp--preset--color--base, #ffffff);
+	background: var(--pfbt-geo-card-bg, var(--wp--preset--color--base, #ffffff));
 	padding: var(--wp--preset--spacing--small, 0.75rem);
 	border-radius: var(--wp--preset--border-radius--sm, 0.375rem);
 }
@@ -45,7 +45,7 @@
 	padding: 0;
 	font-family: var(--wp--preset--font-family--primary, system-ui, sans-serif);
 	font-size: var(--wp--preset--font-size--small, 0.875rem);
-	color: var(--wp--preset--color--main, #0a0a0a);
+	color: var(--pfbt-geo-card-fg, var(--wp--preset--color--main, var(--wp--preset--color--contrast, #0a0a0a)));
 }
 
 .wp-block-gallery.is-style-map-pinned-geo.is-layout-flex .wp-block-image figcaption::before {

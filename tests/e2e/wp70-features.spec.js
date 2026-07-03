@@ -73,11 +73,7 @@ test.describe("WP 7.0 Features", () => {
     await apiContext.dispose();
   });
 
-  // The badge's block-hooks injection does not currently render in ANY
-  // environment — verified missing on a fresh wp-env (this suite) and on
-  // production courtneyr.dev (video-format post, 2026-07-03). Needs a
-  // live-WP debugging session; these three tests are the spec.
-  test.describe.fixme("Format Badge Block", () => {
+  test.describe("Format Badge Block", () => {
     test("badge appears before post title for non-standard formats", async ({
       page,
     }) => {

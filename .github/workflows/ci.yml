@@ -68,6 +68,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-progress
 
+      - name: Install Subversion
+        # install-wp-tests.sh checks out the WP test library via svn,
+        # which GitHub removed from ubuntu runners in 2024.
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
       - name: Install WordPress test suite
         run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 ${{ matrix.wordpress }}
 

@@ -3,6 +3,14 @@ name: Deploy to WordPress.org
 on:
   release:
     types: [published]
+  # Manual re-run path: release events pin the workflow file to the tagged
+  # commit, so a fixed workflow can't re-serve an already-published tag
+  # without this.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Plugin version to deploy (must match readme.txt Stable tag, e.g. 2.3.0)'
+        required: true
 
 jobs:
   deploy:
@@ -12,6 +20,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        # Strip a leading "v" so the SVN tag matches readme.txt's Stable tag.
+        env:
+          RAW: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.version }}
+        run: |
+          echo "version=${RAW#v}" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -24,7 +40,7 @@ jobs:
         with:
           php-version: '8.2'
           coverage: none
-          tools: composer
+          tools: composer, wp-cli
 
       - name: Install Node dependencies
         run: npm ci
@@ -54,9 +70,10 @@ jobs:
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: post-formats-for-block-themes
-          VERSION: ${{ github.event.release.tag_name }}
+          VERSION: ${{ steps.version.outputs.version }}
 
       - name: Upload release asset
+        if: github.event_name == 'release'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

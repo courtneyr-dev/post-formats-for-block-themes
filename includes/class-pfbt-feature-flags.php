@@ -65,9 +65,10 @@ class PFBT_Feature_Flags {
 			return (bool) $filtered;
 		}
 
-		// 3. Check option (user/admin setting).
-		$option = get_option( "pfbt_feature_{$flag}" );
-		if ( false !== $option ) {
+		// 3. Check option (user/admin setting). Null default distinguishes
+		// "not set" from a stored falsy value like '0'.
+		$option = get_option( "pfbt_feature_{$flag}", null );
+		if ( null !== $option ) {
 			return (bool) $option;
 		}
 
@@ -115,7 +116,7 @@ class PFBT_Feature_Flags {
 				$source = 'constant';
 			} elseif ( has_filter( "pfbt_feature_{$flag}" ) ) {
 				$source = 'filter';
-			} elseif ( false !== get_option( "pfbt_feature_{$flag}" ) ) {
+			} elseif ( null !== get_option( "pfbt_feature_{$flag}", null ) ) {
 				$source = 'option';
 			}
 
@@ -143,7 +144,11 @@ class PFBT_Feature_Flags {
 			return false;
 		}
 
-		return update_option( "pfbt_feature_{$flag}", (bool) $enabled );
+		// Store '1'/'0' rather than booleans: update_option() silently
+		// short-circuits when writing false to a missing option (false is
+		// also get_option()'s "missing" sentinel), so a raw false can
+		// never disable a default-on feature.
+		return update_option( "pfbt_feature_{$flag}", $enabled ? '1' : '0' );
 	}
 
 	/**

@@ -23,6 +23,7 @@ class Test_Abilities_Integration extends WP_UnitTestCase {
 	 */
 	public function set_up() {
 		parent::set_up();
+		require_once PFBT_PLUGIN_DIR . 'includes/abilities/class-pfbt-core-abilities.php';
 		$this->abilities = PFBT_Core_Abilities::instance();
 	}
 
@@ -47,11 +48,11 @@ class Test_Abilities_Integration extends WP_UnitTestCase {
 	 * Test feature flag controls abilities registration
 	 */
 	public function test_feature_flag_controls_abilities() {
-		update_option( 'pfbt_feature_abilities_api', false );
+		PFBT_Feature_Flags::set_flag( 'abilities_api', false );
 
 		$this->assertFalse( PFBT_Feature_Flags::is_enabled( 'abilities_api' ) );
 
-		delete_option( 'pfbt_feature_abilities_api' );
+		PFBT_Feature_Flags::reset_flag( 'abilities_api' );
 	}
 
 	/**
@@ -65,11 +66,11 @@ class Test_Abilities_Integration extends WP_UnitTestCase {
 	 * Test block bindings feature flag can be disabled via option
 	 */
 	public function test_block_bindings_feature_flag_can_be_disabled() {
-		update_option( 'pfbt_feature_block_bindings', false );
+		PFBT_Feature_Flags::set_flag( 'block_bindings', false );
 
 		$this->assertFalse( PFBT_Feature_Flags::is_enabled( 'block_bindings' ) );
 
-		delete_option( 'pfbt_feature_block_bindings' );
+		PFBT_Feature_Flags::reset_flag( 'block_bindings' );
 	}
 
 	/**

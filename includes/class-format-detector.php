@@ -56,6 +56,14 @@ class PFBT_Format_Detector {
 	const META_KEY_DETECTED = '_pfbt_format_detected';
 
 	/**
+	 * Meta key marking that the detector has applied a format once
+	 *
+	 * @since 1.2.0
+	 * @var string
+	 */
+	const META_KEY_APPLIED = '_pfbt_format_applied';
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @since 1.0.0
@@ -76,9 +84,11 @@ class PFBT_Format_Detector {
 	 * @since 1.0.0
 	 */
 	private function __construct() {
-		// Temporarily disabled — causes format override issues.
-		// add_action( 'save_post', array( $this, 'detect_and_set_format' ), 10, 3 );
-		// add_action( 'rest_after_insert_post', array( $this, 'detect_format_rest' ), 10, 2 ).
+		// Re-enabled in 1.2.0 with apply-once semantics; the reclassify bug
+		// that forced the disable is guarded by META_KEY_APPLIED.
+		add_action( 'save_post', array( $this, 'detect_and_set_format' ), 10, 3 );
+		// rest_after_insert_post stays unhooked: save_post already fires
+		// during REST inserts, so hooking both would double-process.
 	}
 
 	/**
@@ -109,28 +119,30 @@ class PFBT_Format_Detector {
 			return;
 		}
 
-		// Check user capability.
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
-			return;
-		}
+		// No capability check: by the time save_post fires the write has
+		// already been authorized, and server-side clients (Micropub, CLI,
+		// cron) legitimately save without a user context.
 
-		// Check if format was manually set.
-		$manual_format = get_post_meta( $post_id, self::META_KEY_MANUAL, true );
-
-		// If user explicitly set format via UI, respect it.
-		if ( $manual_format ) {
-			// User has taken control, don't auto-detect.
-			return;
-		}
-
-		// Detect format from content.
+		// Always run detection and record the result — the audit meta feeds
+		// the repair tool and divergence telemetry even when application is
+		// blocked below.
 		$detected_format = $this->detect_format_from_content( $post->post_content );
-
-		// Store detected format for reference.
 		update_post_meta( $post_id, self::META_KEY_DETECTED, $detected_format );
 
-		// Set the post format.
+		// Respect an explicit user/client format choice.
+		if ( self::is_manual( $post_id ) ) {
+			return;
+		}
+
+		// Apply-once: after the detector has classified a post, later saves
+		// never reclassify. Gutenberg omits the format param when unchanged,
+		// so re-detection would silently revert a user's format edit.
+		if ( get_post_meta( $post_id, self::META_KEY_APPLIED, true ) ) {
+			return;
+		}
+
 		set_post_format( $post_id, $detected_format );
+		update_post_meta( $post_id, self::META_KEY_APPLIED, '1' );
 
 		/**
 		 * Fires after format is auto-detected and set
@@ -266,6 +278,9 @@ class PFBT_Format_Detector {
 	 */
 	public static function mark_as_manual( $post_id ) {
 		update_post_meta( $post_id, self::META_KEY_MANUAL, true );
+		// The user/client now owns the format, so any earlier detector
+		// application no longer describes the current format.
+		delete_post_meta( $post_id, self::META_KEY_APPLIED );
 	}
 
 	/**

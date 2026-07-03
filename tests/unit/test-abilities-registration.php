@@ -40,8 +40,9 @@ class Test_Feature_Flags extends WP_UnitTestCase {
 	 * Test option override for feature flags
 	 */
 	public function test_option_override() {
-		// Set option to disable IndieWeb.
-		update_option( 'pfbt_feature_indieweb_integration', false );
+		// Set option to disable IndieWeb ('0' as a settings form would store;
+		// a raw false is indistinguishable from a missing option in WP).
+		update_option( 'pfbt_feature_indieweb_integration', '0' );
 
 		$this->assertFalse( PFBT_Feature_Flags::is_enabled( 'indieweb_integration' ) );
 

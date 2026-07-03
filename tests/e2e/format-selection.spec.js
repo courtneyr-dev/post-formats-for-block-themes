@@ -38,8 +38,10 @@ test.describe('Format Selection Workflow', () => {
 		// Modal should close
 		await expect(modal).not.toBeVisible();
 
-		// Gallery block should be inserted
-		await expect(page.locator('.wp-block-gallery')).toBeVisible();
+		// Gallery block should be inserted. The editor canvas is iframed
+		// (WP 6.3+), so block content is invisible to page-level locators.
+		const canvas = page.frameLocator('iframe[name="editor-canvas"]');
+		await expect(canvas.locator('.wp-block-gallery')).toBeVisible();
 	});
 
 	test('format switcher allows changing format mid-edit', async ({ page }) => {

@@ -9,6 +9,7 @@
   "description": "Displays the current post format as a badge.",
   "textdomain": "post-formats-for-block-themes",
   "usesContext": ["postId", "postType"],
+  "style": ["dashicons"],
   "supports": {
     "html": false,
     "anchor": true,

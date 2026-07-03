@@ -589,6 +589,20 @@ class PFBT_Format_Styles {
 			}
 		}
 
+		/*
+		 * Only offer format templates to queries that can use them: the
+		 * editor's unfiltered list, the editor's per-post-type query, or a
+		 * slug__in that names a format template (front-end resolution of a
+		 * post with an assigned format template). Appending them to every
+		 * query broke front-end resolution: resolve_block_template() sorts
+		 * candidates by their position in the requested hierarchy, and a
+		 * slug that was never requested has no position — it sorted first,
+		 * so single-format-aside outranked the theme's single template on
+		 * every post.
+		 */
+		$requested_slugs = isset( $query['slug__in'] ) && is_array( $query['slug__in'] ) ? $query['slug__in'] : array();
+		$for_post_editor = isset( $query['post_type'] ) && 'post' === $query['post_type'];
+
 		// Add format templates to BOTH post editor and site editor
 		// Visual separation will be handled by CSS styling
 		$templates = array(
@@ -604,6 +618,10 @@ class PFBT_Format_Styles {
 		);
 
 		foreach ( $templates as $slug => $title ) {
+			if ( ! empty( $requested_slugs ) && ! $for_post_editor && ! in_array( $slug, $requested_slugs, true ) ) {
+				continue;
+			}
+
 			$template_file = PFBT_PLUGIN_DIR . 'templates/' . $slug . '.html';
 
 			if ( ! file_exists( $template_file ) ) {
@@ -643,7 +661,7 @@ class PFBT_Format_Styles {
 			$template->author         = null;
 			$template->origin         = 'plugin';
 
-			$query_result[] = $template;
+			$query_result[] = self::apply_hooked_blocks( $template );
 		}
 
 		// Log final templates being returned
@@ -696,6 +714,31 @@ class PFBT_Format_Styles {
 		$template->has_theme_file = false;
 		$template->is_custom      = true;
 		$template->post_types     = array( 'post' );
+
+		return self::apply_hooked_blocks( $template );
+	}
+
+	/**
+	 * Run the Block Hooks algorithm on a plugin-built template.
+	 *
+	 * Core injects hooked blocks (blockHooks in block.json, e.g. the Format
+	 * Badge before core/post-title) inside _build_block_template_result_from_file().
+	 * Templates built by hand and returned from the get_block_templates /
+	 * pre_get_block_file_template filters bypass that factory, so they must
+	 * apply the same injection themselves or hooked blocks never render.
+	 *
+	 * @since 2.3.1
+	 * @param WP_Block_Template $template Plugin-built template object.
+	 * @return WP_Block_Template The template with hooked blocks injected.
+	 */
+	private static function apply_hooked_blocks( $template ) {
+		if ( function_exists( 'apply_block_hooks_to_content' ) ) {
+			$template->content = apply_block_hooks_to_content(
+				$template->content,
+				$template,
+				'insert_hooked_blocks_and_set_ignored_hooked_blocks_metadata'
+			);
+		}
 
 		return $template;
 	}

@@ -52,7 +52,17 @@ jobs:
         run: npm run build
 
       - name: Generate translation files
-        run: composer i18n
+        # Non-fatal: wp.org builds language packs from translate.wordpress.org
+        # for hosted plugins, so the bundled .pot is a convenience. make-pot
+        # fetches block-i18n.json from develop.svn.wordpress.org, which times
+        # out entirely when wp.org SVN is degraded (observed 2026-07-03).
+        run: |
+          for i in 1 2 3; do
+            composer i18n && exit 0
+            echo "make-pot attempt $i failed; retrying in 15s"
+            sleep 15
+          done
+          echo "::warning::.pot generation failed (develop.svn.wordpress.org unreachable); shipping without an updated .pot"
 
       - name: Create distribution archive
         run: |

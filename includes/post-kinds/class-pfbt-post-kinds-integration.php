@@ -28,7 +28,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * - Audio format → Listen kind (podcast, music)
  * - Video format → Watch kind (video content)
  * - Image/Gallery → Photo kind
- * - Quote → Quotation kind
+ * - Quote → Note kind (PKIW has no quotation kind)
  * - Link → Bookmark kind
  * - Status/Aside → Note kind
  * - Standard → Article kind
@@ -79,7 +79,17 @@ class PFBT_Post_Kinds_Integration {
 	 */
 	private function __construct() {
 		$this->init_mappings();
-		$this->init_hooks();
+
+		// This class is instantiated at after_setup_theme:99, but PKIW does
+		// not register the `kind` taxonomy until init:5 — so an immediate
+		// taxonomy_exists() check always fails on PKIW-only installs. Defer
+		// the active check until after PKIW has registered its taxonomy and
+		// seeded its terms (init:5–11).
+		if ( did_action( 'init' ) ) {
+			$this->init_hooks();
+		} else {
+			add_action( 'init', array( $this, 'init_hooks' ), 12 );
+		}
 	}
 
 	/**
@@ -95,37 +105,50 @@ class PFBT_Post_Kinds_Integration {
 		 * Multiple formats can map to the same kind.
 		 */
 		$this->format_kind_map = array(
-			'standard' => 'article',   // Long-form blog post.
-			'aside'    => 'note',      // Short note.
-			'status'   => 'note',      // Status update (also note).
-			'quote'    => 'quotation', // Quote with attribution.
-			'link'     => 'bookmark',  // Link/bookmark.
-			'image'    => 'photo',     // Single image.
-			'gallery'  => 'photo',     // Multiple images (still photo kind).
-			'video'    => 'watch',     // Video content.
-			'audio'    => 'listen',    // Audio/podcast content.
-			'chat'     => 'note',      // Chat transcript.
+			'standard' => 'article',  // Long-form blog post.
+			'aside'    => 'note',     // Short note.
+			'status'   => 'note',     // Status update (also note).
+			'quote'    => 'note',     // PKIW has no quotation kind; a quote is a short note.
+			'link'     => 'bookmark', // Link/bookmark.
+			'image'    => 'photo',    // Single image.
+			'gallery'  => 'photo',    // Multiple images (still photo kind).
+			'video'    => 'watch',    // Video content.
+			'audio'    => 'listen',   // Audio/podcast content.
+			'chat'     => 'note',     // Chat transcript.
 		);
 
 		/**
 		 * Kind to Format mapping (for reverse suggestions).
 		 *
 		 * When a user selects a post kind, suggest the corresponding format.
+		 * Covers every default kind PKIW registers — title-bearing kinds map
+		 * to standard, reaction kinds to aside, short activity kinds to status.
 		 */
 		$this->kind_format_map = array(
-			'article'   => 'standard',
-			'note'      => 'aside',    // Default note to aside (status is more restrictive).
-			'quotation' => 'quote',
-			'bookmark'  => 'link',
-			'photo'     => 'image',
-			'watch'     => 'video',
-			'listen'    => 'audio',
-			'reply'     => 'aside',    // Replies are typically short.
-			'like'      => 'aside',    // Likes can use aside format.
-			'repost'    => 'aside',    // Reposts/boosts.
-			'rsvp'      => 'aside',    // Event RSVPs.
-			'checkin'   => 'status',   // Location checkins.
-			'tag'       => 'aside',    // Tag responses.
+			'article'     => 'standard',
+			'event'       => 'standard', // Events carry a title and details.
+			'recipe'      => 'standard', // Recipes carry a title and steps.
+			'review'      => 'standard', // Reviews carry a title and body.
+			'note'        => 'aside',    // Default note to aside (status is more restrictive).
+			'reply'       => 'aside',    // Replies are typically short.
+			'like'        => 'aside',    // Likes can use aside format.
+			'repost'      => 'aside',    // Reposts/boosts.
+			'favorite'    => 'aside',    // Favorites are like-style reactions.
+			'rsvp'        => 'aside',    // Event RSVPs.
+			'bookmark'    => 'link',
+			'photo'       => 'image',
+			'watch'       => 'video',
+			'video'       => 'video',    // Own video content.
+			'listen'      => 'audio',
+			'checkin'     => 'status',   // Location checkins.
+			'eat'         => 'status',   // Food log.
+			'drink'       => 'status',   // Drink log.
+			'mood'        => 'status',   // Mood updates.
+			'play'        => 'status',   // Game/play sessions.
+			'read'        => 'status',   // Reading progress.
+			'jam'         => 'status',   // Currently-listening jams.
+			'wish'        => 'status',   // Wishlist items.
+			'acquisition' => 'status',   // New acquisitions.
 		);
 
 		/**
@@ -150,9 +173,12 @@ class PFBT_Post_Kinds_Integration {
 	/**
 	 * Initialize hooks
 	 *
+	 * Runs at init:12 (or immediately when instantiated after init) so the
+	 * active check sees PKIW's `kind` taxonomy, registered at init:5.
+	 *
 	 * @since 1.2.0
 	 */
-	private function init_hooks() {
+	public function init_hooks() {
 		// Only add hooks if Post Kinds plugin is active.
 		if ( ! $this->is_post_kinds_active() ) {
 			return;
@@ -164,10 +190,13 @@ class PFBT_Post_Kinds_Integration {
 		// Pass mapping data to JavaScript editor.
 		add_filter( 'pfbt_editor_script_data', array( $this, 'add_kind_mapping_to_editor' ) );
 
-		// Suggest kind when format is set.
-		add_action( 'set_post_format', array( $this, 'suggest_kind_on_format_change' ), 10, 3 );
+		// Suggest kind when format is set. Core has no `set_post_format`
+		// action — set_post_format() is a wp_set_post_terms() wrapper — so
+		// format changes surface through `set_object_terms` on the
+		// `post_format` taxonomy.
+		add_action( 'set_object_terms', array( $this, 'suggest_kind_on_format_terms' ), 10, 4 );
 
-		// Optionally auto-set format when kind is set.
+		// Auto-set format when kind is set.
 		add_action( 'set_object_terms', array( $this, 'suggest_format_on_kind_change' ), 10, 6 );
 
 		// Add REST API endpoint for kind suggestions.
@@ -214,7 +243,8 @@ class PFBT_Post_Kinds_Integration {
 	 * Check if Post Kinds or IndieBlocks plugin is active
 	 *
 	 * Supports:
-	 * - Post Kinds plugin (Kind_Taxonomy class or 'kind' taxonomy)
+	 * - Post Kinds for IndieWeb plugin (PostKindsForIndieWeb\Taxonomy class)
+	 * - Legacy Post Kinds plugin (Kind_Taxonomy class or 'kind' taxonomy)
 	 * - IndieBlocks plugin (has Post Kind meta box feature)
 	 *
 	 * @since 1.2.0
@@ -222,7 +252,12 @@ class PFBT_Post_Kinds_Integration {
 	 * @return bool True if Post Kinds or IndieBlocks is active.
 	 */
 	public function is_post_kinds_active() {
-		// Check for Post Kinds plugin.
+		// Check for Post Kinds for IndieWeb plugin.
+		if ( class_exists( 'PostKindsForIndieWeb\\Taxonomy' ) ) {
+			return true;
+		}
+
+		// Check for legacy Post Kinds plugin.
 		if ( class_exists( 'Kind_Taxonomy' ) || taxonomy_exists( 'kind' ) ) {
 			return true;
 		}
@@ -288,9 +323,47 @@ class PFBT_Post_Kinds_Integration {
 	}
 
 	/**
+	 * Route post_format term changes to the kind suggestion
+	 *
+	 * Listens to `set_object_terms` because core never fires a
+	 * `set_post_format` action. Resolves the format slug from the term
+	 * taxonomy IDs (always integers, unlike $terms which may be slugs)
+	 * and strips the `post-format-` prefix core stores on format terms.
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param int    $object_id Object ID.
+	 * @param array  $terms     Terms as passed to wp_set_object_terms().
+	 * @param array  $tt_ids    Term taxonomy IDs.
+	 * @param string $taxonomy  Taxonomy slug.
+	 */
+	public function suggest_kind_on_format_terms( $object_id, $terms, $tt_ids, $taxonomy ) {
+		if ( 'post_format' !== $taxonomy ) {
+			return;
+		}
+
+		if ( 'post' !== get_post_type( $object_id ) ) {
+			return;
+		}
+
+		// No format term means the standard format.
+		$format = 'standard';
+
+		if ( ! empty( $tt_ids ) ) {
+			$term = get_term_by( 'term_taxonomy_id', (int) $tt_ids[0], 'post_format' );
+			if ( ! $term instanceof WP_Term ) {
+				return;
+			}
+			$format = str_replace( 'post-format-', '', $term->slug );
+		}
+
+		$this->suggest_kind_on_format_change( $object_id, $format );
+	}
+
+	/**
 	 * Suggest kind when post format is changed
 	 *
-	 * This fires after set_post_format() and can optionally set the kind.
+	 * Invoked by suggest_kind_on_format_terms() and can optionally set the kind.
 	 *
 	 * @since 1.2.0
 	 *
@@ -355,13 +428,15 @@ class PFBT_Post_Kinds_Integration {
 			return;
 		}
 
-		// Get the new kind slug.
-		if ( empty( $terms ) ) {
+		// Get the new kind slug. Resolve from the term taxonomy IDs — the
+		// $terms argument echoes whatever the caller passed to
+		// wp_set_object_terms(), which is usually slugs, not IDs.
+		if ( empty( $tt_ids ) ) {
 			return;
 		}
 
-		$term = get_term( $terms[0], 'kind' );
-		if ( ! $term || is_wp_error( $term ) ) {
+		$term = get_term_by( 'term_taxonomy_id', (int) $tt_ids[0], 'kind' );
+		if ( ! $term instanceof WP_Term ) {
 			return;
 		}
 
@@ -406,11 +481,16 @@ class PFBT_Post_Kinds_Integration {
 		/**
 		 * Filter whether to auto-suggest post kinds based on format.
 		 *
+		 * Defaults to enabled when the `kind` taxonomy exists — the
+		 * suggestion writes to that taxonomy, so its presence is the
+		 * precise capability check. IndieBlocks meta-only installs
+		 * stay off unless a filter opts in.
+		 *
 		 * @since 1.2.0
 		 *
 		 * @param bool $enabled Whether auto-suggestion is enabled.
 		 */
-		return apply_filters( 'pfbt_auto_suggest_kind', false );
+		return apply_filters( 'pfbt_auto_suggest_kind', taxonomy_exists( 'kind' ) );
 	}
 
 	/**
@@ -424,11 +504,14 @@ class PFBT_Post_Kinds_Integration {
 		/**
 		 * Filter whether to auto-suggest post formats based on kind.
 		 *
+		 * Defaults to enabled when the `kind` taxonomy exists, mirroring
+		 * pfbt_auto_suggest_kind.
+		 *
 		 * @since 1.2.0
 		 *
 		 * @param bool $enabled Whether auto-suggestion is enabled.
 		 */
-		return apply_filters( 'pfbt_auto_suggest_format', false );
+		return apply_filters( 'pfbt_auto_suggest_format', taxonomy_exists( 'kind' ) );
 	}
 
 	/**
@@ -464,6 +547,13 @@ class PFBT_Post_Kinds_Integration {
 	private function set_post_kind( $post_id, $kind ) {
 		if ( function_exists( 'set_post_kind' ) ) {
 			return set_post_kind( $post_id, $kind );
+		}
+
+		// The kind taxonomy is non-hierarchical, so wp_set_post_terms()
+		// would silently create a term for any unknown slug. Only assign
+		// kinds the plugin has registered.
+		if ( ! get_term_by( 'slug', $kind, 'kind' ) ) {
+			return false;
 		}
 
 		$result = wp_set_post_terms( $post_id, array( $kind ), 'kind' );

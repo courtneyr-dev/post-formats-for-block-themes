@@ -255,8 +255,12 @@ class PFBT_Format_Detector {
 				continue;
 			}
 
-			// Skip blocks with no content.
-			if ( empty( $block['innerHTML'] ) && empty( $block['innerBlocks'] ) ) {
+			// Skip blocks with no content — unless the block is a registered
+			// dynamic block, whose markup renders at runtime. Contentless
+			// self-closing comments are exactly what Micropub clients write
+			// for kind cards, so skipping them would leave those posts
+			// classified as standard.
+			if ( empty( $block['innerHTML'] ) && empty( $block['innerBlocks'] ) && ! $this->is_dynamic_block( $block['blockName'] ) ) {
 				continue;
 			}
 
@@ -264,6 +268,20 @@ class PFBT_Format_Detector {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Check whether a block is registered as a dynamic (server-rendered) block
+	 *
+	 * @since 2.4.0
+	 *
+	 * @param string $block_name Block name (e.g. 'post-kinds-indieweb/listen-card').
+	 * @return bool True if the block is registered with a render callback.
+	 */
+	private function is_dynamic_block( $block_name ) {
+		$block_type = WP_Block_Type_Registry::get_instance()->get_registered( $block_name );
+
+		return $block_type instanceof WP_Block_Type && $block_type->is_dynamic();
 	}
 
 	/**

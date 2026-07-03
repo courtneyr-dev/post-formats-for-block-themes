@@ -3,7 +3,7 @@ Contributors: courane01
 Donate link: https://github.com/sponsors/courtneyr-dev
 Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
 Stable tag: 2.3.0
 License: GPLv2 or later
@@ -346,6 +346,21 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 2.3.0 =
+
+**WP 7.0 features, automatic format detection returns, and fixes across every format.**
+
+* New: Block Bindings source `post-formats/format-data` — bind core block attributes to format name, label, icon, `has_format`, character count, media URL, or quote attribution.
+* New: Format Badge block (`post-formats/format-badge`), auto-inserted before post titles on non-standard formats via Block Hooks.
+* New: SVG icon sets with a settings-page picker (`img/icon-sets/{slug}/format-icons.svg`), filterable for custom sets.
+* New: Chat Log block front-end interactivity via the Interactivity API, with thread grouping.
+* Changed: automatic format detection is back on, with apply-once semantics — it applies once on first save from content and never overrides a manual choice.
+* Fixed: Quote and Video patterns no longer trigger the "unexpected or invalid content" recovery prompt in the editor.
+* Fixed: image, gallery, and quote style variations now load their CSS on block-theme front ends (previously registered but rendered unstyled); interactive gallery view modules load on demand the same way.
+* Fixed: the format selection modal now waits for the WordPress welcome guide to be dismissed instead of stacking on top of it.
+* Fixed: feature flags could silently fail to store an "off" value.
+* Fixed: format analyzer no longer lets Status/Aside outrank strong structural matches; Chat speaker labels detect correctly across paragraph boundaries.
 
 = 2.2.0 =
 

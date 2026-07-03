@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.3.0] - 2026-07-03
+
 ### Added
 
 - Block Bindings source (`post-formats/format-data`) for binding core block attributes to post format metadata
@@ -14,6 +16,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Seven bindable keys: `format_name`, `format_label`, `format_icon`, `has_format`, `char_count`, `media_url`, `quote_attribution`
 - Interactivity API integration for Chat Log block with thread grouping and frontend interactivity
 - `block_bindings` feature flag in `PFBT_Feature_Flags`
+- SVG icon sets (`PFBT_Icon_Set`, `img/icon-sets/{slug}/format-icons.svg`) with a settings-page picker and `pfbt_icon_sets` / URL filters
+- First runnable test suites: PHPUnit (254 tests, 9-job CI matrix), Playwright e2e, and axe accessibility specs
+
+### Changed
+
+- Automatic format detection re-enabled with apply-once semantics: applies once on first save from content, never overrides a manual or externally-set format
+- Style-variation CSS and Interactivity view modules now load via a `render_block` filter attached at `init`, because block themes render template HTML before `enqueue_block_assets` and core's `style_handle` conditional loading never fires there
+
+### Fixed
+
+- Quote and Video format patterns emitted markup that fails core block validation ("unexpected or invalid content" recovery prompt)
+- All 52 image/gallery/quote style variations rendered unstyled on block-theme front ends (registered, visible in the picker, but their CSS never enqueued)
+- Format selection modal stacked on top of the WordPress welcome guide; it now defers until the guide is dismissed (`isFeatureActive` gating)
+- Format Badge hooked block did not render (missing render wiring + dashicons on the front end)
+- Feature flags could silently fail to store an "off" value (`update_option(false)` no-op)
+- Format analyzer let Status/Aside outrank strong structural matches (structural score ≥60 now wins)
+- Chat speaker labels failed to match across `</p>` boundaries without newlines
 
 ## [2.0.1] - 2026-04-30
 

@@ -104,6 +104,14 @@ jobs:
       - name: Start WordPress (wp-env)
         run: npx --yes @wordpress/env@latest start
 
+      - name: Prepare WordPress for E2E
+        # Disable the editor welcome guide (it stacks above the plugin's
+        # format modal and intercepts clicks) and mint an application
+        # password — core only accepts app passwords over Basic auth.
+        run: |
+          npx --yes @wordpress/env@latest run cli wp user meta update admin wp_persisted_preferences '{"core/edit-post":{"welcomeGuide":false,"fullscreenMode":false},"core":{"welcomeGuide":false,"fullscreenMode":false}}' --format=json
+          echo "WP_APP_PASSWORD=$(npx --yes @wordpress/env@latest run cli wp user application-password create admin e2e --porcelain)" >> "$GITHUB_ENV"
+
       - name: Run E2E tests
         run: npm run test:e2e
         env:

@@ -25,9 +25,11 @@ test.describe("WP 7.0 Features", () => {
     apiContext = await playwright.request.newContext({
       baseURL: process.env.WP_BASE_URL || "http://localhost:8888",
       extraHTTPHeaders: {
-        Authorization: `Basic ${Buffer.from("admin:password").toString(
-          "base64",
-        )}`,
+        // Core only accepts application passwords over Basic auth; CI
+        // mints one after wp-env start and passes it via WP_APP_PASSWORD.
+        Authorization: `Basic ${Buffer.from(
+          `admin:${process.env.WP_APP_PASSWORD || "password"}`,
+        ).toString("base64")}`,
       },
     });
 

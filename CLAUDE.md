@@ -73,8 +73,14 @@ composer i18n                # Generate .pot file
 - **Security Trinity** — nonce verification, capability checks, data sanitization/escaping on every user input and output
 - **i18n** — All user-facing strings wrapped in `__()`, `_e()`, `esc_html__()`, etc. with text domain `post-formats-for-block-themes`
 - **Block API** — `apiVersion: 3` for all blocks
-- **Accessibility** — Semantic HTML, ARIA labels, keyboard navigation, focus management
+- **Accessibility** — Semantic HTML, ARIA labels, keyboard navigation, focus management. Floor is WCAG 2.2 AA: semantic HTML first, ARIA only where semantics can't do the job, and a keyboard-only pass plus a screen reader spot-check before shipping any UI change.
 - **PHPStan** — Static analysis on `includes/`, `blocks/`, and main plugin file
+- **Testing to capacity** — Every feature or bugfix lands with tests. Write the failing test first, then make it pass. Cover edge and failure paths, not just the happy path. No OR-assertions (a test that passes on multiple different behaviors isn't testing anything). No self-grading tests. CI green is the source of truth over local runs — if CI and a local run disagree, trust CI.
+- **Security by default** — Sanitize input, validate data, escape output on every boundary (this is the Security Trinity bullet above, applied project-wide as a default, not just a per-PR checklist item). Secrets live in env/config, never in code or commits. Public-facing features get a security review before shipping.
+
+## Release Policy
+
+Never cut a release, tag, or deploy without Courtney's explicit go. This repo's releases auto-deploy to wordpress.org: publishing a GitHub release, or manually running `workflow_dispatch` on `.github/workflows/deploy-wporg.yml`, ships straight to production via WordPress.org SVN. There's no staging step in that pipeline — a tag/release is a live deploy. The explicit-go gate is mandatory, not optional, for exactly that reason.
 
 ## WP 7.0 Upgrade — Branch: `feature/wp70-api-integration`
 
@@ -111,6 +117,7 @@ if ( function_exists( 'wp_ai_client_prompt' ) && get_option( 'pfbt_enable_ai' ) 
 
 ## Conventions
 
+- **Commit messages (going forward):** Emoji-Log format — emoji + CAPS label, imperative mood, exactly seven prefixes: `📦 NEW:` `👌 IMPROVE:` `🐛 FIX:` `📖 DOC:` `🚀 RELEASE:` `🤖 TEST:` `‼️ BREAKING:`. Existing history uses conventional-commit-style prefixes (`feat:`, `fix:`, `test:`, `docs:`, `ci:`) — that's the established practice up to this point, not something to rewrite. Emoji-Log applies from here forward.
 - Class files: `class-{name}.php` in `includes/`
 - Class names: `PFBT_{Name}` or descriptive (e.g., `Format_Registry`)
 - Constants: `PFBT_VERSION`, `PFBT_PLUGIN_DIR`, `PFBT_PLUGIN_URL`, `PFBT_PLUGIN_BASENAME`

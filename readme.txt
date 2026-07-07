@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.3.0
+Stable tag: 2.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -346,6 +346,13 @@ Yes! Fully multisite compatible. Install network-wide or per-site, each site has
 8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
 
 == Changelog ==
+
+= 2.4.0 =
+
+**Style-variation token contract and Post Kinds integration fixes.**
+
+* Changed: all 52 block style variation colors resolve through a `--pfbt-*` token contract — override token → theme palette preset → fixed default. Palette-mapped variations follow the active theme via dual slug chains so Ollie- and Twenty-Twenty-Four/Five-style palettes work with zero configuration; skeuomorphic materials (photo paper, aged card, device chrome, dark editor, lightbox) stay fixed so dark or brand-heavy palettes can't break the metaphor.
+* Fixed: Post Kinds for IndieWeb integration — hooks now register after the `kind` taxonomy exists (was failing on PKIW-only installs); auto-suggest defaults to on when the taxonomy is present and routes format→kind through the `post_format` taxonomy; the kind/format map covers all 24 default kinds and refuses unregistered slugs; and dynamic kind-card blocks (what the Micropub builder writes) are detected and mapped to formats.
 
 = 2.3.0 =
 

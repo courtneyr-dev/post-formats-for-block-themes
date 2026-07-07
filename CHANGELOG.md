@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.4.0] - 2026-07-06
+
+### Changed
+
+- Every one of the 52 block style variation colors now resolves through a `--pfbt-*` token contract: override token → theme palette preset → fixed default. Palette-mapped variations follow the active theme via dual slug chains (primary→accent-1, main→contrast, tertiary→base, …) so both Ollie-style and Twenty Twenty-Four/Five-style palettes work with zero configuration. Skeuomorphic materials (photo paper, aged card, device chrome, dark editor, lightbox overlay) are detached from palette presets so dark or brand-heavy palettes can't break the metaphor; solid accent fills that carry text chain to `contrast` rather than `accent-1`. The full token reference and mapped/fixed classification is documented in `docs/BLOCK-STYLE-VARIATIONS.md`.
+
+### Fixed
+
+- Post Kinds for IndieWeb integration, four gaps closed: (1) the active check ran before the `kind` taxonomy registered, so hooks never registered on PKIW-only installs — registration now defers to `init:12`; (2) `pfbt_auto_suggest_kind` / `pfbt_auto_suggest_format` default to enabled when the kind taxonomy exists, and the format→kind direction routes through `set_object_terms` on the `post_format` taxonomy (core has no `set_post_format` action); (3) `kind_format_map` now covers all 24 PKIW default kinds and `set_post_kind()` refuses unregistered slugs so a bad mapping can't create junk terms; (4) contentless registered dynamic blocks (what the Micropub builder writes for kind cards) count as meaningful first blocks, mapped to formats via the filterable `pfbt_kind_card_format_map`.
+
 ## [2.3.0] - 2026-07-03
 
 ### Added

@@ -24,6 +24,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 class PFBT_Format_Styles {
 
 	/**
+	 * Log a debug message when debug logging is enabled.
+	 *
+	 * No-op unless both WP_DEBUG and WP_DEBUG_LOG are true, so production
+	 * sites never write these diagnostics.
+	 *
+	 * @since 2.4.1
+	 *
+	 * @param string $message Message to log.
+	 * @return void
+	 */
+	private static function debug_log( $message ) {
+		if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
+			error_log( $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- Intentional debug channel, disabled unless WP_DEBUG_LOG is on.
+		}
+	}
+
+	/**
 	 * Initialize the format styles
 	 *
 	 * @since 1.0.0
@@ -69,7 +86,7 @@ class PFBT_Format_Styles {
 			if ( empty( $format ) || 'standard' === $format || false === $format ) {
 				// Force delete any format template immediately
 				delete_post_meta( $post->ID, '_wp_page_template' );
-				error_log( "PFBT EARLY: Cleared template for post {$post->ID} due to standard format in request" );
+				self::debug_log( "PFBT EARLY: Cleared template for post {$post->ID} due to standard format in request" );
 			}
 		}
 	}
@@ -88,9 +105,9 @@ class PFBT_Format_Styles {
 			return;
 		}
 
-		error_log( "PFBT REST: === START rest_assign_template for post {$post->ID} ===" );
-		error_log( "PFBT REST: Request has 'format' param: " . ( $request->has_param( 'format' ) ? 'YES (' . $request->get_param( 'format' ) . ')' : 'NO' ) );
-		error_log( "PFBT REST: Request has 'template' param: " . ( $request->has_param( 'template' ) ? 'YES (' . $request->get_param( 'template' ) . ')' : 'NO' ) );
+		self::debug_log( "PFBT REST: === START rest_assign_template for post {$post->ID} ===" );
+		self::debug_log( "PFBT REST: Request has 'format' param: " . ( $request->has_param( 'format' ) ? 'YES (' . $request->get_param( 'format' ) . ')' : 'NO' ) );
+		self::debug_log( "PFBT REST: Request has 'template' param: " . ( $request->has_param( 'template' ) ? 'YES (' . $request->get_param( 'template' ) . ')' : 'NO' ) );
 
 		// Check if user manually selected a template in this request
 		if ( $request->has_param( 'template' ) ) {
@@ -101,18 +118,18 @@ class PFBT_Format_Styles {
 				delete_post_meta( $post->ID, '_wp_page_template' );
 				delete_post_meta( $post->ID, '_pfbt_manual_template' );
 				delete_post_meta( $post->ID, '_pfbt_manual_template_slug' );
-				error_log( "PFBT REST: User selected 'Default' template for post {$post->ID}, cleared template assignment and override flags" );
+				self::debug_log( "PFBT REST: User selected 'Default' template for post {$post->ID}, cleared template assignment and override flags" );
 			} else {
 				// User manually selected a specific template
 				update_post_meta( $post->ID, '_pfbt_manual_template', true );
 				update_post_meta( $post->ID, '_pfbt_manual_template_slug', $manual_template );
-				error_log( "PFBT REST: User manually selected template '{$manual_template}' for post {$post->ID}, set override flag" );
+				self::debug_log( "PFBT REST: User manually selected template '{$manual_template}' for post {$post->ID}, set override flag" );
 
 				// Set the template meta (WordPress doesn't do this automatically for custom template values)
 				update_post_meta( $post->ID, '_wp_page_template', $manual_template );
 			}
 
-			error_log( 'PFBT REST: === END (manual template in request) ===' );
+			self::debug_log( 'PFBT REST: === END (manual template in request) ===' );
 			return;
 		}
 
@@ -122,8 +139,8 @@ class PFBT_Format_Styles {
 		if ( $has_manual_override ) {
 			// User has taken control, don't auto-assign
 			$manual_template_slug = get_post_meta( $post->ID, '_pfbt_manual_template_slug', true );
-			error_log( "PFBT REST: Manual override active for post {$post->ID}, keeping template: {$manual_template_slug}" );
-			error_log( 'PFBT REST: === END (manual override active) ===' );
+			self::debug_log( "PFBT REST: Manual override active for post {$post->ID}, keeping template: {$manual_template_slug}" );
+			self::debug_log( 'PFBT REST: === END (manual override active) ===' );
 			return;
 		}
 
@@ -134,40 +151,40 @@ class PFBT_Format_Styles {
 		// Normalize - WordPress stores standard as false/empty
 		$current_format = empty( $current_format ) || false === $current_format ? 'standard' : $current_format;
 
-		error_log( 'PFBT REST: get_post_format() returned: ' . var_export( $raw_format_value, true ) );
-		error_log( "PFBT REST: Normalized format: {$current_format}" );
+		self::debug_log( 'PFBT REST: get_post_format() returned: ' . wp_json_encode( $raw_format_value ) );
+		self::debug_log( "PFBT REST: Normalized format: {$current_format}" );
 
 		// Get current template assignment
 		$current_template = get_post_meta( $post->ID, '_wp_page_template', true );
-		error_log( 'PFBT REST: Current template meta: ' . ( $current_template ? $current_template : 'EMPTY' ) );
+		self::debug_log( 'PFBT REST: Current template meta: ' . ( $current_template ? $current_template : 'EMPTY' ) );
 
 		// Auto-assign template based on format (no manual override)
 		if ( 'standard' === $current_format ) {
 			// Standard format should NEVER have a format template
 			if ( $current_template && strpos( $current_template, 'single-format-' ) === 0 ) {
 				delete_post_meta( $post->ID, '_wp_page_template' );
-				error_log( "PFBT REST: ❌ CLEARED format template for standard post {$post->ID}, was: {$current_template}" );
+				self::debug_log( "PFBT REST: ❌ CLEARED format template for standard post {$post->ID}, was: {$current_template}" );
 
 				// Verify it was actually deleted
 				$verify = get_post_meta( $post->ID, '_wp_page_template', true );
-				error_log( 'PFBT REST: After delete, template meta is now: ' . ( $verify ? $verify : 'EMPTY' ) );
+				self::debug_log( 'PFBT REST: After delete, template meta is now: ' . ( $verify ? $verify : 'EMPTY' ) );
 			} elseif ( $current_template && strpos( $current_template, 'single-format-' ) !== 0 ) {
-				error_log( "PFBT REST: ⚠️ Standard post {$post->ID} has non-format template: {$current_template} (leaving as-is)" );
+				self::debug_log( "PFBT REST: ⚠️ Standard post {$post->ID} has non-format template: {$current_template} (leaving as-is)" );
 			} else {
-				error_log( "PFBT REST: ✅ Post {$post->ID} is standard and has no template (correct)" );
+				self::debug_log( "PFBT REST: ✅ Post {$post->ID} is standard and has no template (correct)" );
 			}
 		} else {
 			// Format post should have matching format template
 			$expected_template = 'single-format-' . $current_format;
 			if ( $current_template !== $expected_template ) {
 				update_post_meta( $post->ID, '_wp_page_template', $expected_template );
-				error_log( "PFBT REST: ✅ Auto-assigned template {$expected_template} for post {$post->ID} (format: {$current_format})" );
+				self::debug_log( "PFBT REST: ✅ Auto-assigned template {$expected_template} for post {$post->ID} (format: {$current_format})" );
 			} else {
-				error_log( "PFBT REST: ✅ Post {$post->ID} already has correct template: {$expected_template}" );
+				self::debug_log( "PFBT REST: ✅ Post {$post->ID} already has correct template: {$expected_template}" );
 			}
 		}
 
-		error_log( 'PFBT REST: === END rest_assign_template ===' );
+		self::debug_log( 'PFBT REST: === END rest_assign_template ===' );
 	}
 
 	/**
@@ -183,9 +200,7 @@ class PFBT_Format_Styles {
 		if ( '_wp_page_template' === $meta_key ) {
 			$post = get_post( $object_id );
 			if ( $post && 'post' === $post->post_type ) {
-				$backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 5 );
-				$caller    = isset( $backtrace[3] ) ? $backtrace[3]['function'] : 'unknown';
-				error_log( "PFBT WATCH: Template meta updated for post {$object_id} to '{$meta_value}' by {$caller}" );
+				self::debug_log( "PFBT WATCH: Template meta updated for post {$object_id} to '{$meta_value}'" );
 			}
 		}
 	}
@@ -269,7 +284,7 @@ class PFBT_Format_Styles {
 		} elseif ( empty( $template_meta ) ) {
 			// If template meta is empty, ensure response shows 'default'.
 			$response->data['template'] = 'default';
-			error_log( "PFBT POST REST: ✅ Set template to 'default' for post {$post->ID}" );
+			self::debug_log( "PFBT POST REST: ✅ Set template to 'default' for post {$post->ID}" );
 		}
 
 		return $response;
@@ -286,7 +301,7 @@ class PFBT_Format_Styles {
 	 * @return array Modified query parameters.
 	 */
 	public static function filter_rest_template_query( $args, $request ) {
-		error_log( 'PFBT REST QUERY: Template query args: ' . print_r( $args, true ) );
+		self::debug_log( 'PFBT REST QUERY: Template query args: ' . wp_json_encode( $args ) );
 
 		// If querying for post templates, ensure 'single' is explicitly included
 		if ( isset( $args['post_type'] ) && 'post' === $args['post_type'] ) {
@@ -294,12 +309,12 @@ class PFBT_Format_Styles {
 			if ( isset( $args['slug__in'] ) && is_array( $args['slug__in'] ) ) {
 				if ( ! in_array( 'single', $args['slug__in'], true ) ) {
 					$args['slug__in'][] = 'single';
-					error_log( "PFBT REST QUERY: Added 'single' to slug__in array" );
+					self::debug_log( "PFBT REST QUERY: Added 'single' to slug__in array" );
 				}
 			} else {
 				// No slug__in set, create one with single
 				$args['slug__in'] = array( 'single' );
-				error_log( "PFBT REST QUERY: Created slug__in array with 'single'" );
+				self::debug_log( "PFBT REST QUERY: Created slug__in array with 'single'" );
 			}
 		}
 
@@ -320,7 +335,7 @@ class PFBT_Format_Styles {
 	 */
 	public static function hide_format_templates_from_rest( $response, $template, $request ) {
 		// Log ALL templates going through REST API
-		error_log( "PFBT REST FILTER: Processing template '{$template->slug}' for REST response" );
+		self::debug_log( "PFBT REST FILTER: Processing template '{$template->slug}' for REST response" );
 
 		// Check if this is the "Default" pseudo-template
 		if ( 'default' === $template->slug ) {
@@ -333,11 +348,11 @@ class PFBT_Format_Styles {
 			$response->data['pfbt_format_name']     = str_replace( 'single-format-', '', $template->slug );
 			$response->data['pfbt_auto_applicable'] = true;
 
-			error_log( "PFBT REST: Added metadata to format template {$template->slug}" );
+			self::debug_log( "PFBT REST: Added metadata to format template {$template->slug}" );
 		} else {
 			// Theme template
 			$response->data['pfbt_template_type'] = 'theme';
-			error_log( "PFBT REST: Marked as theme template: {$template->slug}" );
+			self::debug_log( "PFBT REST: Marked as theme template: {$template->slug}" );
 		}
 
 		return $response;
@@ -450,8 +465,8 @@ class PFBT_Format_Styles {
 			return $query_result;
 		}
 
-		error_log( 'PFBT: add_block_templates called with ' . count( $query_result ) . ' templates' );
-		error_log( 'PFBT: Query params: ' . print_r( $query, true ) );
+		self::debug_log( 'PFBT: add_block_templates called with ' . count( $query_result ) . ' templates' );
+		self::debug_log( 'PFBT: Query params: ' . wp_json_encode( $query ) );
 
 		// Log what templates we currently have
 		$template_slugs = array_map(
@@ -460,7 +475,7 @@ class PFBT_Format_Styles {
 			},
 			$query_result
 		);
-		error_log( 'PFBT: Current templates: ' . implode( ', ', $template_slugs ) );
+		self::debug_log( 'PFBT: Current templates: ' . implode( ', ', $template_slugs ) );
 
 		/*
 		 * v1.2.5 — narrow the single-template injection to queries that
@@ -504,14 +519,14 @@ class PFBT_Format_Styles {
 			foreach ( $query_result as $template ) {
 				if ( 'single' === $template->slug ) {
 					$single_found = true;
-					error_log( "PFBT: Found 'single' template in results" );
+					self::debug_log( "PFBT: Found 'single' template in results" );
 					// Ensure it's assigned to post type
 					if ( ! isset( $template->post_types ) || ! is_array( $template->post_types ) ) {
 						$template->post_types = array();
 					}
 					if ( ! in_array( 'post', $template->post_types, true ) ) {
 						$template->post_types[] = 'post';
-						error_log( "PFBT: Added 'post' to single template post_types" );
+						self::debug_log( "PFBT: Added 'post' to single template post_types" );
 					}
 					break;
 				}
@@ -519,7 +534,7 @@ class PFBT_Format_Styles {
 
 			// If single template wasn't in the filtered results, fetch it and add it
 			if ( ! $single_found ) {
-				error_log( 'PFBT: Single template NOT found, attempting to fetch and add it' );
+				self::debug_log( 'PFBT: Single template NOT found, attempting to fetch and add it' );
 
 				// Try to get the single template directly from the theme
 				// Avoid recursion by using remove_filter temporarily
@@ -527,7 +542,7 @@ class PFBT_Format_Styles {
 				$all_templates = get_block_templates( array(), $template_type );
 				add_filter( 'get_block_templates', array( __CLASS__, 'add_block_templates' ), 10, 3 );
 
-				error_log( 'PFBT: Fetched ' . count( $all_templates ) . ' templates without filter' );
+				self::debug_log( 'PFBT: Fetched ' . count( $all_templates ) . ' templates without filter' );
 
 				foreach ( $all_templates as $template ) {
 					if ( 'single' === $template->slug ) {
@@ -542,17 +557,17 @@ class PFBT_Format_Styles {
 						// Add it to the beginning of results so it's the default
 						array_unshift( $query_result, $single_template );
 						$single_found = true; // Mark as found
-						error_log( "PFBT: Successfully added 'single' template to results" );
+						self::debug_log( "PFBT: Successfully added 'single' template to results" );
 						break;
 					}
 				}
 
 				if ( ! $single_found ) {
-					error_log( "PFBT: WARNING - Could not find 'single' template even after fetching all templates" );
+					self::debug_log( "PFBT: WARNING - Could not find 'single' template even after fetching all templates" );
 				}
 			}
 		} else {
-			error_log( 'PFBT: Skipped single-template injection — query does not target it (slug__in=' . wp_json_encode( $query['slug__in'] ?? null ) . ', post_type=' . ( $query['post_type'] ?? 'n/a' ) . ')' );
+			self::debug_log( 'PFBT: Skipped single-template injection — query does not target it (slug__in=' . wp_json_encode( $query['slug__in'] ?? null ) . ', post_type=' . ( $query['post_type'] ?? 'n/a' ) . ')' );
 		}
 
 		// Add "Default" pseudo-template option ONLY in admin
@@ -671,7 +686,7 @@ class PFBT_Format_Styles {
 			},
 			$query_result
 		);
-		error_log( 'PFBT: Returning ' . count( $query_result ) . ' templates: ' . implode( ', ', $final_slugs ) );
+		self::debug_log( 'PFBT: Returning ' . count( $query_result ) . ' templates: ' . implode( ', ', $final_slugs ) );
 
 		return $query_result;
 	}

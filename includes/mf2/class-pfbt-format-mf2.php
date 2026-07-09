@@ -323,7 +323,7 @@ class PFBT_Format_Mf2 {
 				'name'      => array( get_the_title( $post ) ),
 				'content'   => array(
 					array(
-						'html'  => apply_filters( 'the_content', $post->post_content ),
+						'html'  => apply_filters( 'the_content', $post->post_content ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Applying the core content filter to render HTML, not declaring a new hook.
 						'value' => wp_strip_all_tags( $post->post_content ),
 					),
 				),

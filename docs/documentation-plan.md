@@ -54,7 +54,7 @@ GitHub Pages from `/docs` on the main branch, plain Markdown with `jekyll-theme-
 
 ## Needs maintainer review
 
-1. **"Tested up to" mismatch:** plugin header says 6.9, readme.txt says 7.0. Docs cite the header; confirm which is right.
+1. **"Tested up to" mismatch — resolved 2026-07-09.** The plugin header now matches readme.txt at 7.0 (release-readiness audit; smoke-tested on WordPress 7.0.1).
 2. **PHP floor mismatch:** header/readme say PHP 7.4, but `composer.json` requires `>=8.2` and the CI matrix starts at 8.2. Docs cite the header; confirm the real supported minimum.
 3. **Name/version drift in internal files:** `package.json` (1.0.0, author "Your Name"), `potomatic.json` (1.0.0, "Post Formats Power-Up"), QA-TEST-PLAN.md / TEST-REPORT.md (1.0.0). Presumed stale; confirm.
 4. **readme.txt screenshot captions don't match the shipped files.** Checksums show `screenshot-2.png` = Chat Log editing, `-3` = Chat Log published, `-4` = Quote editor, `-5` = Status editor, `-6` = Repair Tool, while captions 2–6 describe Format Switcher / Quote / Chat / Repair / Status (and captions 7–8 have no files). Docs used the verified image content, not the captions; the listing captions should be fixed.

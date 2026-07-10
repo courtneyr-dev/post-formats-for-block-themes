@@ -623,7 +623,7 @@ See `THEME-INTEGRATION.md` for the full table of old → new token names. Patter
 == Upgrade Notice ==
 
 = 2.0.0 =
-**Major release — breaking change.** Establishes a hard plugin/theme styling contract: plugin owns layout, theme owns paint. Sites that customized via `--wp--preset--color--format-*` tokens must rename to `--pfbt-format-*`. Sites that did not customize see no visible change. Pattern slugs `pfpu/{format}` deprecated in favor of `pfbt/{format}-archive` and `pfbt/{format}-single`. See THEME-INTEGRATION.md before upgrading on heavily customized sites.
+Major release with a breaking change: custom `--wp--preset--color--format-*` tokens must be renamed to `--pfbt-format-*`, and `pfpu/{format}` pattern slugs are deprecated. Uncustomized sites see no visible change. Read the theme integration guide before upgrading customized sites.
 
 = 1.2.5 =
 Important fix: Resolves homepage / page / archive resolution rendering with `single.html` markup on heavily-themed sites. Recommended for any site that has its own front-page or page templates and saw post-title, author byline, or related-posts sections leaking onto non-post pages.

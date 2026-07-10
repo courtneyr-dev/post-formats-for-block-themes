@@ -1,12 +1,15 @@
-# Privacy and data
+---
+title: Privacy and data
+description: "What Post Formats for Block Themes stores, what it sends, and what it adds to your pages — based on a code audit of the plugin source."
+---
 
-What the plugin stores, what it sends, and what it adds to your pages, based on a code audit of version 2.4.0.
+What the plugin stores, what it sends, and what it adds to your pages, based on a code audit of version 1.1.5 (plugin header).
 
 ## External requests: none found
 
 A search across the plugin's PHP and JavaScript (`includes/`, `blocks/`, `src/`) for outbound HTTP mechanisms (`wp_remote_*`, `curl_*`, `fsockopen`, `file_get_contents` with URLs, `WP_Http`) found no external network calls. The plugin does not phone home, load remote assets, or send content to third-party services.
 
-The IndieWeb, ActivityPub, and POSSE modules transform content for *other* plugins to send; they hook into those host plugins rather than making requests themselves. If you use those companion plugins, their own privacy behavior applies. (A line-by-line audit of every transformer when host plugins are active is listed under maintainer review.)
+The [IndieWeb](https://indieweb.org/), [ActivityPub](https://wordpress.org/plugins/activitypub/), and [POSSE](https://indieweb.org/POSSE) modules transform content for *other* plugins to send; they hook into those host plugins rather than making requests themselves. If you use those companion plugins, their own privacy behavior applies. (A line-by-line audit of every transformer when host plugins are active is listed under maintainer review.)
 
 ## Options stored (site-wide, in wp_options)
 
@@ -53,7 +56,3 @@ The plugin stores no user meta and collects nothing about site visitors. It sets
 
 - Outbound behavior of IndieWeb/ActivityPub/POSSE transformers when their host plugins are active (none found in this plugin's code; flagged for maintainer confirmation).
 - An exhaustive search for custom REST routes (none were found; the plugin registers meta and filters template REST responses).
-
----
-
-[Documentation home](index.md) · Previous: [FAQ](faq.md) · Next: [Accessibility](accessibility.md)

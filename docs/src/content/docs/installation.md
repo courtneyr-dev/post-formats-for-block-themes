@@ -1,10 +1,13 @@
-# Installation
+---
+title: Installation
+description: "Install Post Formats for Block Themes from WordPress.org, a ZIP, or GitHub, activate it on a block theme, and confirm the format modal appears."
+---
 
 How to install and activate Post Formats for Block Themes, and how to confirm it's working.
 
 ## Before you start
 
-- WordPress 6.9 or higher and PHP 7.4 or higher, as of version 2.4.0 (plugin header).
+- WordPress 6.9 or higher and PHP 7.4 or higher, as of version 1.1.5 (plugin header).
 - **Your active theme must be a block theme** (a theme with a `theme.json` and block templates, such as Twenty Twenty-Five). This is a hard requirement — see [what happens if requirements aren't met](#what-happens-if-requirements-arent-met).
 - JavaScript enabled in your browser (the editor features are JavaScript-based).
 
@@ -53,10 +56,6 @@ Both checks show a link back to the plugins screen; nothing else is changed on y
 1. Go to **Posts → Add New**.
 2. The **Choose Post Format** modal should appear, showing 10 format cards (Standard, Aside, Audio, Chat, Gallery, Image, Link, Quote, Status, Video).
 
-![Format selection modal on a new post showing post format cards with icons and descriptions](assets/screenshots/editor-format-selection-modal.png)
+![Format selection modal on a new post showing post format cards with icons and descriptions](../../assets/screenshots/editor-format-selection-modal.png)
 
 You should also see **Tools → Post Format Repair** and **Settings → Post Formats** in the wp-admin menu.
-
----
-
-[Documentation home](index.md) · Previous: [Index](index.md) · Next: [Getting started](getting-started.md)

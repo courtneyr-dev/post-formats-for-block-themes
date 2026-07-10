@@ -1,4 +1,7 @@
-# Theme Integration Guide — PFBT 2.0
+---
+title: Theme integration
+description: "The contract between the plugin and block themes: plugin owns layout, theme owns paint, and the migration table from the old token names."
+---
 
 How a block theme integrates with the Post Formats for Block Themes plugin.
 
@@ -35,7 +38,7 @@ That's it. The plugin's structural CSS picks up the tokens; formats you didn't p
 On singular post views (`is_singular('post')`):
 
 | Class | When |
-|---|---|
+| --- | --- |
 | `format-{slug}` | WP core (always present for any post format) |
 | `pfbt-format-{slug}` | Plugin namespace; same conditions as above |
 | `pfbt-format-titleless` | Aside, status, and quote (formats with hidden titles) |
@@ -63,7 +66,7 @@ All plugin CSS lives in the `@layer pfbt-format-tokens` cascade layer. Theme sty
 
 ## Token reference
 
-Full reference: [`/docs/DESIGN-TOKENS.md`](DESIGN-TOKENS.md). Quick cheat sheet:
+Full reference: [`/docs/DESIGN-TOKENS.md`](/post-formats-for-block-themes/design-tokens/). Quick cheat sheet:
 
 ### Per format
 
@@ -73,7 +76,7 @@ have a partial set; chat has a different shape (paint by element rather
 than container).
 
 | Format | bg | fg | accent | font | Extra |
-|---|---|---|---|---|---|
+| --- | --- | --- | --- | --- | --- |
 | aside | ✓ | ✓ | ✓ | ✓ | — |
 | status | ✓ | ✓ | ✓ | ✓ | — |
 | quote | ✓ | ✓ | ✓ | ✓ | — |
@@ -95,7 +98,7 @@ the image itself should come through the theme's normal `core/image` rules.
 
 ### Format-specific extras
 
-```
+```text
 --pfbt-format-image-caption-font           Image-format figcaption font
 --pfbt-format-chat-row-bg-odd              Odd chat lines background
 --pfbt-format-chat-row-bg-even             Even chat lines background
@@ -113,7 +116,7 @@ the image itself should come through the theme's normal `core/image` rules.
 
 ### Sizing tokens (rarely override)
 
-```
+```text
 --pfbt-format-icon-size   Default 1em (icon scales with text)
 --pfbt-format-icon-gap    Default 0.4em (gap between icon + text)
 ```
@@ -208,7 +211,7 @@ Themes that prefer to ship their own templates have three options:
 
 The plugin registers 20 display patterns (10 formats × 2 variants — archive and single):
 
-```
+```text
 pfbt/aside-archive       pfbt/aside-single
 pfbt/audio-archive       pfbt/audio-single
 ... etc, 10 formats total
@@ -234,7 +237,8 @@ Place the Format Icon block anywhere a post context exists (inside Query Loops, 
 
 Output is an inline SVG that inherits text color via `currentColor`. Standard-format posts render nothing (the block bails). The block is locked to specific parent types: `core/post-template`, `core/group`, `core/post-meta`.
 
-For richer customization, see the four filters in [HOOKS-REFERENCE.md](HOOKS-REFERENCE.md):
+For richer customization, see the four filters in [HOOKS-REFERENCE.md](/post-formats-for-block-themes/hooks-reference/):
+
 - `pfbt_format_icon_svg` — full output override
 - `pfbt_format_icon_map` — slug → symbol-id mapping
 - `pfbt_format_icon_sprite_url` — sprite URL
@@ -246,7 +250,7 @@ For richer customization, see the four filters in [HOOKS-REFERENCE.md](HOOKS-REF
 
 The `post-formats/format-data` block bindings source exposes 9 keys themes can bind to from any core block:
 
-```
+```text
 format_name             Slug ('aside', 'quote', etc.)
 format_label            Localized label ('Aside', 'Quote', ...)
 format_icon             Dashicon name (legacy)
@@ -300,7 +304,7 @@ add_filter( 'pfbt_use_block_templates', '__return_false' );
 PFBT 2.0 is a major break. See `CHANGELOG.md` for the full upgrade path. Quick summary:
 
 | Old (1.x) | New (2.0) |
-|---|---|
+| --- | --- |
 | `--wp--preset--color--format-aside-bg` | `--pfbt-format-aside-bg` |
 | `--wp--preset--color--format-aside-border` | `--pfbt-format-aside-accent` |
 | `--wp--preset--color--format-quote-border` | `--pfbt-format-quote-accent` |
@@ -315,6 +319,6 @@ Sites that customized via the old token names need to rename to the new ones. Si
 
 ## Reference
 
-- Token reference: [`/docs/DESIGN-TOKENS.md`](DESIGN-TOKENS.md)
-- Filters and actions: [`/docs/HOOKS-REFERENCE.md`](HOOKS-REFERENCE.md)
+- Token reference: [`/docs/DESIGN-TOKENS.md`](/post-formats-for-block-themes/design-tokens/)
+- Filters and actions: [`/docs/HOOKS-REFERENCE.md`](/post-formats-for-block-themes/hooks-reference/)
 - Layout reference: [Twenty Thirteen content-{format}.php](https://themes.trac.wordpress.org/log/twentythirteen)

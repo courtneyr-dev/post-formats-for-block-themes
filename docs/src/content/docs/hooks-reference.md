@@ -1,4 +1,7 @@
-# Hooks Reference — PFBT 2.0
+---
+title: Hooks reference
+description: "Every filter and action Post Formats for Block Themes exposes, with signatures and usage notes for extending formats, detection, and styling."
+---
 
 Every filter and action the plugin exposes, what it does, and when each was added.
 
@@ -208,7 +211,7 @@ When `true`, the plugin both registers the 18 templates (9 single + 9 archive) A
 Not a filter, but the binding source's keys are the documented public API. Bind any core block attribute to format data:
 
 | Key | Returns | Notes |
-|---|---|---|
+| --- | --- | --- |
 | `format_name` | Slug string ('aside', 'quote', ...) | Returns 'standard' for un-formatted posts |
 | `format_label` | Localized label ('Aside', 'Quote', ...) | From PFBT_Format_Registry::name |
 | `format_icon` | Dashicon name | Legacy 1.x; use format_icon_svg in 2.0 |
@@ -272,7 +275,7 @@ if ( function_exists( 'wp_ai_client_prompt' ) && get_option( 'pfbt_enable_ai' ) 
 ## Constants
 
 | Constant | Value | Purpose |
-|---|---|---|
+| --- | --- | --- |
 | `PFBT_VERSION` | `1.2.5` (2.0.0 in 2.0) | Plugin version |
 | `PFBT_PLUGIN_DIR` | Plugin directory path | For internal `require_once` |
 | `PFBT_PLUGIN_URL` | Plugin URL | For asset loading |
@@ -283,7 +286,7 @@ if ( function_exists( 'wp_ai_client_prompt' ) && get_option( 'pfbt_enable_ai' ) 
 ## Class API
 
 | Class | Purpose |
-|---|---|
+| --- | --- |
 | `PFBT_Format_Registry` | Format definitions (singleton) |
 | `PFBT_Format_Detector` | Auto-detect format from content (singleton) |
 | `PFBT_Pattern_Manager` | Pattern + display pattern registration (singleton) |

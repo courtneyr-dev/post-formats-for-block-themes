@@ -1,0 +1,9 @@
+extends: substitution
+message: "Use '%s' — WordPress trademark and product capitalization."
+level: error
+ignorecase: false
+swap:
+  Wordpress: WordPress
+  "Word Press": WordPress
+  wordpress.org directory: WordPress.org directory
+  Gutenburg: Gutenberg

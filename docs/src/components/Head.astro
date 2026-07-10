@@ -1,0 +1,48 @@
+---
+// Head override: default Starlight head plus structured data.
+// WebSite + software JSON-LD is emitted on the homepage only; every other
+// page keeps the defaults (title, description, canonical, Open Graph).
+import Default from '@astrojs/starlight/components/Head.astro';
+import meta from '../site-meta.mjs';
+
+const isHome = Astro.locals.starlightRoute.id === '';
+const homeUrl = `${meta.site}${meta.base}/`;
+
+const webSite = {
+	'@context': 'https://schema.org',
+	'@type': 'WebSite',
+	name: `${meta.name} documentation`,
+	description: meta.description,
+	url: homeUrl,
+};
+
+// SoftwareApplication only when the plugin is really installable from
+// WordPress.org; otherwise describe the source repository instead.
+const software = meta.wporg
+	? {
+			'@context': 'https://schema.org',
+			'@type': 'SoftwareApplication',
+			name: meta.name,
+			operatingSystem: `WordPress ${meta.requiresWP} or newer`,
+			applicationCategory: 'Plugin',
+			softwareVersion: meta.version,
+			downloadUrl: meta.wporg,
+			url: homeUrl,
+			author: { '@type': 'Person', name: meta.author, url: meta.authorUrl },
+		}
+	: {
+			'@context': 'https://schema.org',
+			'@type': 'SoftwareSourceCode',
+			name: meta.name,
+			codeRepository: meta.github,
+			programmingLanguage: 'PHP',
+			runtimePlatform: `WordPress ${meta.requiresWP} or newer, PHP ${meta.requiresPHP} or newer`,
+			version: meta.version,
+			url: homeUrl,
+			author: { '@type': 'Person', name: meta.author, url: meta.authorUrl },
+		};
+---
+
+<Default><slot /></Default>
+{isHome && <script type="application/ld+json" set:html={JSON.stringify(webSite)} />}
+{isHome && <script type="application/ld+json" set:html={JSON.stringify(software)} />}

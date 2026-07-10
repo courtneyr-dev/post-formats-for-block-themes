@@ -1,4 +1,7 @@
-# FAQ
+---
+title: FAQ
+description: "Short answers about Post Formats for Block Themes: block-theme requirement, the ten formats, auto-detection behavior, and styling questions."
+---
 
 Answers to the questions users ask most about Post Formats for Block Themes.
 
@@ -24,19 +27,19 @@ To preserve the format's structure — a quote post keeps its pullquote, a galle
 
 ## Which chat platforms does the Chat Log block understand?
 
-Slack, Discord, Microsoft Teams, Telegram, WhatsApp, and Signal transcripts, with auto-detection of the platform. Display styles: bubbles, IRC, transcript, and timeline. Working paste patterns are documented in the [chat log format examples](../.wordpress-org/CHAT-LOG-FORMAT-EXAMPLES.md).
+Slack, Discord, Microsoft Teams, Telegram, WhatsApp, and Signal transcripts, with auto-detection of the platform. Display styles: bubbles, IRC, transcript, and timeline. Working paste patterns are documented in the [chat log format examples](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/.wordpress-org/CHAT-LOG-FORMAT-EXAMPLES.md).
 
 ## Can I restyle a format without code?
 
-Yes. Format templates and styles are editable in the Site Editor like any other template, and Global Styles applies. See the [Site Editor guide](../SITE-EDITOR-GUIDE.md). The plugin deliberately ships structure, not design — your theme's look wins by default.
+Yes. Format templates and styles are editable in the Site Editor like any other template, and Global Styles applies. See the [Site Editor guide](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/SITE-EDITOR-GUIDE.md). The plugin deliberately ships structure, not design — your theme's look wins by default.
 
 ## What are the "52 block style variations" and how do I turn them on?
 
-Opt-in style variations for image (16), gallery (20), and quote/pullquote (16) blocks. They're off by default and there's no settings toggle — enabling them requires a feature flag set in code (filter, option, or constant), so plan on developer help. See [Settings](settings.md) and [Block style variations](BLOCK-STYLE-VARIATIONS.md).
+Opt-in style variations for image (16), gallery (20), and quote/pullquote (16) blocks. They're off by default and there's no settings toggle — enabling them requires a feature flag set in code (filter, option, or constant), so plan on developer help. See [Settings](/post-formats-for-block-themes/settings/) and [Block style variations](/post-formats-for-block-themes/block-style-variations/).
 
 ## Does it work with other plugins?
 
-Optional integrations activate when the other plugin is installed: Bookmark Card (richer link-format previews), Able Player (accessible audio/video playback), Podlove (podcasting), and Post Kinds for IndieWeb (maps formats to post kinds, such as Video → Watch). All are optional with fallbacks to core blocks.
+Optional integrations activate when the other plugin is installed: Bookmark Card (richer link-format previews), Able Player (accessible audio/video playback), Podlove (podcasting), and [Post Kinds for IndieWeb](https://courtneyr-dev.github.io/post-kinds-for-indieweb/) (maps formats to post kinds, such as Video → Watch). All are optional with fallbacks to core blocks.
 
 ## Does it slow down or restyle my whole site?
 
@@ -45,7 +48,3 @@ The plugin enqueues one frontend stylesheet of structural tokens, wrapped in a C
 ## What happens if I deactivate or uninstall it?
 
 Your posts and their formats remain — formats are stored in core WordPress taxonomy. The plugin's editor tooling, patterns, blocks, and templates stop being available; posts using the Chat Log or format blocks will show them as missing blocks in the editor. On deactivation the plugin cleans up its transients.
-
----
-
-[Documentation home](index.md) · Previous: [Troubleshooting](troubleshooting.md) · Next: [Privacy and data](privacy-and-data.md)

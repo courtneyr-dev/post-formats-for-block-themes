@@ -1,4 +1,7 @@
-# Accessibility
+---
+title: Accessibility
+description: "The accessibility behavior built into the plugin's UI, the testing evidence in the repository, and what still needs verification."
+---
 
 The accessibility behavior built into the plugin's UI, the evidence in the repository, and what still needs testing.
 
@@ -31,8 +34,4 @@ The Settings → Post Formats page groups the icon set choice in a `<fieldset>` 
 - No recorded manual screen reader (NVDA/JAWS/VoiceOver) or keyboard-only test results are in the repository.
 - Color contrast of the opt-in style variations across arbitrary theme palettes isn't covered by the automated tests.
 
-If you rely on assistive technology and hit a problem, please report it — see [SUPPORT.md](../SUPPORT.md) and the [issues page](https://github.com/courtneyr-dev/post-formats-for-block-themes/issues).
-
----
-
-[Documentation home](index.md) · Previous: [Privacy and data](privacy-and-data.md) · Next: [Documentation plan](documentation-plan.md)
+If you rely on assistive technology and hit a problem, please report it — see [SUPPORT.md](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/SUPPORT.md) and the [issues page](https://github.com/courtneyr-dev/post-formats-for-block-themes/issues).

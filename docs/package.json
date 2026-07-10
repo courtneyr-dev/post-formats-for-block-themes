@@ -1,0 +1,25 @@
+{
+  "name": "post-formats-for-block-themes-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "lint:md": "markdownlint-cli2 \"src/content/**/*.md\"",
+    "lint:prose": "vale src/content",
+    "check:links": "node scripts/check-links.mjs",
+    "check:a11y": "node scripts/a11y-check.mjs"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.41.3",
+    "astro": "^7.0.7",
+    "sharp": "^0.35.3"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.12.1",
+    "linkinator": "^7.6.1",
+    "markdownlint-cli2": "^0.23.0",
+    "playwright": "^1.61.1"
+  }
+}

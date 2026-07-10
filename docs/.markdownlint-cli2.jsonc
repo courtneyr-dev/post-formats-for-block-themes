@@ -1,0 +1,14 @@
+{
+	// Structure rules for docs content. Starlight renders the H1 from
+	// frontmatter, so body content starts at H2 (MD041 off, MD025 covers
+	// duplicate H1s if someone adds one back).
+	"config": {
+		"default": true,
+		"MD013": false, // line length — prose wraps naturally
+		"MD041": false, // first line need not be a heading (frontmatter + intro)
+		"MD024": { "siblings_only": true },
+		"MD060": false, // table pipe alignment — cosmetic, fights mixed table styles in reference pages
+		"MD033": { "allowed_elements": ["kbd", "br", "img", "figure", "figcaption"] }
+	},
+	"ignores": ["node_modules", "dist", ".astro"]
+}

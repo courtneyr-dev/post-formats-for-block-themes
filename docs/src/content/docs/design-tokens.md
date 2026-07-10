@@ -1,4 +1,7 @@
-# Design Tokens — Post Formats for Block Themes
+---
+title: Design tokens
+description: "Reference for the --pfbt-format-* design tokens: what each token paints, its neutral default, and how themes override it."
+---
 
 **Version:** 2.0.0
 **File:** `/styles/format-tokens.css`
@@ -64,7 +67,7 @@ Themes should override only the formats they care about. Tokens left at their de
 These are structural — most themes won't override.
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-icon-size` | `1em` | Format Icon block font-size (icon scales with surrounding text) |
 | `--pfbt-format-icon-gap` | `0.4em` | Gap between icon SVG and any sibling text (used in `.pfbt-format-icon` and `.pfbt-format-gallery__count`) |
 
@@ -75,7 +78,7 @@ Every value defaults to a neutral fallback. **No format paints anything by defau
 #### Aside
 
 | Token | Default | What this paints | What happens if you don't set it |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `--pfbt-format-aside-bg` | `transparent` | Background of `.pfbt-format-aside` container | Container has no background; theme's normal post styling shows through |
 | `--pfbt-format-aside-fg` | `inherit` | Text color of `.pfbt-format-aside` container | Inherits from parent (usually post-content text color) |
 | `--pfbt-format-aside-accent` | `currentColor` | Format icon color, decorative borders if a theme adds them | Icon is the same color as surrounding text |
@@ -86,7 +89,7 @@ Every value defaults to a neutral fallback. **No format paints anything by defau
 Same shape as Aside.
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-status-bg` | `transparent` | Container background |
 | `--pfbt-format-status-fg` | `inherit` | Container text color |
 | `--pfbt-format-status-accent` | `currentColor` | Format icon, optional accent borders |
@@ -97,7 +100,7 @@ Same shape as Aside.
 Same shape. The `accent` token is what most themes use for the decorative `"` glyph or quote-mark.
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-quote-bg` | `transparent` | Container background |
 | `--pfbt-format-quote-fg` | `inherit` | Container text color |
 | `--pfbt-format-quote-accent` | `currentColor` | Decorative quote glyph, format icon, attribution rule |
@@ -106,7 +109,7 @@ Same shape. The `accent` token is what most themes use for the decorative `"` gl
 #### Link
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-link-bg` | `transparent` | Container background (Twenty Thirteen used a tinted card) |
 | `--pfbt-format-link-fg` | `inherit` | Container text color |
 | `--pfbt-format-link-accent` | `currentColor` | External-link arrow indicator (`→`), format icon |
@@ -115,7 +118,7 @@ Same shape. The `accent` token is what most themes use for the decorative `"` gl
 #### Image
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-image-bg` | `transparent` | Container background (commonly used for a full-bleed dark mat) |
 | `--pfbt-format-image-fg` | `inherit` | Container text color (caption + meta) |
 | `--pfbt-format-image-caption-font` | `inherit` | `.wp-element-caption` font-family inside the format |
@@ -125,7 +128,7 @@ There's no `--pfbt-format-image-accent` because Image format borders should gene
 #### Gallery
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-gallery-bg` | `transparent` | Container background |
 | `--pfbt-format-gallery-fg` | `inherit` | Container text color |
 | `--pfbt-format-gallery-accent` | `currentColor` | Photo count badge, format icon |
@@ -133,7 +136,7 @@ There's no `--pfbt-format-image-accent` because Image format borders should gene
 #### Video
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-video-bg` | `transparent` | Container background (often a dark mat for letterboxed video) |
 | `--pfbt-format-video-fg` | `inherit` | Container text color |
 | `--pfbt-format-video-accent` | `currentColor` | Format icon, optional play-button accent |
@@ -141,7 +144,7 @@ There's no `--pfbt-format-image-accent` because Image format borders should gene
 #### Audio
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-audio-bg` | `transparent` | Container background. Themes that want an inverted "audio booth" set this to a dark color. **The plugin never forces an inverted treatment.** |
 | `--pfbt-format-audio-fg` | `inherit` | Container text color |
 | `--pfbt-format-audio-accent` | `currentColor` | Format icon, optional waveform/seek-bar accent |
@@ -149,7 +152,7 @@ There's no `--pfbt-format-image-accent` because Image format borders should gene
 #### Chat
 
 | Token | Default | Paints |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-format-chat-row-bg-odd` | `transparent` | Background of odd-numbered `.pfbt-chat-line` rows |
 | `--pfbt-format-chat-row-bg-even` | `transparent` | Background of even-numbered `.pfbt-chat-line` rows |
 | `--pfbt-format-chat-speaker-fg` | `inherit` | Color of `.pfbt-chat-speaker` (the bold name above each line) |
@@ -166,7 +169,7 @@ The plugin emits these classes on the body, post, and per-format containers. The
 ### Body classes (added by the plugin's body class filter)
 
 | Class | When |
-|---|---|
+| --- | --- |
 | `format-{slug}` | WordPress core; present whenever `get_post_format()` returns the slug |
 | `pfbt-format-{slug}` | Plugin; same conditions as above, distinct namespace for theme targeting |
 | `pfbt-format-titleless` | Plugin; only on aside, status, quote |
@@ -174,7 +177,7 @@ The plugin emits these classes on the body, post, and per-format containers. The
 ### Post classes (added by the plugin's post class filter)
 
 | Class | When |
-|---|---|
+| --- | --- |
 | `has-post-format` | Always when `get_post_format()` returns truthy |
 | `pfbt-format-{slug}` | Same as body class |
 | `pfbt-format-titleless` | Aside, status, quote |
@@ -184,7 +187,7 @@ The plugin emits these classes on the body, post, and per-format containers. The
 These are wrapping `<div>` or `<article>` classes inside the rendered post content. Patterns add them to the outermost block of the format card.
 
 | Class | Where |
-|---|---|
+| --- | --- |
 | `pfbt-format-aside` | Aside pattern outer wrapper |
 | `pfbt-format-status` | Status pattern outer wrapper |
 | `pfbt-format-quote` | Quote pattern outer wrapper |
@@ -197,14 +200,14 @@ These are wrapping `<div>` or `<article>` classes inside the rendered post conte
 ### Format Icon block classes
 
 | Class | Where |
-|---|---|
+| --- | --- |
 | `pfbt-format-icon` | Outer `<span>` of the Format Icon block |
 | `pfbt-format-icon--{slug}` | Modifier on the same span; lets themes write per-format icon rules without targeting `[data-format]` |
 
 ### Chat-specific structural classes
 
 | Class | Where |
-|---|---|
+| --- | --- |
 | `pfbt-chat-line` | Each line in a chat log (one speaker turn) |
 | `pfbt-chat-speaker` | The speaker's name within a `.pfbt-chat-line` |
 
@@ -212,7 +215,7 @@ These are wrapping `<div>` or `<article>` classes inside the rendered post conte
 
 | Class | Effect |
 |---|---|
-| `is-style-show-format-title` | Added to `<!-- wp:post-title --> ` to opt back into a visible title on aside, status, or quote |
+| `is-style-show-format-title` | Added to `<!-- wp:post-title -->` to opt back into a visible title on aside, status, or quote |
 
 ---
 
@@ -230,7 +233,7 @@ The contract excludes:
 
 The test `tests/unit/test-no-color-leakage.php` enforces this rule. Any commit that adds a forbidden value to plugin CSS or pattern markup fails CI.
 
-Opt-in block style variations (`styles/{quote,image,gallery}-variations/`) are excluded — they follow their own three-level token contract (`--pfbt-*` override → theme palette preset → fixed default), documented in [`BLOCK-STYLE-VARIATIONS.md`](./BLOCK-STYLE-VARIATIONS.md#color-the---pfbt--token-contract).
+Opt-in block style variations (`styles/{quote,image,gallery}-variations/`) are excluded — they follow their own three-level token contract (`--pfbt-*` override → theme palette preset → fixed default), documented in [`BLOCK-STYLE-VARIATIONS.md`](/post-formats-for-block-themes/block-style-variations/#color-the---pfbt--token-contract).
 
 ---
 
@@ -239,7 +242,7 @@ Opt-in block style variations (`styles/{quote,image,gallery}-variations/`) are e
 Pre-2.0, format CSS used the `--wp--preset--color--format-*` namespace with stock Gutenberg fallbacks. Themes that customized via the old tokens need a one-time migration:
 
 | Old token (1.x) | New token (2.0) |
-|---|---|
+| --- | --- |
 | `--wp--preset--color--format-aside-bg` | `--pfbt-format-aside-bg` |
 | `--wp--preset--color--format-aside-border` | `--pfbt-format-aside-accent` |
 | `--wp--preset--color--format-status-bg` | `--pfbt-format-status-bg` |
@@ -263,14 +266,14 @@ The plugin's own `theme.json` no longer ships the 12 `format-*-bg` / `format-*-b
 
 The plugin's layout decisions (which blocks render, in what order, with which behaviors) trace to WordPress Twenty Thirteen's `content-{format}.php` template parts. Source-of-truth canonical:
 
-> https://themes.trac.wordpress.org/log/twentythirteen
+> <https://themes.trac.wordpress.org/log/twentythirteen>
 
 Twenty Thirteen used `get_template_part( 'content', get_post_format() )` from both `index.php` and `single.php`. One template part defined the archive teaser **and** the single. That shared structure is the architectural reason archives and singles felt like the same thing — the plugin reproduces this idea via patterns split into `pfbt/{slug}-archive` and `pfbt/{slug}-single` flavors that share one base file.
 
 Per-format layout matrix (Twenty Thirteen):
 
 | Format | Header | Footer |
-|---|---|---|
+| --- | --- | --- |
 | Aside | NO | date + edit (single adds entry-meta + author bio) |
 | Status | NO | entry-meta (date + author + edit) |
 | Quote | NO | entry-meta + comments-link |

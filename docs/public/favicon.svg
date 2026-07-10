@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Post Formats for Block Themes">
+  <title>Post Formats for Block Themes — plugin icon (three plank cuts on a post)</title>
+  <rect width="256" height="256" fill="#4a3623"></rect>
+  <rect x="14" y="14" width="228" height="228" rx="10" fill="none" stroke="#faf6ec" stroke-width="5" opacity="0.26"></rect>
+  <rect x="121" y="44" width="14" height="164" fill="#faf6ec"></rect>
+  <rect x="97" y="200" width="62" height="12" fill="#faf6ec"></rect>
+  <rect x="64" y="60" width="128" height="26" fill="#faf6ec"></rect>
+  <path d="M 64 110 L 158 110 L 182 123 L 158 136 L 64 136 Z" fill="#a87a3e"></path>
+  <rect x="64" y="160" width="88" height="26" fill="#faf6ec"></rect>
+</svg>

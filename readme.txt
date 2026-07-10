@@ -198,7 +198,7 @@ The plugin reads color palette, typography, spacing, and border styles from your
 
 = Documentation =
 
-Full user documentation — installation, settings, common tasks, troubleshooting, privacy, and a Playground preview guide — lives in the [GitHub docs](https://github.com/courtneyr-dev/post-formats-for-block-themes/tree/main/docs). Developers extending formats, detection, or styling should start with the [hooks reference](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/docs/HOOKS-REFERENCE.md).
+Full user documentation — installation, settings, common tasks, troubleshooting, privacy, and a Playground preview guide — lives at [courtneyr-dev.github.io/post-formats-for-block-themes](https://courtneyr-dev.github.io/post-formats-for-block-themes/). Developers extending formats, detection, or styling should start with the [hooks reference](https://courtneyr-dev.github.io/post-formats-for-block-themes/hooks-reference/).
 
 == Installation ==
 

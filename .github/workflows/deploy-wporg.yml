@@ -16,6 +16,8 @@ jobs:
   deploy:
     name: Deploy to WordPress.org SVN
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # upload-release-asset attaches the zip to the release
 
     steps:
       - name: Checkout code

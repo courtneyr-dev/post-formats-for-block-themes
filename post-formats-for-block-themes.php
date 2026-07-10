@@ -5,7 +5,7 @@
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
  * Version: 2.4.0
  * Requires at least: 6.9
- * Tested up to: 6.9
+ * Tested up to: 7.0
  * Requires PHP: 7.4
  * Author: Courtney Robertson
  * Author URI: https://profiles.wordpress.org/courane01/

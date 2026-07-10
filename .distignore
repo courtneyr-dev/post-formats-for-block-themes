@@ -115,3 +115,18 @@ npm-debug.log*
 /.playwright
 /coverage-report
 /dist
+
+# Plugin Check remediation (2026-07-09): dev/meta files that leaked into dist
+.phpcs.xml
+.wp-env.json
+phpstan.neon.dist
+QUICK-START-RELEASE.md
+README-RELEASE.md
+SUPPORT.md
+HANDOFF-MERGE-THEME-JSON-FIX.md
+CLAUDE.md
+docs
+scripts
+img
+potomatic.json
+BRANCHING-DIAGRAM.txt

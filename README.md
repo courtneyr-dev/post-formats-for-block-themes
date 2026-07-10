@@ -11,6 +11,18 @@ Includes an integrated Chat Log block for displaying conversation transcripts fr
 
 ---
 
+## User documentation
+
+Full user documentation lives in [docs/index.md](docs/index.md). Key pages:
+
+- [Installation](docs/installation.md)
+- [Getting started](docs/getting-started.md)
+- [Settings](docs/settings.md)
+- [Common tasks](docs/common-tasks.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+---
+
 ## Download
 
 ### From WordPress.org (Recommended)

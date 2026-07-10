@@ -13,7 +13,7 @@ Bring post formats to block themes with auto-detection, format-specific patterns
 
 == Description ==
 
-**Post Formats for Block Themes** brings the beloved post format functionality from classic WordPress themes to modern block themes, with intelligent pattern insertion, automatic format detection, and a streamlined editing experience that makes creating formatted content effortless.
+**Post Formats for Block Themes** brings the beloved post format functionality from classic WordPress themes to modern block themes, with intelligent pattern insertion, automatic format detection, and a streamlined editing experience. It requires a block theme — on a classic theme the plugin deactivates itself with an explanatory notice.
 
 = Why Post Formats Matter for Block Themes =
 
@@ -27,7 +27,7 @@ WordPress post formats have been a powerful feature since WordPress 3.1, allowin
 - **Content creators** who publish different types of content (articles, quotes, galleries, status updates)
 - **News sites** migrating from classic themes and want to preserve post format functionality
 - **Designers and developers** building block themes who need format support built-in
-- **Accessibility advocates** who require WCAG 2.2 AA compliant content tools
+- **Accessibility-minded editors** — the modal, format switcher, and Chat Log block are built with keyboard support and screen reader announcements
 - **Anyone moving from classic themes** who misses the post format features they relied on
 
 = Key Features =
@@ -196,46 +196,9 @@ Twenty Twenty-Five, Twenty Twenty-Four, Twenty Twenty-Three, Block themes from A
 **Theme.json Integration:**
 The plugin reads color palette, typography, spacing, and border styles from your theme.json. Format styles automatically adapt. To customize, edit your theme.json color and typography settings.
 
-= Developer Guide: Extending Post Formats =
+= Documentation =
 
-**Add Custom Format:**
-```php
-add_filter( 'pfbt_registered_formats', function( $formats ) {
-    $formats['review'] = [
-        'name'         => 'Review',
-        'description'  => 'Product review',
-        'icon'         => 'star-filled',
-        'pattern_slug' => 'my-theme/review-pattern',
-    ];
-    return $formats;
-} );
-```
-
-**Custom Detection Logic:**
-```php
-add_filter( 'pfbt_detected_format', function( $format, $first_block, $all_blocks ) {
-    if ( $first_block['blockName'] === 'my-plugin/custom-block' ) {
-        return 'gallery';
-    }
-    return $format;
-}, 10, 3 );
-```
-
-**Run Code After Detection:**
-```php
-add_action( 'pfbt_format_detected', function( $post_id, $format, $post ) {
-    error_log( "Post {$post_id} detected as {$format}" );
-}, 10, 3 );
-```
-
-**Track Format Changes:**
-```php
-add_action( 'pfbt_format_changed', function( $post_id, $old_format, $new_format ) {
-    // Analytics tracking
-}, 10, 3 );
-```
-
-More filters and actions available for pattern content modification, post-repair actions, and format definition customization.
+Full user documentation — installation, settings, common tasks, troubleshooting, privacy, and a Playground preview guide — lives in the [GitHub docs](https://github.com/courtneyr-dev/post-formats-for-block-themes/tree/main/docs). Developers extending formats, detection, or styling should start with the [hooks reference](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/docs/HOOKS-REFERENCE.md).
 
 == Installation ==
 
@@ -321,29 +284,14 @@ Absolutely! Use **Format Switcher** in post sidebar. Open post in block editor, 
 
 Auto-detection respects manual choices. Detection WILL run on: new posts without format selection, posts never explicitly formatted, programmatically created posts. Detection WON'T run on: manually selected formats, Format Switcher changes, posts with internal user-selected flag, Quick Edit manual formats. Once you choose manually, auto-detection defers to you.
 
-= Can I use this with WooCommerce or custom post types? =
-
-Yes! Register post format support for custom post types:
-```php
-add_post_type_support( 'product', 'post-formats' );  // WooCommerce
-add_post_type_support( 'portfolio', 'post-formats' );  // Custom type
-```
-Then formats and plugin features work for those types. Patterns and modal only appear in block editor.
-
-= Does this work with multisite? =
-
-Yes! Fully multisite compatible. Install network-wide or per-site, each site has independent format settings, repair tool scans only current site's posts, no database conflicts, pattern registration respects site context. For large networks, consider network activation.
-
 == Screenshots ==
 
-1. Format selection modal displaying all 10 post formats with descriptive icons and labels when creating a new post
-2. Format Switcher sidebar panel showing current format, auto-detection status, and dropdown to switch formats mid-edit
-3. Quote format pattern with locked pullquote block, attribution field, and enhanced typography adapting to theme
-4. Chat Log block displaying Slack conversation with avatars, usernames, timestamps, and bubble-style formatting
-5. Post Format Repair tool showing scan results, detected mismatches, suggested format changes, and one-click repair
-6. Status format editor with real-time 280-character counter, validation, and visual feedback like social media
-7. Automatic format detection notification suggesting Quote format after inserting pullquote block
-8. Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
+1. Format selection modal with post format cards shown when creating a new post
+2. Chat Log block in the editor with a pasted conversation transcript
+3. A published chat post on the frontend with usernames, timestamps, and bubble-style messages
+4. A quote format post in the editor
+5. A status format post in the editor with the character counter
+6. The Post Format Repair tool under Tools, ready to scan posts for format mismatches
 
 == Changelog ==
 
@@ -675,7 +623,7 @@ See `THEME-INTEGRATION.md` for the full table of old → new token names. Patter
 == Upgrade Notice ==
 
 = 2.0.0 =
-**Major release — breaking change.** Establishes a hard plugin/theme styling contract: plugin owns layout, theme owns paint. Sites that customized via `--wp--preset--color--format-*` tokens must rename to `--pfbt-format-*`. Sites that did not customize see no visible change. Pattern slugs `pfpu/{format}` deprecated in favor of `pfbt/{format}-archive` and `pfbt/{format}-single`. See THEME-INTEGRATION.md before upgrading on heavily customized sites.
+Major release with a breaking change: custom `--wp--preset--color--format-*` tokens must be renamed to `--pfbt-format-*`, and `pfpu/{format}` pattern slugs are deprecated. Uncustomized sites see no visible change. Read the theme integration guide before upgrading customized sites.
 
 = 1.2.5 =
 Important fix: Resolves homepage / page / archive resolution rendering with `single.html` markup on heavily-themed sites. Recommended for any site that has its own front-page or page templates and saw post-title, author byline, or related-posts sections leaking onto non-post pages.

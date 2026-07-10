@@ -21,7 +21,8 @@
     "test:visual:update": "playwright test tests/visual --update-snapshots",
     "test:performance": "playwright test tests/performance",
     "test:js": "wp-scripts test-unit-js",
-    "test:all": "composer test && npm run test:a11y && npm run test:e2e"
+    "test:all": "composer test && npm run test:a11y && npm run test:e2e",
+    "screenshots:docs": "node scripts/capture-docs-screenshots.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.12.1",

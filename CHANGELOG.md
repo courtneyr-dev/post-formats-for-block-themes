@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [2.4.0] - 2026-07-06
+## [1.1.5] - 2026-07-10
+
+> **Version renumbering.** WordPress.org never published the 1.2.x–2.3.0 releases (its listing continues from 1.1.4), so the public line resumes at 1.1.5. The 1.2.0–2.3.0 entries below record GitHub-only releases; everything in them ships to WordPress.org as part of 1.1.5.
 
 ### Changed
 

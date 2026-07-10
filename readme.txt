@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.4.0
+Stable tag: 1.1.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -295,172 +295,21 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 
 == Changelog ==
 
-= 2.4.0 =
+= 1.1.5 =
 
-**Style-variation token contract and Post Kinds integration fixes.**
+**Everything since 1.1.4, consolidated.** The 1.2.x and 2.x lines were GitHub-only releases that never reached WordPress.org; the plugin's public numbering continues from 1.1.4. Full per-release history lives in CHANGELOG.md on GitHub.
 
-* Changed: all 52 block style variation colors resolve through a `--pfbt-*` token contract — override token → theme palette preset → fixed default. Palette-mapped variations follow the active theme via dual slug chains so Ollie- and Twenty-Twenty-Four/Five-style palettes work with zero configuration; skeuomorphic materials (photo paper, aged card, device chrome, dark editor, lightbox) stay fixed so dark or brand-heavy palettes can't break the metaphor.
-* Fixed: Post Kinds for IndieWeb integration — hooks now register after the `kind` taxonomy exists (was failing on PKIW-only installs); auto-suggest defaults to on when the taxonomy is present and routes format→kind through the `post_format` taxonomy; the kind/format map covers all 24 default kinds and refuses unregistered slugs; and dynamic kind-card blocks (what the Micropub builder writes) are detected and mapped to formats.
-
-= 2.3.0 =
-
-**WP 7.0 features, automatic format detection returns, and fixes across every format.**
-
-* New: Block Bindings source `post-formats/format-data` — bind core block attributes to format name, label, icon, `has_format`, character count, media URL, or quote attribution.
-* New: Format Badge block (`post-formats/format-badge`), auto-inserted before post titles on non-standard formats via Block Hooks.
-* New: SVG icon sets with a settings-page picker (`img/icon-sets/{slug}/format-icons.svg`), filterable for custom sets.
-* New: Chat Log block front-end interactivity via the Interactivity API, with thread grouping.
-* Changed: automatic format detection is back on, with apply-once semantics — it applies once on first save from content and never overrides a manual choice.
-* Fixed: Quote and Video patterns no longer trigger the "unexpected or invalid content" recovery prompt in the editor.
-* Fixed: image, gallery, and quote style variations now load their CSS on block-theme front ends (previously registered but rendered unstyled); interactive gallery view modules load on demand the same way.
-* Fixed: the format selection modal now waits for the WordPress welcome guide to be dismissed instead of stacking on top of it.
-* Fixed: feature flags could silently fail to store an "off" value.
-* Fixed: format analyzer no longer lets Status/Aside outrank strong structural matches; Chat speaker labels detect correctly across paragraph boundaries.
-
-= 2.2.0 =
-
-**Added — 16 quote and pullquote block style variations.**
-
-* 16 quote variations registered on BOTH `core/quote` and `core/pullquote`: post-it, notebook-scrap, typewriter, napkin, library-card, chalkboard, whiteboard, postcard, magazine-pull, broadsheet, decorative-marks, side-rule-editorial, speech-bubble, message-bubble, comment-card, plaque.
-* Variations apply to the quote block ITSELF, not inner content. Each leads with a chrome-reset (zeroes default left border, padding, italic body) before drawing its own design — no inner Group/Paragraph wrapping needed.
-* Citation built into every variation: styled when present, hidden via `cite:empty { display: none; }` when empty.
-* New `quote_styles` feature flag, **default off** — independent of v2.1.0's `image_gallery_styles`. Flip via `add_filter( 'pfbt_feature_quote_styles', '__return_true' )`.
-* `patterns/quote.php` defaults to `is-style-side-rule-editorial` (the most minimal of the 16, intentionally chosen as the editor-default).
-* New `pfbt_quote_style_variations` filter for theme/plugin extension. Per-entry `block_names` field overrides the default dual-block registration.
-
-= 2.1.0 =
-
-**Added — 36 image and gallery block style variations.**
-
-* 16 image block style variations on `core/image`: rounded, circle, soft-shadow, tinted-border, caption-card, polaroid, postcard, photo-strip, magazine-cutout, index-card, headline-crop, duotone-mood, halftone, phone-frame, browser-window, code-editor.
-* 20 gallery block style variations on `core/gallery`: justified-rows, square-tile, polaroid-stack, filmstrip-snap, caption-prominent, duotone-mood-gallery, mosaic-spotlight, bordered-grid, masonry-cascade, headline-mosaic, lightbox-slideshow, before-after-pairs, filter-tags, lookbook-hotspots, card-deck-swipe, photo-essay-scroll, comparison-pairs, map-pinned-geo (SSR fallback), panorama-360 (SSR fallback), dynamic-query-gallery.
-* New `image_gallery_styles` feature flag, **default off** — opt-in for the first release. Flip via `add_filter( 'pfbt_feature_image_gallery_styles', '__return_true' )`.
-* Conditional CSS loading: each variation's stylesheet loads only on pages where the variation is rendered (WP 6.1+ `style_handle` mechanism).
-* Interactivity API view modules for the 7 interactive gallery variations are likewise registered conditionally — sites that don't use them ship zero JS from this PR.
-* New `pfbt_image_style_variations` and `pfbt_gallery_style_variations` filters let themes and other plugins extend the variation list.
-* `patterns/image.php` defaults to `is-style-caption-card`; `patterns/gallery.php` defaults to `is-style-justified-rows`.
-* New author docs: `docs/BLOCK-STYLE-VARIATIONS.md` (what each variation does, when to use) and `docs/ADDING-A-VARIATION.md` (how contributors add their own).
-
-= 2.0.1 =
-
-**Added:**
-
-* New filter `pfbt_format_badge_icon` lets themes replace the Format Badge's Dashicon span with their own icon markup (SVG, image, icon font).
-* Expanded block supports on `format-badge`, `format-icon`, `post-format`, and `chatlog/conversation` — anchor, className, align (where applicable), border, expanded typography.
-
-**Fixed:**
-
-* Chat Log block now honors its declared `align`, `className`, color, spacing, typography, and border supports. Previously the render hardcoded its wrapper div without calling `get_block_wrapper_attributes()`, so editor-set wide / full alignment was ignored.
-
-= 2.0.0 =
-
-**Major release — format styling system.** Twelve-session overhaul that establishes a hard contract between the plugin and consumer themes: plugin owns layout, theme owns paint. Every plugin reference to color or typography routes through `var(--pfbt-format-X-*, NEUTRAL)` tokens.
-
-**This is a breaking change.** Sites that customized via the old `--wp--preset--color--format-*` tokens must rename to the new `--pfbt-format-*` namespace. Sites that did not customize see no visible change after upgrading (most look better, since stock Gutenberg colors that fought brand palettes are gone).
-
-**Highlights:**
-
-* 34 new design tokens covering all 9 non-standard formats + chat sub-elements, all in `@layer pfbt-format-tokens` so theme styles win the cascade automatically (no `!important` arms-races).
-* New Format Icon block (`post-formats/format-icon`) — manually-placed standalone icon with currentColor inheritance.
-* 9-symbol SVG sprite at `/img/format-icons.svg`.
-* Three new body + post classes: `pfbt-format-{slug}`, `pfbt-format-titleless`, `has-post-format`.
-* Twenty new display patterns under the `pfbt/` namespace (10 formats × 2 variants — archive + single).
-* 18 opt-in block templates (9 single-post + 9 archive variants) with a Tools page toggle.
-* `_pfbt_link_url` post meta + Bookmark Card fallback for link-format external URLs.
-* First-media helpers: `pfbt_get_first_gallery()`, `_video()`, `_audio()`.
-* New contract enforcement test (`tests/unit/test-no-color-leakage.php`) that fails CI on any forbidden color literal.
-* Three new docs: `DESIGN-TOKENS.md`, `THEME-INTEGRATION.md`, `HOOKS-REFERENCE.md`.
-
-**Migration:**
-
-See `THEME-INTEGRATION.md` for the full table of old → new token names. Pattern slugs `pfpu/{format}` are deprecated; use `pfbt/{format}-archive` or `pfbt/{format}-single`. Plugin's `theme.json` no longer ships palette entries — themes own the palette.
-
-= 1.2.5 =
-
-**Fixed**
-
-* **Root-cause fix for homepage / page / archive resolution rendering with `single.html` markup** on heavily-themed sites. `add_block_templates()` (registered on the `get_block_templates` filter) was running `array_unshift($single_template, $query_result)` on every `wp_template` query, which placed `single` at the front of the result array even for queries asking about other slugs (`front-page`, `page-home`, `page`, `singular`, `index`). The block-template renderer's first-match resolution then picked `single` for the front page, leaking post-title, author byline, related-posts, and reading-progress markup onto pages that had their own templates resolved correctly.
-* The single-template injection is now scoped to queries that actually want it: empty `slug__in` (editor's full-template list), `slug__in` containing `single`, or `post_type === 'post'` (editor querying templates assignable to a post). For all other queries the result order is preserved.
-* The `pfbt_register_format_templates` opt-out filter from 1.2.4 is still honored as a complete bypass; this fix narrows the failure mode for themes that haven't opted out.
-
-= 1.2.4 =
-
-**Added**
-
-* New filter `pfbt_register_format_templates` (default `true`) lets themes opt out of the entire `add_block_templates()` body — the `single` injection, the "Default" pseudo-template, and the nine `single-format-*` registrations. Useful for themes that ship their own template hierarchy and don't want the plugin to interfere. Stop-gap for the underlying bug fixed properly in 1.2.5.
-
-`add_filter( 'pfbt_register_format_templates', '__return_false' );`
-
-= 1.2.3 =
-
-**Added**
-
-* New filter `pfbt_enqueue_format_styles` (default `true`) lets themes opt out of enqueueing `styles/format-styles.css`. The plugin's stylesheet ships with stock WordPress fallback colors (`#0073aa`, `#f0f0f1`, `#cccccc`, etc.) that override branded child-theme palettes when both target the same `.format-X` body-class selectors.
-
-`add_filter( 'pfbt_enqueue_format_styles', '__return_false' );`
-
-* New filter `pfbt_merge_format_palette` (default `true`) lets themes opt out of merging the plugin's `theme.json` palette additions (12 `format-X-bg` / `format-X-border` entries with stock Gutenberg defaults) into the resolved `theme.json`. Useful for themes whose palette is fully bespoke.
-
-`add_filter( 'pfbt_merge_format_palette', '__return_false' );`
-
-= 1.2.2 =
-
-**Fixed**
-
-* Bumped version header so Git Updater detects an update on installs that pulled the v1.2.1 release before commit `8daf545` ("fix: add missing activitypub and post-kinds include files") landed. Those installs were missing `includes/activitypub/class-pfbt-activitypub-transformer.php` and `includes/post-kinds/class-pfbt-post-kinds-integration.php`, causing a fatal in `pfbt_include_files()` during `plugins_loaded`. No code changes — release marker only.
-
-= 1.2.1 =
-
-**Fixed**
-
-* Plugin no longer wholesale-replaces the host theme's `theme.json` data when merging format colors. The merge is now additive: theme palette, gradients, styles, custom templates, and template parts are preserved alongside the plugin's contributions. Resolves an issue where activating this plugin would strip the active theme's brand palette from the Site Editor color picker.
-* Bumped plugin `theme.json` schema from version 2 to version 3 for forward compatibility with WordPress 6.6+.
-
-= 1.2.0 =
-
-**New Features**
-
-* **Added:** WordPress Abilities API integration (requires WordPress 6.9+)
-* **Added:** Six core abilities for machine-readable post format operations:
-  - `post_formats/list_formats` - List all formats with metadata and post counts
-  - `post_formats/get_format_template` - Get template and pattern info for a format
-  - `post_formats/validate_format` - Validate content against format requirements
-  - `post_formats/set_post_format` - Set format on a post
-  - `post_formats/get_post_format` - Get current format of a post
-  - `post_formats/detect_format` - Detect appropriate format from content
-* **Added:** Five IndieWeb abilities for microformats2, POSSE, and webmentions:
-  - `post_formats/mf2_markup` - Generate microformats2 markup for a post
-  - `post_formats/mf2_validate` - Validate mf2 output for a post
-  - `post_formats/posse_prepare` - Prepare content for POSSE syndication
-  - `post_formats/posse_targets` - Get available syndication targets
-  - `post_formats/webmention_context` - Get webmention context for a format
-* **Added:** Four MCP abilities for AI-powered format suggestions:
-  - `post_formats/suggest_format` - Analyze content and suggest appropriate format
-  - `post_formats/analyze_content` - Detailed content analysis with signals and scores
-  - `post_formats/validate_format_content` - Validate content for a specific format
-  - `post_formats/get_format_signals` - Get signal weights for format detection
-* **Added:** Feature flags system for optional integrations (IndieWeb, MCP, ActivityPub)
-* **Added:** Microformats2 markup generation with format-specific classes (h-entry, p-note, h-cite, u-photo, etc.)
-* **Added:** POSSE content preparation for Twitter/X, Mastodon, Bluesky, Threads, LinkedIn, Tumblr
-* **Added:** Webmention context mapping for format-specific interaction types
-* **Added:** `pfbt_abilities_registered` action for extending abilities
-
-**Requirements**
-
-* **Changed:** Minimum WordPress version increased to 6.9 (for Abilities API support)
-
-**Developer**
-
-* **Added:** `PFBT_Feature_Flags` class for managing optional feature toggles
-* **Added:** `PFBT_Abilities_Manager` class for Abilities API registration
-* **Added:** `PFBT_Core_Abilities` class with core format abilities
-* **Added:** `PFBT_IndieWeb_Abilities` class with IndieWeb abilities
-* **Added:** `PFBT_MCP_Abilities` class for AI-powered format suggestions
-* **Added:** `PFBT_Format_Analyzer` class for content signal detection
-* **Added:** `PFBT_Format_Mf2` class for microformats2 generation
-* **Added:** `PFBT_Posse_Transformer` class for POSSE syndication preparation
-* **Added:** `PFBT_Webmention_Context` class for webmention handling
-* **Added:** Unit tests for all abilities, IndieWeb, and MCP classes
+* New: format styling system built on a `--pfbt-*` design token contract — the plugin owns layout, your theme owns paint. If you customized the old `--wp--preset--color--format-*` tokens, rename them to `--pfbt-format-*`; uncustomized sites see no visible change.
+* New: Format Badge and Format Icon blocks, a Block Bindings source (`post-formats/format-data`), SVG icon sets with a settings-page picker, and Chat Log front-end interactivity with thread grouping.
+* New: 52 opt-in block style variations — 16 image, 20 gallery, 16 quote/pullquote — behind the `image_gallery_styles` and `quote_styles` feature flags (default off). All variation colors resolve through the token contract, so palette-mapped styles follow the active theme automatically.
+* New: 20 display patterns and 18 opt-in block templates covering all nine non-standard formats, plus the Tools → Post Format Repair screen.
+* New: WordPress Abilities API integration with core, IndieWeb (microformats2, POSSE, webmention), and AI format-suggestion abilities, all behind feature flags.
+* Changed: automatic format detection is back with apply-once semantics — it applies once on first save from content and never overrides a manual choice.
+* Changed: requires WordPress 6.9 or newer; tested up to 7.0.
+* Fixed: template registration no longer leaks single-post markup onto the homepage, pages, or archives on heavily-themed sites.
+* Fixed: theme.json merging is additive — the active theme's palette, gradients, and templates are preserved.
+* Fixed: Post Kinds for IndieWeb integration registers after the kind taxonomy exists and maps all 24 default kinds.
+* Fixed: style variation CSS loads on block-theme front ends; Quote and Video patterns no longer trigger the editor recovery prompt; debug logging is gated behind WP_DEBUG.
 
 = 1.1.4 - 2025-12-19 =
 
@@ -622,23 +471,8 @@ See `THEME-INTEGRATION.md` for the full table of old → new token names. Patter
 
 == Upgrade Notice ==
 
-= 2.0.0 =
-Major release with a breaking change: custom `--wp--preset--color--format-*` tokens must be renamed to `--pfbt-format-*`, and `pfpu/{format}` pattern slugs are deprecated. Uncustomized sites see no visible change. Read the theme integration guide before upgrading customized sites.
-
-= 1.2.5 =
-Important fix: Resolves homepage / page / archive resolution rendering with `single.html` markup on heavily-themed sites. Recommended for any site that has its own front-page or page templates and saw post-title, author byline, or related-posts sections leaking onto non-post pages.
-
-= 1.2.4 =
-Adds `pfbt_register_format_templates` opt-out filter for themes that ship their own template hierarchy. Stop-gap for the bug fixed properly in 1.2.5.
-
-= 1.2.3 =
-Adds `pfbt_enqueue_format_styles` and `pfbt_merge_format_palette` opt-out filters. Useful for themes with bespoke palettes that don't want the plugin's stock Gutenberg defaults appearing in the color picker or fighting `.format-X` body-class styling.
-
-= 1.2.2 =
-Release marker: forces Git Updater to detect an update on installs that pulled v1.2.1 before commit 8daf545 added the activitypub and post-kinds include files. Resolves a fatal in `pfbt_include_files()` for affected installs.
-
-= 1.2.0 =
-Major feature release: Adds WordPress Abilities API integration for machine-readable post format operations. Requires WordPress 6.9+. Includes feature flags system for future IndieWeb, MCP, and ActivityPub integrations.
+= 1.1.5 =
+Large consolidated update (the 1.2.x/2.x GitHub lines folded into one release). Breaking only for customized sites: rename `--wp--preset--color--format-*` token overrides to `--pfbt-format-*`. Uncustomized sites upgrade with no visible change.
 
 = 1.1.4 =
 Critical fix: Resolves issue where plugin's theme.json was overriding theme layout settings and causing blank templates. All users should upgrade immediately.

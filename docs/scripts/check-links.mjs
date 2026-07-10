@@ -18,7 +18,10 @@ try {
 	const broken = result.links.filter((l) => l.state === 'BROKEN');
 	console.log(`Checked ${result.links.length} links; ${broken.length} broken.`);
 	for (const l of broken) console.error(`BROKEN ${l.status} ${l.url} (on ${l.parent})`);
-	process.exitCode = broken.length ? 1 : 0;
-} finally {
 	stop();
+	process.exit(broken.length ? 1 : 0);
+} catch (e) {
+	console.error(e);
+	stop();
+	process.exit(1);
 }

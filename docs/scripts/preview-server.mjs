@@ -3,8 +3,11 @@
 import { spawn } from 'node:child_process';
 
 export async function startPreview(port = 4325) {
+	// detached => own process group, so stop() can kill astro's whole tree
+	// (killing the npx wrapper alone leaves the server running on Linux CI).
 	const child = spawn('npx', ['astro', 'preview', '--port', String(port)], {
 		stdio: ['ignore', 'pipe', 'pipe'],
+		detached: true,
 	});
 	let output = '';
 	child.stdout.on('data', (d) => (output += d));
@@ -17,12 +20,25 @@ export async function startPreview(port = 4325) {
 	while (Date.now() < deadline) {
 		try {
 			const res = await fetch(base);
-			if (res.ok) return { base, meta, stop: () => child.kill('SIGTERM') };
+			if (res.ok) {
+				const stop = () => {
+					try {
+						process.kill(-child.pid, 'SIGTERM');
+					} catch {
+						child.kill('SIGTERM');
+					}
+				};
+				return { base, meta, stop };
+			}
 		} catch {
 			// Not up yet.
 		}
 		await new Promise((r) => setTimeout(r, 500));
 	}
-	child.kill('SIGTERM');
+	try {
+		process.kill(-child.pid, 'SIGTERM');
+	} catch {
+		child.kill('SIGTERM');
+	}
 	throw new Error(`astro preview did not become ready.\n${output}`);
 }

@@ -31,4 +31,4 @@ try {
 	await browser.close();
 	stop();
 }
-process.exitCode = failures ? 1 : 0;
+process.exit(failures ? 1 : 0);

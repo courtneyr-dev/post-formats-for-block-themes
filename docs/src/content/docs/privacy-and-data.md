@@ -9,7 +9,7 @@ What the plugin stores, what it sends, and what it adds to your pages, based on 
 
 A search across the plugin's PHP and JavaScript (`includes/`, `blocks/`, `src/`) for outbound HTTP mechanisms (`wp_remote_*`, `curl_*`, `fsockopen`, `file_get_contents` with URLs, `WP_Http`) found no external network calls. The plugin does not phone home, load remote assets, or send content to third-party services.
 
-The IndieWeb, ActivityPub, and POSSE modules transform content for *other* plugins to send; they hook into those host plugins rather than making requests themselves. If you use those companion plugins, their own privacy behavior applies. (A line-by-line audit of every transformer when host plugins are active is listed under maintainer review.)
+The [IndieWeb](https://indieweb.org/), [ActivityPub](https://wordpress.org/plugins/activitypub/), and [POSSE](https://indieweb.org/POSSE) modules transform content for *other* plugins to send; they hook into those host plugins rather than making requests themselves. If you use those companion plugins, their own privacy behavior applies. (A line-by-line audit of every transformer when host plugins are active is listed under maintainer review.)
 
 ## Options stored (site-wide, in wp_options)
 

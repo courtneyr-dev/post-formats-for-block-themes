@@ -78,3 +78,7 @@ languages/*.mo
 .wp-env.override.json
 .gstack/
 /tests/.auth
+
+# Docs site build output (docs/ is an Astro Starlight project)
+docs/dist/
+docs/.astro/

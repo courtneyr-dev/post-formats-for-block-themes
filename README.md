@@ -13,13 +13,18 @@ Includes an integrated Chat Log block for displaying conversation transcripts fr
 
 ## User documentation
 
-Full user documentation lives in [docs/index.md](docs/index.md). Key pages:
+**User documentation:** [Read the complete Post Formats for Block Themes documentation](https://courtneyr-dev.github.io/post-formats-for-block-themes/)
 
-- [Installation](docs/installation.md)
-- [Getting started](docs/getting-started.md)
-- [Settings](docs/settings.md)
-- [Common tasks](docs/common-tasks.md)
-- [Troubleshooting](docs/troubleshooting.md)
+Key pages:
+
+- [Installation](https://courtneyr-dev.github.io/post-formats-for-block-themes/installation/)
+- [Getting started](https://courtneyr-dev.github.io/post-formats-for-block-themes/getting-started/)
+- [Settings](https://courtneyr-dev.github.io/post-formats-for-block-themes/settings/)
+- [Common tasks](https://courtneyr-dev.github.io/post-formats-for-block-themes/common-tasks/)
+- [Troubleshooting](https://courtneyr-dev.github.io/post-formats-for-block-themes/troubleshooting/)
+- [For theme developers](https://courtneyr-dev.github.io/post-formats-for-block-themes/theme-integration/) — tokens, hooks, and the styling contract
+
+The docs site builds from [`docs/`](docs/) with Astro Starlight — see [docs/MAINTAINING.md](docs/MAINTAINING.md) to update it.
 
 ---
 

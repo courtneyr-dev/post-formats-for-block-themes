@@ -1,4 +1,7 @@
-# Block Style Variations
+---
+title: Block style variations
+description: "Catalog of the 52 opt-in image, gallery, and quote block style variations, their feature flags, and how each resolves theme colors."
+---
 
 PFBT ships block style variations across four core blocks:
 
@@ -36,7 +39,7 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 ### Everyday / Content (5)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `rounded` | Soft rounded corners. Works for any image; minimum-fuss styling. |
 | `circle` | Portraits and avatar-style images. Forces 1:1 + circular clip. |
 | `soft-shadow` | When you want the image to lift off the page without a border. Drop-shadow follows transparent silhouettes (PNG/SVG). |
@@ -46,7 +49,7 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 ### Nostalgic / Tactile (5)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `polaroid` | Personal/casual posts; family photos, travel snaps. White card with wide bottom edge for the caption, slight rotation that straightens on hover. |
 | `postcard` | Travel and place-based content. 4:3 crop with a dashed inline-end border and cream tint. |
 | `photo-strip` | Photobooth-style memory grids; pairs and quartets. CSS-only divider bars. |
@@ -56,7 +59,7 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 ### Editorial / Print (3)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `headline-crop` | Hero images and section banners. 21:9 cinematic crop with a small uppercase caption underneath. |
 | `duotone-mood` | Mood pieces. CSS-filter-chain duotone; override `--pfbt-duotone-hue` per-block to retint. |
 | `halftone` | Editorial posts that need a print-comic feel. Subtle dot-pattern overlay. |
@@ -64,7 +67,7 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 ### Device / Mockup (3)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `phone-frame` | Mobile-first product showcases. Stylized phone frame with notch. 9:19.5. |
 | `browser-window` | Web/SaaS screenshots. Browser chrome with traffic-light dots. |
 | `code-editor` | Code screenshots. Dark editor chrome with sidebar. |
@@ -74,7 +77,7 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 ### CSS-only (8)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `justified-rows` | Mixed-aspect-ratio collections. Items balance into uniform-height rows. **Default in `patterns/gallery.php`.** |
 | `square-tile` | Avatar grids, icon sets, product tiles. 1:1 with cover crop. |
 | `polaroid-stack` | Personal photo collections. Each item gets a polaroid frame with randomized rotation. |
@@ -87,7 +90,7 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 ### Interactivity API (8) — vanilla JS, no third-party libraries
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `masonry-cascade` | Mixed-height collections. CSS multi-column with native masonry @supports progressive enhancement. **No JS required.** |
 | `headline-mosaic` | Editorial highlight reels. Set `data-shape="A\|B\|C"` to pick the layout. |
 | `lightbox-slideshow` | When the gallery should expand to a fullscreen viewer. Click any image to open a focus-trapped dialog with prev/next + arrow-key/Esc keyboard nav + live "image X of Y" announcements. |
@@ -101,7 +104,7 @@ Total CSS shipped (all 36 variations + IA modules) is well under the 60 KB / 12 
 ### Advanced (3) — SSR fallbacks
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `map-pinned-geo` | Geo-tagged collections. **v2.1.0 ships the SSR text-list fallback** per Hard Rule 5 (no third-party JS libraries). Tile rendering is a v2.2 roadmap item. |
 | `panorama-360` | Panoramic photos. **v2.1.0 ships the SSR flat-image fallback** with horizontal scroll-snap. WebGL viewer is a v2.2 roadmap item. |
 | `dynamic-query-gallery` | Auto-curated galleries fed by a Query Loop. Set `data-pfbt-layout="grid\|tile\|mosaic"` to pick the inner layout. |
@@ -115,7 +118,7 @@ Variations register on **both** `core/quote` and `core/pullquote`. Each one rese
 ### Tactile / Nostalgic (8)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `post-it` | Personal notes, reminders, scratch ideas. Yellow square card with folded corner and slight rotation. Citation rendered inside, em-dash prefixed. |
 | `notebook-scrap` | Field notes, drafted thoughts. Torn top edge, ruled lines, red margin line. Citation as a signature line. |
 | `typewriter` | Manuscript-style quotes, retro vibes. Monospace on cream paper with faint ink-bleed. Citation prefixed `--`. |
@@ -128,7 +131,7 @@ Variations register on **both** `core/quote` and `core/pullquote`. Each one rese
 ### Editorial / Print (4)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `magazine-pull` | Big editorial moments. Large display font with oversized decorative quote mark behind the text. |
 | `broadsheet` | Classical centered quote treatment. Centered serif with double-rule top and bottom and corner quotation marks. |
 | `decorative-marks` | Editorial restraint with one design beat. Oversized opening quote mark in the upper-inline-start corner. |
@@ -137,7 +140,7 @@ Variations register on **both** `core/quote` and `core/pullquote`. Each one rese
 ### Conversational / Digital (3)
 
 | Slug | When to use |
-|---|---|
+| --- | --- |
 | `speech-bubble` | Conversational extracts, dialogue. Rounded card with a tail. Citation rendered below as the speaker (not inside). |
 | `message-bubble` | SMS/chat-style snippets. Accent-colored rounded rectangle. Citation below as sender label. |
 | `comment-card` | Quoted comments, testimonials. Card with decorative initial avatar — set `data-pfbt-avatar="A"` on the block via Advanced → HTML attribute (or via Block Bindings). Citation as username. |
@@ -152,7 +155,7 @@ Variations register on **both** `core/quote` and `core/pullquote`. Each one rese
 
 Every color in every variation resolves through the same three-level chain:
 
-```
+```text
 --pfbt-{variation}-{role}          ← site/theme override token (always wins)
   → theme palette preset(s)        ← palette-mapped colors only
     → fixed default                 ← skeuomorphic colors, and the last resort
@@ -163,12 +166,12 @@ In CSS that looks like:
 ```css
 /* Palette-mapped: follows the active theme's palette by default */
 .wp-block-image.is-style-tinted-border img {
-	border-color: var(--pfbt-tinted-border-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
+ border-color: var(--pfbt-tinted-border-color, var(--wp--preset--color--primary, var(--wp--preset--color--accent-1, #2271b1)));
 }
 
 /* Fixed skeuomorph: photo paper is white on any palette */
 .wp-block-image.is-style-polaroid {
-	background: var(--pfbt-polaroid-paper, #ffffff);
+ background: var(--pfbt-polaroid-paper, #ffffff);
 }
 ```
 
@@ -177,7 +180,7 @@ In CSS that looks like:
 **Palette-mapped variations** pick up the active theme's colors with no configuration. Each color role tries two common palette slug conventions before falling back:
 
 | Role | Preset chain | Fallback |
-|---|---|---|
+| --- | --- | --- |
 | Accent, decorative (rules, borders — nothing sits on it) | `primary` → `accent-1` | `#2271b1` |
 | Accent, solid fill carrying text (bubbles, chips, buttons) | `primary` → `contrast` | `#2271b1` |
 | Body ink | `main` → `contrast` | `#0a0a0a` |
@@ -205,9 +208,9 @@ Set tokens from a block theme's `theme.json`:
 
 ```json
 {
-	"styles": {
-		"css": ":root { --pfbt-side-rule-color: var(--wp--preset--color--brand); --pfbt-postit-bg: #ffe98a; }"
-	}
+ "styles": {
+  "css": ":root { --pfbt-side-rule-color: var(--wp--preset--color--brand); --pfbt-postit-bg: #ffe98a; }"
+ }
 }
 ```
 
@@ -215,9 +218,9 @@ Set tokens from a block theme's `theme.json`:
 
 ```css
 :root {
-	--pfbt-tinted-border-width: 5px;
-	--pfbt-window-dot-close: var(--cr-orange);
-	--pfbt-code-editor-bg: #0d1117;
+ --pfbt-tinted-border-width: 5px;
+ --pfbt-window-dot-close: var(--cr-orange);
+ --pfbt-code-editor-bg: #0d1117;
 }
 ```
 
@@ -227,10 +230,10 @@ For per-block overrides, use the block's Advanced → Additional CSS Class field
 
 Defaults shown as `slug chain → fallback` for palette-mapped tokens, or a literal value for fixed tokens.
 
-**Quote / pullquote**
+#### Quote / pullquote
 
 | Token | Paints | Default |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-magazine-pull-ink` | Body text | `main` → `contrast` → `#0a0a0a` |
 | `--pfbt-magazine-pull-accent` | Big quote mark, divider rule | `primary` → `accent-1` → `#2271b1` |
 | `--pfbt-magazine-pull-cite` | Citation | `secondary` → `contrast` → `#666666` |
@@ -261,10 +264,10 @@ Defaults shown as `slug chain → fallback` for palette-mapped tokens, or a lite
 | `--pfbt-postcard-bg` / `-fg` / `-edge` / `-divider` / `-stamp` | Quote postcard (fixed) | aged cream set |
 | `--pfbt-plaque-light` / `-mid` / `-engraved` / `-frame` | Plaque (fixed) | brass set |
 
-**Image**
+#### Image
 
 | Token | Paints | Default |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-caption-card-bg` / `-fg` | Card / caption | `tertiary` → `base` → `#f5f5f5` / `main` → `contrast` → `#0a0a0a` |
 | `--pfbt-tinted-border-color` | Border + outer ring | `primary` → `accent-1` → `#2271b1` |
 | `--pfbt-tinted-border-mat-color` | Inner mat | `base` → `#ffffff` |
@@ -281,10 +284,10 @@ Defaults shown as `slug chain → fallback` for palette-mapped tokens, or a lite
 | `--pfbt-phone-frame-bezel` / `-notch` / `-caption` | Device hardware (fixed) | `#0a0a0a` / `#ffffff` / `#fafafa` |
 | `--pfbt-code-editor-bg` / `-fg` | Editor chrome (fixed) | `#1e1e1e` / `#fafafa` |
 
-**Gallery**
+#### Gallery
 
 | Token | Paints | Default |
-|---|---|---|
+| --- | --- | --- |
 | `--pfbt-caption-prominent-bg` / `-fg` | Card / caption | `tertiary` → `base` / `main` → `contrast` |
 | `--pfbt-bordered-grid-color` | Borders + gutter | `primary` → `accent-1` → `#2271b1` |
 | `--pfbt-bordered-grid-focus` | Focus outline | `primary-accent` → `base` → `#e8f0fa` |
@@ -301,7 +304,7 @@ Defaults shown as `slug chain → fallback` for palette-mapped tokens, or a lite
 | `--pfbt-polaroid-paper` / `-ink` | Polaroid stack (fixed; shared with image polaroid) | `#ffffff` / `#0a0a0a` |
 | `--pfbt-lightbox-overlay` / `-fg` / `-focus` | Lightbox (fixed dark) | `rgba(0,0,0,0.92)` / `#fafafa` / `#e8f0fa` |
 
-These tokens are distinct from the per-format `--pfbt-format-*` tokens documented in [`DESIGN-TOKENS.md`](./DESIGN-TOKENS.md) — those paint the format containers, these paint user-selected block style variations.
+These tokens are distinct from the per-format `--pfbt-format-*` tokens documented in [`DESIGN-TOKENS.md`](/post-formats-for-block-themes/design-tokens/) — those paint the format containers, these paint user-selected block style variations.
 
 ## Accessibility
 
@@ -318,4 +321,4 @@ Every variation has been authored against the v2.1.0 brief's a11y gates:
 
 ## Adding your own variations
 
-See [`ADDING-A-VARIATION.md`](./ADDING-A-VARIATION.md).
+See [`ADDING-A-VARIATION.md`](/post-formats-for-block-themes/adding-a-variation/).

@@ -1,0 +1,100 @@
+---
+// PageTitle override: visible breadcrumb trail above the H1, plus
+// BreadcrumbList JSON-LD. The middle (group) segment is presentational —
+// sidebar groups have no landing URL, and Google's BreadcrumbList rules
+// require an item URL on every element except the last, so the JSON-LD
+// carries Home and the current page.
+import meta from '../site-meta.mjs';
+
+// Starlight renders the skip-link target on this id (constants.ts PAGE_TITLE_ID).
+const PAGE_TITLE_ID = '_top';
+
+const { entry, sidebar, id } = Astro.locals.starlightRoute;
+const isHome = id === '';
+
+/** Find the current link in the sidebar tree and return its group-label trail. */
+function findTrail(entries, trail = []) {
+	for (const item of entries) {
+		if (item.type === 'link' && item.isCurrent) return trail;
+		if (item.type === 'group') {
+			const found = findTrail(item.entries, [...trail, item.label]);
+			if (found) return found;
+		}
+	}
+	return null;
+}
+
+const groups = isHome ? [] : (findTrail(sidebar) ?? []);
+const homeUrl = `${meta.site}${meta.base}/`;
+const pageUrl = `${meta.site}${meta.base}/${id ? `${id}/` : ''}`;
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BreadcrumbList',
+	itemListElement: [
+		{ '@type': 'ListItem', position: 1, name: 'Home', item: homeUrl },
+		{ '@type': 'ListItem', position: 2, name: entry.data.title },
+	],
+};
+---
+
+{
+	!isHome && (
+		<nav aria-label="Breadcrumb" class="breadcrumbs">
+			<ol>
+				<li>
+					<a href={`${meta.base}/`}>Home</a>
+				</li>
+				{groups.map((label) => (
+					<li>
+						<span>{label}</span>
+					</li>
+				))}
+				<li>
+					<span aria-current="page">{entry.data.title}</span>
+				</li>
+			</ol>
+		</nav>
+	)
+}
+{!isHome && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+<h1 id={PAGE_TITLE_ID}>{entry.data.title}</h1>
+
+<style>
+	@layer starlight.core {
+		h1 {
+			margin-top: 1rem;
+			font-size: var(--sl-text-h1);
+			line-height: var(--sl-line-height-headings);
+			font-weight: 600;
+			color: var(--sl-color-white);
+		}
+	}
+	.breadcrumbs {
+		margin-top: 1rem;
+		font-size: var(--sl-text-sm);
+	}
+	.breadcrumbs ol {
+		list-style: none;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		margin: 0;
+		padding: 0;
+	}
+	.breadcrumbs li {
+		margin: 0;
+	}
+	.breadcrumbs li + li::before {
+		content: '›';
+		margin-inline-end: 0.25rem;
+		color: var(--sl-color-gray-3);
+	}
+	.breadcrumbs a {
+		color: var(--sl-color-text-accent);
+	}
+	.breadcrumbs [aria-current='page'] {
+		color: var(--sl-color-gray-2);
+	}
+</style>

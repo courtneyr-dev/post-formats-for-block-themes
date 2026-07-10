@@ -1,0 +1,11 @@
+extends: existence
+message: "Drop '%s' — it judges the reader instead of instructing them."
+level: error
+ignorecase: true
+tokens:
+  - simply
+  - obviously
+  - easily
+  - just click
+  - it's easy
+  - it is easy

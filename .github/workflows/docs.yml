@@ -1,0 +1,73 @@
+name: Docs
+
+on:
+  pull_request:
+    paths: ['docs/**', '.github/workflows/docs.yml']
+  push:
+    branches: [main]
+    paths: ['docs/**', '.github/workflows/docs.yml']
+  workflow_dispatch:
+
+env:
+  VALE_VERSION: 3.9.4
+
+jobs:
+  quality:
+    name: Build and quality checks
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build site
+        run: npm run build
+
+      - name: Markdown lint
+        run: npm run lint:md
+
+      - name: Prose lint (Vale)
+        run: |
+          curl -sL "https://github.com/errata-ai/vale/releases/download/v${VALE_VERSION}/vale_${VALE_VERSION}_Linux_64-bit.tar.gz" | tar xz vale
+          ./vale --minAlertLevel=error src/content
+
+      - name: Internal link check
+        run: SKIP_EXTERNAL=1 npm run check:links
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Accessibility check (axe)
+        run: npm run check:a11y
+
+      - name: Upload site artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    if: github.event_name != 'pull_request'
+    needs: quality
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

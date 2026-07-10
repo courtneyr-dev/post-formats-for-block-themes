@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://courtneyr-dev.github.io/post-formats-for-block-themes/sitemap-index.xml

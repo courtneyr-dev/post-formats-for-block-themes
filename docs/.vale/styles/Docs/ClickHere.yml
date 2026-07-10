@@ -1,0 +1,7 @@
+extends: existence
+message: "Rewrite the link text — 'click here' says nothing about the destination."
+level: error
+ignorecase: true
+tokens:
+  - click here
+  - tap here

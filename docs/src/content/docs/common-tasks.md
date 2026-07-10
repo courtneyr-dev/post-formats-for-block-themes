@@ -1,4 +1,7 @@
-# Common tasks
+---
+title: Common tasks
+description: "Step-by-step instructions for everyday format work: quotes, chat transcripts, status posts, switching formats, and repairing mismatched posts."
+---
 
 Step-by-step instructions for the everyday things you'll do with Post Formats for Block Themes.
 
@@ -8,7 +11,7 @@ Step-by-step instructions for the everyday things you'll do with Post Formats fo
 2. In the **Choose Post Format** modal, pick one of the 10 formats. Its pattern is inserted with a locked first block.
 3. To skip formats entirely, choose **Standard** or close the modal.
 
-![Format selection modal on a new post showing post format cards with icons and descriptions](assets/screenshots/editor-format-selection-modal.png)
+![Format selection modal on a new post showing post format cards with icons and descriptions](../../assets/screenshots/editor-format-selection-modal.png)
 
 ## Change a post's format
 
@@ -23,11 +26,11 @@ Step-by-step instructions for the everyday things you'll do with Post Formats fo
 3. Adjust display settings in the block sidebar: platform, display style, avatars, timestamps and their format, thread collapsing, and participant list.
 4. Publish. The transcript renders as an accessible, threaded conversation.
 
-![Chat Log block in the editor with a pasted transcript, detected platform, and display settings in the sidebar](assets/screenshots/editor-chat-log.png)
+![Chat Log block in the editor with a pasted transcript, detected platform, and display settings in the sidebar](../../assets/screenshots/editor-chat-log.png)
 
-![Published chat log on the frontend showing avatars, usernames, timestamps, and bubble-style messages](assets/screenshots/frontend-chat-log.png)
+![Published chat log on the frontend showing avatars, usernames, timestamps, and bubble-style messages](../../assets/screenshots/frontend-chat-log.png)
 
-If a paste doesn't parse, check the expected line patterns in the [chat log format examples](../.wordpress-org/CHAT-LOG-FORMAT-EXAMPLES.md) — for example, Slack-style pastes need two spaces between the name and the time (`sarah  9:30 AM`).
+If a paste doesn't parse, check the expected line patterns in the [chat log format examples](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/.wordpress-org/CHAT-LOG-FORMAT-EXAMPLES.md) — for example, Slack-style pastes need two spaces between the name and the time (`sarah  9:30 AM`).
 
 ## Change how a chat log is displayed
 
@@ -40,7 +43,7 @@ If a paste doesn't parse, check the expected line patterns in the [chat log form
 1. Create a new post and choose the **Status** format.
 2. Type your update. A live counter shows how many of the 280 characters remain, social-media style, and warns when you go over the limit.
 
-![Status format post in the editor showing the remaining-characters counter below the text](assets/screenshots/editor-status-format.png)
+![Status format post in the editor showing the remaining-characters counter below the text](../../assets/screenshots/editor-status-format.png)
 
 ## Display a post's format on your site
 
@@ -62,11 +65,11 @@ Three blocks show format information; add them in the Site Editor (to templates)
 2. Review the scan results and the detected mismatches.
 3. Leave **Dry run** checked to preview, then uncheck it and click **Apply All Suggestions** — or use the per-post **Apply** buttons. A revision is created for each post before changes are applied.
 
-![Post Format Repair tool showing scan results with all posts correctly formatted and no mismatches](assets/screenshots/admin-repair-tool.png)
+![Post Format Repair tool showing scan results with all posts correctly formatted and no mismatches](../../assets/screenshots/admin-repair-tool.png)
 
 ## Customize a format's appearance
 
-Use the Site Editor — no code needed. Format templates and styles are editable like any other template. Follow the [Site Editor guide](../SITE-EDITOR-GUIDE.md) or the [format customization quick start](../FORMAT-CUSTOMIZATION-QUICK-START.md).
+Use the Site Editor — no code needed. Format templates and styles are editable like any other template. Follow the [Site Editor guide](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/SITE-EDITOR-GUIDE.md) or the [format customization quick start](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/FORMAT-CUSTOMIZATION-QUICK-START.md).
 
 ## Enable the plugin's block templates
 
@@ -81,7 +84,3 @@ If your theme has no format-specific templates:
 1. Create a new post, skip the modal, and add a distinctive first block (for example, a pullquote).
 2. Save the post.
 3. Check the Format Switcher or the post sidebar: the detected format (Quote, in this example) is applied. It's applied once — later edits won't change it, and it never overrides a format you set manually.
-
----
-
-[Documentation home](index.md) · Previous: [Settings](settings.md) · Next: [Screenshots](screenshots.md)

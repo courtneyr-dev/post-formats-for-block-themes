@@ -1,6 +1,9 @@
-# Privacy and data
+---
+title: Privacy and data
+description: "What Post Formats for Block Themes stores, what it sends, and what it adds to your pages — based on a code audit of the plugin source."
+---
 
-What the plugin stores, what it sends, and what it adds to your pages, based on a code audit of version 2.4.0.
+What the plugin stores, what it sends, and what it adds to your pages, based on a code audit of version 1.1.5 (plugin header).
 
 ## External requests: none found
 
@@ -53,7 +56,3 @@ The plugin stores no user meta and collects nothing about site visitors. It sets
 
 - Outbound behavior of IndieWeb/ActivityPub/POSSE transformers when their host plugins are active (none found in this plugin's code; flagged for maintainer confirmation).
 - An exhaustive search for custom REST routes (none were found; the plugin registers meta and filters template REST responses).
-
----
-
-[Documentation home](index.md) · Previous: [FAQ](faq.md) · Next: [Accessibility](accessibility.md)

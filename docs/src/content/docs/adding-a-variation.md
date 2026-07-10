@@ -1,4 +1,7 @@
-# Adding a Block Style Variation
+---
+title: Adding a variation
+description: "How to add your own block style variation to the plugin: the registry entry, CSS rules under the token contract, and the tests to update."
+---
 
 How to ship a new variation under `is-style-{slug}` for `core/image` or `core/gallery`.
 
@@ -23,19 +26,19 @@ Create `styles/{block}-variations/{slug}.css` (one file per variation).
  */
 
 .wp-block-image.is-style-{slug} {
-	/* layout / decoration */
+ /* layout / decoration */
 }
 
 .wp-block-image.is-style-{slug} img {
-	/* image rules */
+ /* image rules */
 }
 
 @media (prefers-reduced-motion: no-preference) {
-	/* any transitions or transforms go here */
+ /* any transitions or transforms go here */
 }
 
 @media print {
-	/* flatten decorative effects */
+ /* flatten decorative effects */
 }
 ```
 
@@ -57,10 +60,10 @@ Open `includes/definitions/{block}-style-variations.php` and append:
 
 ```php
 array(
-	'slug'        => 'my-new-variation',
-	'label'       => __( 'My New Variation', 'post-formats-for-block-themes' ),
-	'style_path'  => 'styles/image-variations/my-new-variation.css',
-	'description' => __( 'One-sentence description for docs.', 'post-formats-for-block-themes' ),
+ 'slug'        => 'my-new-variation',
+ 'label'       => __( 'My New Variation', 'post-formats-for-block-themes' ),
+ 'style_path'  => 'styles/image-variations/my-new-variation.css',
+ 'description' => __( 'One-sentence description for docs.', 'post-formats-for-block-themes' ),
 ),
 ```
 
@@ -70,11 +73,11 @@ For Interactivity-API variations, add `view_module` and `view_module_id`:
 
 ```php
 array(
-	'slug'           => 'my-interactive',
-	'label'          => __( 'My Interactive', 'post-formats-for-block-themes' ),
-	'style_path'     => 'styles/gallery-variations/my-interactive.css',
-	'view_module'    => 'blocks/gallery-variations/my-interactive/view.js',
-	'view_module_id' => 'post-formats/my-interactive',
+ 'slug'           => 'my-interactive',
+ 'label'          => __( 'My Interactive', 'post-formats-for-block-themes' ),
+ 'style_path'     => 'styles/gallery-variations/my-interactive.css',
+ 'view_module'    => 'blocks/gallery-variations/my-interactive/view.js',
+ 'view_module_id' => 'post-formats/my-interactive',
 ),
 ```
 
@@ -84,15 +87,15 @@ Themes and other plugins can register variations without forking PFBT. Use the r
 
 ```php
 add_filter( 'pfbt_image_style_variations', function ( $defs ) {
-	$defs[] = array(
-		'slug'       => 'my-theme-tape',
-		'label'      => __( 'Tape Frame', 'my-theme' ),
-		'style_path' => 'styles/image-variations/tape.css',
-		// `style_path` here is a path under PFBT_PLUGIN_URL; for theme-
-		// shipped variations, use a fully qualified URL via a custom
-		// `style_handle` you wp_register_style yourself.
-	);
-	return $defs;
+ $defs[] = array(
+  'slug'       => 'my-theme-tape',
+  'label'      => __( 'Tape Frame', 'my-theme' ),
+  'style_path' => 'styles/image-variations/tape.css',
+  // `style_path` here is a path under PFBT_PLUGIN_URL; for theme-
+  // shipped variations, use a fully qualified URL via a custom
+  // `style_handle` you wp_register_style yourself.
+ );
+ return $defs;
 } );
 ```
 

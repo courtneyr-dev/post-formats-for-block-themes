@@ -39,7 +39,7 @@ Opt-in style variations for image (16), gallery (20), and quote/pullquote (16) b
 
 ## Does it work with other plugins?
 
-Optional integrations activate when the other plugin is installed: Bookmark Card (richer link-format previews), Able Player (accessible audio/video playback), Podlove (podcasting), and [Post Kinds for IndieWeb](https://courtneyr-dev.github.io/post-kinds-for-indieweb/) (maps formats to post kinds, such as Video → Watch). All are optional with fallbacks to core blocks.
+Optional integrations activate when the other plugin is installed: Bookmark Card (richer link-format previews), Able Player (accessible audio/video playback), Podlove (podcasting), and [Post Kinds for IndieWeb in Block Themes](https://courtneyr-dev.github.io/post-kinds-for-indieweb/) (maps formats to post kinds, such as Video → Watch). All are optional with fallbacks to core blocks.
 
 ## Does it slow down or restyle my whole site?
 

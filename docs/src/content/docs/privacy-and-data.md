@@ -47,7 +47,7 @@ The plugin stores no user meta and collects nothing about site visitors. It sets
 
 ## Other WordPress data it touches
 
-- Assigns terms in core's `post_format` taxonomy (that's what a post format is). With Post Kinds for IndieWeb active, it can also assign a matching `kind` term.
+- Assigns terms in core's `post_format` taxonomy (that's what a post format is). With Post Kinds for IndieWeb in Block Themes active, it can also assign a matching `kind` term.
 - Creates a revision before each Repair Tool change.
 - Limits revisions for reusable blocks (`wp_block`) to 3.
 - Does not modify comments, links, or users.

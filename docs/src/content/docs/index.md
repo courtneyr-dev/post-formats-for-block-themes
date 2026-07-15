@@ -25,7 +25,7 @@ Bloggers and content creators who publish mixed content types (quotes, links, ph
 
 - WordPress 6.9 or higher and PHP 7.4 or higher.
 - **A block theme is required.** If your active theme is a classic theme, activation stops with an error screen and the plugin deactivates itself. See [Troubleshooting](/post-formats-for-block-themes/troubleshooting/).
-- No other plugins are required. Optional integrations light up when their plugins are installed: Bookmark Card (link previews), Able Player (accessible video/audio), Podlove (podcasting), and [Post Kinds for IndieWeb](https://courtneyr-dev.github.io/post-kinds-for-indieweb/).
+- No other plugins are required. Optional integrations light up when their plugins are installed: Bookmark Card (link previews), Able Player (accessible video/audio), Podlove (podcasting), and [Post Kinds for IndieWeb in Block Themes](https://courtneyr-dev.github.io/post-kinds-for-indieweb/).
 
 ## Get the plugin
 

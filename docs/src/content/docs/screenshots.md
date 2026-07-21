@@ -25,11 +25,19 @@ A quote post: the locked pullquote pattern with attribution, and the format set 
 
 A status post with the remaining-characters counter under the text field. See [Common tasks](/post-formats-for-block-themes/common-tasks/).
 
+![Gallery format pattern in the editor with a locked gallery block in a responsive grid](../../assets/screenshots/editor-gallery-format.png)
+
+The gallery pattern keeps the first block structure intact.
+
 ## Front end
 
 ![Published chat log on the frontend showing avatars, usernames, timestamps, and bubble-style messages](../../assets/screenshots/frontend-chat-log.png)
 
 A published chat post rendered in the bubbles style with avatars, usernames, and timestamps.
+
+![Format badge displayed before a post title on the frontend](../../assets/screenshots/frontend-format-badge.png)
+
+The Format Badge labels each post's format for readers.
 
 ## Admin screens
 
@@ -41,6 +49,10 @@ A published chat post rendered in the bubbles style with avatars, usernames, and
 
 **Tools → Post Format Repair**: scan for posts whose format doesn't match their content, then fix them in bulk. See [Settings](/post-formats-for-block-themes/settings/).
 
+![Post Format Templates page with the opt-in checkbox and the list of single and archive templates](../../assets/screenshots/admin-block-templates.png)
+
+**Tools → Post Format Templates**: opt in to the plugin's 18 single and archive templates. See [Settings](/post-formats-for-block-themes/settings/).
+
 ## Screenshots still needed
 
 Each row is the full capture specification (block theme active, 1280×800 at 2x).
@@ -49,6 +61,5 @@ Each row is the full capture specification (block theme active, 1280×800 at 2x)
 | --- | --- | --- | --- | --- |
 | editor-format-switcher.png | Editor sidebar with the Format Switcher panel open on an existing post | Current format + dropdown | Format Switcher sidebar panel showing the current format, auto-detection status, and a dropdown to switch formats | Change a post's format without leaving the editor. |
 | editor-autodetect-notice.png | New post with a pullquote block inserted and saved | The suggestion notice | Editor notice suggesting the Quote format after a pullquote block is added | Auto-detection suggests a format once — your choice always wins. |
-| editor-gallery-format.png | Gallery post with six or more images in the locked pattern | The responsive grid | Gallery format pattern in the editor with a locked gallery block in a responsive grid | The gallery pattern keeps the first block structure intact. |
-| admin-block-templates.png | Tools → Post Format Templates with the opt-in visible | Checkbox + template list | Post Format Templates page with the opt-in checkbox and the list of single and archive templates | Opt in to the plugin's 18 single and archive templates. |
-| frontend-format-badge.png | Published non-standard-format post | The badge before the title | Format badge displayed before a post title on the frontend | The Format Badge labels each post's format for readers. |
+
+These two screens can't be captured yet: the plugin currently uses WordPress core's built-in Format control (there is no custom Format Switcher panel with auto-detection status), and auto-detection applies formats silently on save without an editor notice. Capture them when those UIs ship.

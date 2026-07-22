@@ -37,7 +37,7 @@ An opt-in toggle for the plugin's starter block templates. One checkbox: **"Use 
 - **What enabling does:** registers 18 starter templates — nine `single-post-{format}` and nine `archive-post-format-{format}` variants — and routes single posts and post-format archives to them. The page lists all 18 so you can see exactly what you're enabling.
 - **When to enable it:** the page's own guidance: only if your active theme does *not* provide format-specific templates and you want the plugin's starter templates to render single posts and post-format archives. Most block themes ship their own.
 
-(Screenshot planned: see [screenshot inventory](/post-formats-for-block-themes/screenshots/).)
+![Post Format Templates page with the opt-in checkbox and the list of single and archive templates](../../assets/screenshots/admin-block-templates.png)
 
 ## What you can change without code
 

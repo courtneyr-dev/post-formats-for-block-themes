@@ -218,14 +218,13 @@ post-formats-for-block-themes/
 
 ## Screenshots
 
-1. **Format Selection Modal** - Visual card interface showing all 10 post formats
-2. **Format Switcher Panel** - Sidebar panel for changing formats mid-edit
-3. **Quote Format Pattern** - Enhanced pullquote with attribution
-4. **Chat Log Block** - Slack conversation with avatars and timestamps
-5. **Repair Tool** - Admin interface for scanning and fixing format mismatches
-6. **Status Format** - Twitter-style composer with 280-character counter
-7. **Auto-Detection** - Notification when format is automatically detected
-8. **Gallery Format** - Responsive image grid pattern
+![Format selection modal on a new post showing post format cards with icons and descriptions](docs/src/assets/screenshots/editor-format-selection-modal.png)
+
+![Gallery format pattern in the editor with a locked gallery block in a responsive grid](docs/src/assets/screenshots/editor-gallery-format.png)
+
+![Format badge displayed before a post title on the frontend](docs/src/assets/screenshots/frontend-format-badge.png)
+
+More screens — the Chat Log block, the Status counter, the Repair Tool, and the admin pages — are in the [screenshot gallery](https://courtneyr-dev.github.io/post-formats-for-block-themes/screenshots/).
 
 ---
 

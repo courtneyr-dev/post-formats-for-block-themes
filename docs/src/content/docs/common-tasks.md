@@ -53,6 +53,8 @@ Three blocks show format information; add them in the Site Editor (to templates)
 - **Format Icon** — renders the format's SVG icon. By default the format name is available to screen readers only; enable **Show label** for visible text. The block hides itself on standard-format posts.
 - **Post Format** — shows the format as a text link to the format archive, with alignment and separator options.
 
+![Format badge displayed before a post title on the frontend](../../assets/screenshots/frontend-format-badge.png)
+
 ## Change the format icon style
 
 1. Go to **Settings → Post Formats**.
@@ -78,6 +80,8 @@ If your theme has no format-specific templates:
 1. Go to **Tools → Post Format Templates**.
 2. Check **"Use the plugin's opt-in single + archive templates per post format."** and save.
 3. Single posts and post-format archives now use the plugin's 18 starter templates, which you can customize in the Site Editor.
+
+![Post Format Templates page with the opt-in checkbox and the list of single and archive templates](../../assets/screenshots/admin-block-templates.png)
 
 ## Confirm auto-detection applied a format
 

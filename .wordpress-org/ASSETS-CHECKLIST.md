@@ -76,27 +76,30 @@ Save as PNG files at 1390x864px (recommended size):
 
 ---
 
-### ✅ screenshot-7.png
-**Caption**: Automatic format detection notification suggesting Quote format after inserting pullquote block
-
-**What to capture**:
-- WordPress editor with a post open
-- User just inserted a Pullquote block
-- Blue notification banner appears at top: "We detected you might want to use Quote format. Switch now?"
-- Shows "Switch Format" and "Dismiss" buttons
-- Context showing the pullquote block below
-
----
-
-### ✅ screenshot-8.png
-**Caption**: Gallery format pattern with locked gallery block displaying responsive grid layout adapting to theme columns
+### ✅ screenshot-7.png (captured via `npm run screenshots:docs`)
+**Caption**: A gallery format post in the editor with the locked gallery block in a responsive grid
 
 **What to capture**:
 - Post using Gallery format
 - Gallery block with multiple images (6-9 images work well)
 - Responsive grid layout visible
-- Block toolbar showing lock icon
 - Images displaying in clean grid
+
+---
+
+### ✅ screenshot-8.png (captured via `npm run screenshots:docs`)
+**Caption**: The Format Badge before a post title on the frontend of a quote post
+
+**What to capture**:
+- Published non-standard-format post viewed on the frontend
+- Format Badge visible before the post title
+
+---
+
+### ⏸ Deferred: automatic format detection notification
+**Planned caption**: Automatic format detection notification suggesting Quote format after inserting pullquote block
+
+Not capturable yet — auto-detection currently applies formats silently on save; there is no editor notification UI. Add this screenshot (as the next number) when that UI ships.
 
 ---
 

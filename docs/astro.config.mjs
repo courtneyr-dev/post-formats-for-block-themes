@@ -45,7 +45,7 @@ export default defineConfig({
 				},
 				{
 					label: 'Using post formats',
-					items: ['settings', 'common-tasks'],
+					items: ['settings', 'common-tasks', 'works-together'],
 				},
 				{
 					label: 'Reference',

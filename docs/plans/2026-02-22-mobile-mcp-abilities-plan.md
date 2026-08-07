@@ -443,7 +443,7 @@ class Core_Abilities {
 
     private function register_list_kinds(): void {
         wp_register_ability(
-            'post_kinds/list_kinds',
+            'post-kinds/list-kinds',
             array(
                 'label'               => __( 'List Post Kinds', 'post-kinds-for-indieweb' ),
                 'description'         => __( 'List all available IndieWeb post kinds with descriptions.', 'post-kinds-for-indieweb' ),
@@ -470,7 +470,7 @@ class Core_Abilities {
 
     private function register_list_kind_fields(): void {
         wp_register_ability(
-            'post_kinds/list_kind_fields',
+            'post-kinds/list-kind-fields',
             array(
                 'label'               => __( 'List Kind Fields', 'post-kinds-for-indieweb' ),
                 'description'         => __( 'List meta fields available for a specific post kind.', 'post-kinds-for-indieweb' ),
@@ -503,7 +503,7 @@ class Core_Abilities {
 
     private function register_create_post(): void {
         wp_register_ability(
-            'post_kinds/create_post',
+            'post-kinds/create-post',
             array(
                 'label'               => __( 'Create Kind Post', 'post-kinds-for-indieweb' ),
                 'description'         => __( 'Create a post with a specific kind and kind-specific meta fields. Use list_kind_fields to discover accepted fields for each kind.', 'post-kinds-for-indieweb' ),
@@ -538,7 +538,7 @@ class Core_Abilities {
 
     private function register_set_kind(): void {
         wp_register_ability(
-            'post_kinds/set_kind',
+            'post-kinds/set-kind',
             array(
                 'label'               => __( 'Set Post Kind', 'post-kinds-for-indieweb' ),
                 'description'         => __( 'Assign a kind to an existing post.', 'post-kinds-for-indieweb' ),
@@ -569,7 +569,7 @@ class Core_Abilities {
 
     private function register_get_kind(): void {
         wp_register_ability(
-            'post_kinds/get_kind',
+            'post-kinds/get-kind',
             array(
                 'label'               => __( 'Get Post Kind', 'post-kinds-for-indieweb' ),
                 'description'         => __( 'Get the kind assigned to a post.', 'post-kinds-for-indieweb' ),
@@ -600,7 +600,7 @@ class Core_Abilities {
 
     private function register_update_post_meta(): void {
         wp_register_ability(
-            'post_kinds/update_post_meta',
+            'post-kinds/update-post-meta',
             array(
                 'label'               => __( 'Update Kind Meta', 'post-kinds-for-indieweb' ),
                 'description'         => __( 'Update a kind-specific meta field on a post. Field key should omit the _postkind_ prefix.', 'post-kinds-for-indieweb' ),
@@ -631,7 +631,7 @@ class Core_Abilities {
 
     private function register_get_post_meta(): void {
         wp_register_ability(
-            'post_kinds/get_post_meta',
+            'post-kinds/get-post-meta',
             array(
                 'label'               => __( 'Get Kind Meta', 'post-kinds-for-indieweb' ),
                 'description'         => __( 'Get kind-specific meta fields from a post. Omit meta_keys to get all kind meta.', 'post-kinds-for-indieweb' ),
@@ -912,7 +912,7 @@ class Lookup_Abilities {
     public function register(): void {
         foreach ( $this->get_lookup_definitions() as $slug => $definition ) {
             wp_register_ability(
-                "post_kinds/lookup_{$slug}",
+                "post-kinds/lookup-{$slug}",
                 array(
                     'label'               => $definition['label'],
                     'description'         => $definition['description'],
@@ -1768,7 +1768,7 @@ class XFN_Core_Abilities {
     }
 
     private function register_set_relationships(): void {
-        wp_register_ability( 'xfn/set_relationships', array(
+        wp_register_ability( 'xfn/set-meta-relationships', array(
             'label'               => __( 'Set XFN Relationships', 'link-extension-for-xfn' ),
             'description'         => __( 'Set all XFN relationships for links in a post.', 'link-extension-for-xfn' ),
             'category'            => XFN_Abilities_Manager::CATEGORY_SLUG,
@@ -1803,7 +1803,7 @@ class XFN_Core_Abilities {
     }
 
     private function register_get_relationships(): void {
-        wp_register_ability( 'xfn/get_relationships', array(
+        wp_register_ability( 'xfn/get-meta-relationships', array(
             'label'               => __( 'Get XFN Relationships', 'link-extension-for-xfn' ),
             'description'         => __( 'Get XFN relationships for links in a post.', 'link-extension-for-xfn' ),
             'category'            => XFN_Abilities_Manager::CATEGORY_SLUG,
@@ -1823,7 +1823,7 @@ class XFN_Core_Abilities {
     }
 
     private function register_add_relationship(): void {
-        wp_register_ability( 'xfn/add_relationship', array(
+        wp_register_ability( 'xfn/add-meta-relationship', array(
             'label'               => __( 'Add XFN Relationship', 'link-extension-for-xfn' ),
             'description'         => __( 'Add or update an XFN relationship for a specific URL in a post.', 'link-extension-for-xfn' ),
             'category'            => XFN_Abilities_Manager::CATEGORY_SLUG,
@@ -1847,7 +1847,7 @@ class XFN_Core_Abilities {
     }
 
     private function register_remove_relationship(): void {
-        wp_register_ability( 'xfn/remove_relationship', array(
+        wp_register_ability( 'xfn/remove-meta-relationship', array(
             'label'               => __( 'Remove XFN Relationship', 'link-extension-for-xfn' ),
             'description'         => __( 'Remove XFN relationship for a specific URL from a post.', 'link-extension-for-xfn' ),
             'category'            => XFN_Abilities_Manager::CATEGORY_SLUG,
@@ -1870,7 +1870,7 @@ class XFN_Core_Abilities {
     }
 
     private function register_validate_relationships(): void {
-        wp_register_ability( 'xfn/validate_relationships', array(
+        wp_register_ability( 'xfn/validate-relationships', array(
             'label'               => __( 'Validate XFN Relationships', 'link-extension-for-xfn' ),
             'description'         => __( 'Check XFN relationship values for exclusivity violations.', 'link-extension-for-xfn' ),
             'category'            => XFN_Abilities_Manager::CATEGORY_SLUG,

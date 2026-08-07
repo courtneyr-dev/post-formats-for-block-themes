@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The 15 abilities in `PFBT_Core_Abilities`, `PFBT_IndieWeb_Abilities`, and `PFBT_MCP_Abilities` now actually register. Their names used underscores (`post_formats/list_formats`, `post-formats/suggest_format`), and core's `WP_Abilities_Registry::register()` only accepts `/^[a-z0-9-]+\/[a-z0-9-]+$/` — lowercase alphanumerics, dashes, one slash. Each was refused with a `_doing_it_wrong()` notice and nothing else, so with `WP_DEBUG` off they had been missing since 1.2.0 without a trace. `PFBT_Core_Abilities::NAMESPACE` is now `post-formats` and every name uses dashes. No aliases: the old names never registered.
+- `PFBT_Abilities_Formats` passed a top-level `type` property on its four abilities, which is not one of `WP_Ability`'s properties. Core discarded it and emitted a `_doing_it_wrong()` notice on every request that touched the registry. The same value was already being set at `meta.mcp.type`, so the top-level key was removed.
+
+### Changed
+
+- `PFBT_Core_Abilities`'s content-analysis ability is `post-formats/score-format`, not `post-formats/detect-format`. `PFBT_Abilities_Formats` already registers `detect-format`, which resolves a format from a post ID or raw content and returns no confidence; the renamed one takes content plus an optional title and returns `detected_format`, `confidence`, and `first_block`. Two abilities cannot share a name. `execute_detect_format()` on `PFBT_Core_Abilities` is now `execute_score_format()`.
+
+### Added
+
+- `Test_Abilities_Registry` asserts all 19 `post-formats/*` abilities are present in `wp_get_abilities()` after init, that the expected names are unique and satisfy core's grammar, and that nothing registers under the namespace without being listed.
+
 ## [1.1.5] - 2026-07-10
 
 > **Version renumbering.** WordPress.org never published the 1.2.x–2.3.0 releases (its listing continues from 1.1.4), so the public line resumes at 1.1.5. The 1.2.0–2.3.0 entries below record GitHub-only releases; everything in them ships to WordPress.org as part of 1.1.5.

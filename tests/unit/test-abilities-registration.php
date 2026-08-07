@@ -205,9 +205,12 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 
 	/**
 	 * Test namespace constant
+	 *
+	 * Dashes, not underscores — core rejects any ability name that doesn't match
+	 * /^[a-z0-9-]+\/[a-z0-9-]+$/, and the namespace is half of that name.
 	 */
 	public function test_namespace_constant() {
-		$this->assertEquals( 'post_formats', PFBT_Core_Abilities::NAMESPACE );
+		$this->assertEquals( 'post-formats', PFBT_Core_Abilities::NAMESPACE );
 	}
 
 	/**
@@ -332,12 +335,12 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test execute_detect_format with quote content
+	 * Test execute_score_format with quote content
 	 */
-	public function test_execute_detect_format_quote() {
+	public function test_execute_score_format_quote() {
 		$content = '<!-- wp:quote --><blockquote class="wp-block-quote"><p>Test quote</p></blockquote><!-- /wp:quote -->';
 
-		$result = $this->abilities->execute_detect_format(
+		$result = $this->abilities->execute_score_format(
 			array( 'content' => $content )
 		);
 
@@ -348,12 +351,12 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test execute_detect_format with gallery content
+	 * Test execute_score_format with gallery content
 	 */
-	public function test_execute_detect_format_gallery() {
+	public function test_execute_score_format_gallery() {
 		$content = '<!-- wp:gallery --><figure class="wp-block-gallery"></figure><!-- /wp:gallery -->';
 
-		$result = $this->abilities->execute_detect_format(
+		$result = $this->abilities->execute_score_format(
 			array( 'content' => $content )
 		);
 
@@ -361,10 +364,10 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test execute_detect_format with empty content
+	 * Test execute_score_format with empty content
 	 */
-	public function test_execute_detect_format_empty() {
-		$result = $this->abilities->execute_detect_format(
+	public function test_execute_score_format_empty() {
+		$result = $this->abilities->execute_score_format(
 			array( 'content' => '' )
 		);
 

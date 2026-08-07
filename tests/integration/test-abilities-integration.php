@@ -125,7 +125,7 @@ class Test_Abilities_Integration extends WP_UnitTestCase {
 		wp_set_current_user( 1 );
 
 		// Detect format from content.
-		$detected = $this->abilities->execute_detect_format(
+		$detected = $this->abilities->execute_score_format(
 			array( 'content' => $content )
 		);
 

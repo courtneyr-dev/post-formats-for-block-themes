@@ -106,7 +106,6 @@ class PFBT_Abilities_Formats {
 			array(
 				'label'               => __( 'Detect Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Detect the appropriate post format from a post or content string by analyzing block structure.', 'post-formats-for-block-themes' ),
-				'type'                => 'resource',
 				'category'            => PFBT_Abilities_Manager::CATEGORY_SLUG,
 				'input_schema'        => array(
 					'type'       => 'object',
@@ -232,7 +231,6 @@ class PFBT_Abilities_Formats {
 			array(
 				'label'               => __( 'Switch Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Change the post format for a specific post, recording the old format.', 'post-formats-for-block-themes' ),
-				'type'                => 'tool',
 				'category'            => PFBT_Abilities_Manager::CATEGORY_SLUG,
 				'input_schema'        => array(
 					'type'       => 'object',
@@ -362,7 +360,6 @@ class PFBT_Abilities_Formats {
 			array(
 				'label'               => __( 'Repair Post Formats', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Scan posts for format mismatches and repair them by comparing content blocks against the format registry.', 'post-formats-for-block-themes' ),
-				'type'                => 'tool',
 				'category'            => PFBT_Abilities_Manager::CATEGORY_SLUG,
 				'input_schema'        => array(
 					'type'       => 'object',
@@ -562,7 +559,6 @@ class PFBT_Abilities_Formats {
 			array(
 				'label'               => __( 'Get Format Statistics', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Get the number of published posts for each post format.', 'post-formats-for-block-themes' ),
-				'type'                => 'resource',
 				'category'            => PFBT_Abilities_Manager::CATEGORY_SLUG,
 				'input_schema'        => array(
 					'type'       => 'object',

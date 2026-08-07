@@ -19,11 +19,11 @@ if ( ! defined( 'ABSPATH' ) ) {
  * IndieWeb Abilities Provider
  *
  * Registers IndieWeb abilities:
- * - post_formats/mf2_markup - Generate mf2 markup for a post
- * - post_formats/mf2_validate - Validate mf2 output
- * - post_formats/posse_prepare - Prepare content for POSSE
- * - post_formats/posse_targets - Get available syndication targets
- * - post_formats/webmention_context - Get webmention context for format
+ * - post-formats/mf2-markup - Generate mf2 markup for a post
+ * - post-formats/mf2-validate - Validate mf2 output
+ * - post-formats/posse-prepare - Prepare content for POSSE
+ * - post-formats/posse-targets - Get available syndication targets
+ * - post-formats/webmention-context - Get webmention context for format
  *
  * @since 1.2.0
  */
@@ -99,7 +99,7 @@ class PFBT_IndieWeb_Abilities {
 	 */
 	private function register_mf2_markup() {
 		wp_register_ability(
-			'post_formats/mf2_markup',
+			'post-formats/mf2-markup',
 			array(
 				'label'               => __( 'Generate Microformats2 Markup', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Generate microformats2 markup for a post based on its format.', 'post-formats-for-block-themes' ),
@@ -167,7 +167,7 @@ class PFBT_IndieWeb_Abilities {
 	 */
 	private function register_mf2_validate() {
 		wp_register_ability(
-			'post_formats/mf2_validate',
+			'post-formats/mf2-validate',
 			array(
 				'label'               => __( 'Validate Microformats2 Output', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Validate that a post has correct microformats2 markup for its format.', 'post-formats-for-block-themes' ),
@@ -237,7 +237,7 @@ class PFBT_IndieWeb_Abilities {
 	 */
 	private function register_posse_prepare() {
 		wp_register_ability(
-			'post_formats/posse_prepare',
+			'post-formats/posse-prepare',
 			array(
 				'label'               => __( 'Prepare POSSE Content', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Prepare post content for POSSE (Publish Own Site, Syndicate Elsewhere) syndication.', 'post-formats-for-block-themes' ),
@@ -322,7 +322,7 @@ class PFBT_IndieWeb_Abilities {
 	 */
 	private function register_posse_targets() {
 		wp_register_ability(
-			'post_formats/posse_targets',
+			'post-formats/posse-targets',
 			array(
 				'label'               => __( 'Get POSSE Targets', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Get available POSSE syndication targets and their configurations.', 'post-formats-for-block-themes' ),
@@ -381,7 +381,7 @@ class PFBT_IndieWeb_Abilities {
 	 */
 	private function register_webmention_context() {
 		wp_register_ability(
-			'post_formats/webmention_context',
+			'post-formats/webmention-context',
 			array(
 				'label'               => __( 'Get Webmention Context', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Get webmention sending and receiving context for a post format.', 'post-formats-for-block-themes' ),

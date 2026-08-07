@@ -19,12 +19,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Core Abilities Provider
  *
  * Registers fundamental post format abilities:
- * - post_formats/list_formats - List available formats with metadata
- * - post_formats/get_format_template - Get template for a format
- * - post_formats/validate_format - Validate content for a format
- * - post_formats/set_post_format - Set format on a post
- * - post_formats/get_post_format - Get current format of a post
- * - post_formats/detect_format - Detect format from content
+ * - post-formats/list-formats - List available formats with metadata
+ * - post-formats/get-format-template - Get template for a format
+ * - post-formats/validate-format - Validate content for a format
+ * - post-formats/set-post-format - Set format on a post
+ * - post-formats/get-post-format - Get current format of a post
+ * - post-formats/score-format - Score content against formats, with confidence
  *
  * @since 1.2.0
  */
@@ -42,7 +42,7 @@ class PFBT_Core_Abilities {
 	 *
 	 * @var string
 	 */
-	const NAMESPACE = 'post_formats';
+	const NAMESPACE = 'post-formats';
 
 	/**
 	 * Get singleton instance
@@ -78,7 +78,7 @@ class PFBT_Core_Abilities {
 		$this->register_validate_format();
 		$this->register_set_post_format();
 		$this->register_get_post_format();
-		$this->register_detect_format();
+		$this->register_score_format();
 	}
 
 	/**
@@ -90,7 +90,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_list_formats() {
 		wp_register_ability(
-			self::NAMESPACE . '/list_formats',
+			self::NAMESPACE . '/list-formats',
 			array(
 				'label'               => __( 'List Post Formats', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Retrieve all available post formats with their metadata, templates, and usage statistics.', 'post-formats-for-block-themes' ),
@@ -197,7 +197,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_get_format_template() {
 		wp_register_ability(
-			self::NAMESPACE . '/get_format_template',
+			self::NAMESPACE . '/get-format-template',
 			array(
 				'label'               => __( 'Get Format Template', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Retrieve template and pattern information for a specific post format.', 'post-formats-for-block-themes' ),
@@ -282,7 +282,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_validate_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/validate_format',
+			self::NAMESPACE . '/validate-format',
 			array(
 				'label'               => __( 'Validate Format Content', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Validate that content meets the requirements for a specific post format.', 'post-formats-for-block-themes' ),
@@ -425,7 +425,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_set_post_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/set_post_format',
+			self::NAMESPACE . '/set-post-format',
 			array(
 				'label'               => __( 'Set Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Set the post format for a specific post.', 'post-formats-for-block-themes' ),
@@ -541,7 +541,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_get_post_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/get_post_format',
+			self::NAMESPACE . '/get-post-format',
 			array(
 				'label'               => __( 'Get Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Get the current format of a specific post.', 'post-formats-for-block-themes' ),
@@ -615,17 +615,24 @@ class PFBT_Core_Abilities {
 	}
 
 	/**
-	 * Register detect_format ability
+	 * Register score-format ability
 	 *
-	 * Detects the appropriate format from content.
+	 * Analyzes content and returns the best-matching format along with a
+	 * confidence score and the first block seen.
+	 *
+	 * Not named `detect-format`: PFBT_Abilities_Formats already registers
+	 * `post-formats/detect-format`, which resolves a format from a post ID or
+	 * raw content and returns no confidence. Two abilities cannot share a name
+	 * — core rejects whichever registers second — and the scoring output is
+	 * the difference worth keeping.
 	 *
 	 * @since 1.2.0
 	 */
-	private function register_detect_format() {
+	private function register_score_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/detect_format',
+			self::NAMESPACE . '/score-format',
 			array(
-				'label'               => __( 'Detect Format', 'post-formats-for-block-themes' ),
+				'label'               => __( 'Score Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Analyze content and detect the most appropriate post format.', 'post-formats-for-block-themes' ),
 				'category'            => PFBT_Abilities_Manager::CATEGORY_SLUG,
 				'input_schema'        => array(
@@ -654,7 +661,7 @@ class PFBT_Core_Abilities {
 						),
 					),
 				),
-				'execute_callback'    => array( $this, 'execute_detect_format' ),
+				'execute_callback'    => array( $this, 'execute_score_format' ),
 				'permission_callback' => function () {
 					return current_user_can( 'edit_posts' );
 				},
@@ -666,14 +673,14 @@ class PFBT_Core_Abilities {
 	}
 
 	/**
-	 * Execute detect_format ability
+	 * Execute score-format ability
 	 *
 	 * @since 1.2.0
 	 *
 	 * @param array $args Input arguments.
 	 * @return array Detection result.
 	 */
-	public function execute_detect_format( $args ) {
+	public function execute_score_format( $args ) {
 		$content = $args['content'];
 		$signals = array();
 

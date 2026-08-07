@@ -114,7 +114,7 @@ class PFBT_MCP_Abilities {
 	 */
 	private function register_suggest_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/suggest_format',
+			self::NAMESPACE . '/suggest-format',
 			array(
 				'label'               => __( 'Suggest Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Analyze content and suggest the most appropriate post format based on content signals.', 'post-formats-for-block-themes' ),
@@ -178,7 +178,7 @@ class PFBT_MCP_Abilities {
 	 */
 	private function register_analyze_content() {
 		wp_register_ability(
-			self::NAMESPACE . '/analyze_content',
+			self::NAMESPACE . '/analyze-content',
 			array(
 				'label'               => __( 'Analyze Content', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Perform detailed content analysis and return all detected signals with format scores.', 'post-formats-for-block-themes' ),
@@ -234,7 +234,7 @@ class PFBT_MCP_Abilities {
 	 */
 	private function register_validate_format_content() {
 		wp_register_ability(
-			self::NAMESPACE . '/validate_format_content',
+			self::NAMESPACE . '/validate-format-content',
 			array(
 				'label'               => __( 'Validate Format Content', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Validate if content is appropriate for a specific post format.', 'post-formats-for-block-themes' ),
@@ -297,7 +297,7 @@ class PFBT_MCP_Abilities {
 	 */
 	private function register_get_format_signals() {
 		wp_register_ability(
-			self::NAMESPACE . '/get_format_signals',
+			self::NAMESPACE . '/get-format-signals',
 			array(
 				'label'               => __( 'Get Format Signals', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Get the signal weights used for format detection. Useful for understanding how formats are suggested.', 'post-formats-for-block-themes' ),

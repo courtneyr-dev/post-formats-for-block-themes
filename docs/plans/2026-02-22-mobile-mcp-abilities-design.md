@@ -28,7 +28,7 @@ WordPress MCP Adapter (remote HTTP + OAuth 2.1)
 WordPress 6.9+ Abilities API
         |
         +-- post_formats/*  (Post Formats for Block Themes - already done)
-        +-- post_kinds/*    (Post Kinds for IndieWeb - new)
+        +-- post-kinds/*    (Post Kinds for IndieWeb - new)
         +-- xfn/*           (Link Extension for XFN - new)
 ```
 
@@ -55,24 +55,24 @@ Already has 15 abilities across 3 providers. No changes needed.
 
 | Ability | Input | Output | Permission |
 |---|---|---|---|
-| `post_kinds/set_kind` | post_id, kind_slug | success, kind | edit_posts |
-| `post_kinds/get_kind` | post_id | kind_slug, kind_label, kind_description | read |
-| `post_kinds/list_kinds` | -- | array of 25 kinds with slugs, labels, descriptions | read |
-| `post_kinds/create_post` | kind, title, content, kind-specific meta | post_id, edit_url, view_url | edit_posts |
-| `post_kinds/update_post_meta` | post_id, meta_key, meta_value | success | edit_posts |
-| `post_kinds/get_post_meta` | post_id, meta_keys (optional) | key-value pairs | read |
-| `post_kinds/list_kind_fields` | kind_slug | array of meta field names, types, descriptions | read |
+| `post-kinds/set-kind` | post_id, kind_slug | success, kind | edit_posts |
+| `post-kinds/get-kind` | post_id | kind_slug, kind_label, kind_description | read |
+| `post-kinds/list-kinds` | -- | array of 25 kinds with slugs, labels, descriptions | read |
+| `post-kinds/create-post` | kind, title, content, kind-specific meta | post_id, edit_url, view_url | edit_posts |
+| `post-kinds/update-post-meta` | post_id, meta_key, meta_value | success | edit_posts |
+| `post-kinds/get-post-meta` | post_id, meta_keys (optional) | key-value pairs | read |
+| `post-kinds/list-kind-fields` | kind_slug | array of meta field names, types, descriptions | read |
 
 ### Lookup abilities (6)
 
 | Ability | Wraps endpoint |
 |---|---|
-| `post_kinds/lookup_music` | /lookup/music |
-| `post_kinds/lookup_video` | /lookup/video |
-| `post_kinds/lookup_book` | /lookup/book |
-| `post_kinds/lookup_podcast` | /lookup/podcast |
-| `post_kinds/lookup_venue` | /lookup/venue |
-| `post_kinds/lookup_game` | /lookup/game |
+| `post-kinds/lookup-music` | /lookup/music |
+| `post-kinds/lookup-video` | /lookup/video |
+| `post-kinds/lookup-book` | /lookup/book |
+| `post-kinds/lookup-podcast` | /lookup/podcast |
+| `post-kinds/lookup-venue` | /lookup/venue |
+| `post-kinds/lookup-game` | /lookup/game |
 
 ### create_post behavior
 
@@ -141,11 +141,11 @@ register_post_meta('post', '_xfn_relationships', [
 
 | Ability | Input | Output | Permission |
 |---|---|---|---|
-| `xfn/set_relationships` | post_id, relationships array | success, applied count | edit_posts |
-| `xfn/get_relationships` | post_id | array of {url, rels} | read |
-| `xfn/add_relationship` | post_id, url, rels array | success | edit_posts |
-| `xfn/remove_relationship` | post_id, url | success | edit_posts |
-| `xfn/validate_relationships` | rels array | valid, warnings | read |
+| `xfn/set-meta-relationships` | post_id, relationships array | success, applied count | edit_posts |
+| `xfn/get-meta-relationships` | post_id | array of {url, rels} | read |
+| `xfn/add-meta-relationship` | post_id, url, rels array | success | edit_posts |
+| `xfn/remove-meta-relationship` | post_id, url | success | edit_posts |
+| `xfn/validate-relationships` | rels array | valid, warnings | read |
 
 ### XFN exclusivity validation
 

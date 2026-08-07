@@ -29,29 +29,29 @@ The method is called conditionally, gated behind `class_exists( 'WP_Pinch\Abilit
 ## Post Kinds Ability Names (13)
 
 Core (7):
-- `post_kinds/list_kinds`
-- `post_kinds/list_kind_fields`
-- `post_kinds/create_post`
-- `post_kinds/set_kind`
-- `post_kinds/get_kind`
-- `post_kinds/update_post_meta`
-- `post_kinds/get_post_meta`
+- `post-kinds/list-kinds`
+- `post-kinds/list-kind-fields`
+- `post-kinds/create-post`
+- `post-kinds/set-kind`
+- `post-kinds/get-kind`
+- `post-kinds/update-post-meta`
+- `post-kinds/get-post-meta`
 
 Lookup (6):
-- `post_kinds/lookup_music`
-- `post_kinds/lookup_video`
-- `post_kinds/lookup_book`
-- `post_kinds/lookup_podcast`
-- `post_kinds/lookup_venue`
-- `post_kinds/lookup_game`
+- `post-kinds/lookup-music`
+- `post-kinds/lookup-video`
+- `post-kinds/lookup-book`
+- `post-kinds/lookup-podcast`
+- `post-kinds/lookup-venue`
+- `post-kinds/lookup-game`
 
 ## XFN Ability Names (5)
 
-- `xfn/set_relationships`
-- `xfn/get_relationships`
-- `xfn/add_relationship`
-- `xfn/remove_relationship`
-- `xfn/validate_relationships`
+- `xfn/set-meta-relationships`
+- `xfn/get-meta-relationships`
+- `xfn/add-meta-relationship`
+- `xfn/remove-meta-relationship`
+- `xfn/validate-relationships`
 
 ## Files Changed
 

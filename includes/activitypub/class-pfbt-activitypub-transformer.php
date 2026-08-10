@@ -160,6 +160,34 @@ class PFBT_ActivityPub_Transformer {
 	}
 
 	/**
+	 * Resolve whatever ActivityPub hands us into a WP_Post.
+	 *
+	 * The activitypub_* filters do not guarantee a WP_Post. Depending on the
+	 * call site the second argument can be a post ID or another object, which
+	 * previously caused "Attempt to read property post_type on string".
+	 *
+	 * @since 1.1.6
+	 *
+	 * @param mixed $post Post object, post ID, or anything else.
+	 * @return WP_Post|null Post object, or null when it cannot be resolved.
+	 */
+	private function resolve_post( $post ) {
+		if ( $post instanceof \WP_Post ) {
+			return $post;
+		}
+
+		if ( is_numeric( $post ) ) {
+			return get_post( (int) $post );
+		}
+
+		if ( is_object( $post ) && isset( $post->ID ) ) {
+			return get_post( (int) $post->ID );
+		}
+
+		return null;
+	}
+
+	/**
 	 * Filter ActivityPub object type based on post format
 	 *
 	 * @since 1.2.0
@@ -170,7 +198,9 @@ class PFBT_ActivityPub_Transformer {
 	 * @return string Modified object type.
 	 */
 	public function filter_object_type( $type, $post, $context = '' ) {
-		if ( 'post' !== $post->post_type ) {
+		$post = $this->resolve_post( $post );
+
+		if ( ! $post || 'post' !== $post->post_type ) {
 			return $type;
 		}
 
@@ -189,7 +219,9 @@ class PFBT_ActivityPub_Transformer {
 	 * @return array Modified object array.
 	 */
 	public function filter_object_array( $object, $post, $context = '' ) {
-		if ( 'post' !== $post->post_type ) {
+		$post = $this->resolve_post( $post );
+
+		if ( ! $post || 'post' !== $post->post_type ) {
 			return $object;
 		}
 
@@ -236,7 +268,9 @@ class PFBT_ActivityPub_Transformer {
 	 * @return string Modified content.
 	 */
 	public function filter_content( $content, $post ) {
-		if ( 'post' !== $post->post_type ) {
+		$post = $this->resolve_post( $post );
+
+		if ( ! $post || 'post' !== $post->post_type ) {
 			return $content;
 		}
 

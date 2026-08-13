@@ -1,6 +1,21 @@
 {
   "name": "post-formats-for-block-themes",
   "version": "1.0.0",
+  "files": [
+    "blocks",
+    "build",
+    "includes",
+    "languages",
+    "patterns",
+    "styles",
+    "templates",
+    "img",
+    "post-formats-for-block-themes.php",
+    "readme.txt",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "description": "Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.",
   "author": "Your Name",
   "license": "GPL-2.0-or-later",

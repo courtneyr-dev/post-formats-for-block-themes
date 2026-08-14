@@ -30,7 +30,16 @@ gulpfile.js
 
 # Documentation (keep only readme.txt for WordPress.org)
 /docs
-/img
+
+# Marketing and documentation imagery.
+# NOTE: img/icon-sets/ holds the runtime format icon sprites that
+# PFBT_Icon_Set loads at request time, so img/ must NOT be excluded wholesale.
+/img/*.png
+/img/*.html
+/img/README.md
+/img/banner-1544x500.svg
+/img/banner-772x250.svg
+/img/icon-256x256.svg
 README.md
 CONTRIBUTING.md
 CODE_OF_CONDUCT.md
@@ -127,6 +136,5 @@ HANDOFF-MERGE-THEME-JSON-FIX.md
 CLAUDE.md
 docs
 scripts
-img
 potomatic.json
 BRANCHING-DIAGRAM.txt

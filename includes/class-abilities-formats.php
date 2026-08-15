@@ -141,7 +141,7 @@ class PFBT_Abilities_Formats {
 					'show_in_rest' => true,
 					'mcp'          => array(
 						'public' => true,
-						'type'   => 'resource',
+						'type'   => 'tool',
 					),
 				),
 			)
@@ -583,6 +583,7 @@ class PFBT_Abilities_Formats {
 					'mcp'          => array(
 						'public' => true,
 						'type'   => 'resource',
+						'uri'    => 'post-formats://stats',
 					),
 				),
 			)

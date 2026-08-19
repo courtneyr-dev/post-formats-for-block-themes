@@ -101,6 +101,9 @@ add_action(
 			__DIR__ . '/block.json',
 			array(
 				'render_callback' => 'pfbt_format_badge_render',
+				'supports'        => array(
+					'autoRegister' => true,
+				),
 			)
 		);
 	}

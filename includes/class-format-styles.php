@@ -570,10 +570,18 @@ class PFBT_Format_Styles {
 			self::debug_log( 'PFBT: Skipped single-template injection — query does not target it (slug__in=' . wp_json_encode( $query['slug__in'] ?? null ) . ', post_type=' . ( $query['post_type'] ?? 'n/a' ) . ')' );
 		}
 
+		$requested_slugs = isset( $query['slug__in'] ) && is_array( $query['slug__in'] ) ? $query['slug__in'] : array();
+		$has_slug_filter = isset( $query['slug__in'] );
+
 		// Add "Default" pseudo-template option ONLY in admin
 		// This allows users to explicitly clear template assignment in the editor
 		// Skip on front-end to avoid "Undefined array key" errors in block-template.php
-		if ( is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) {
+		// Also skip slug-limited queries unless they explicitly request default;
+		// resolve_block_template() assumes every returned slug is in slug__in.
+		if (
+			( is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) &&
+			( ! $has_slug_filter || empty( $requested_slugs ) || in_array( 'default', $requested_slugs, true ) )
+		) {
 			$default_exists = false;
 			foreach ( $query_result as $existing_template ) {
 				if ( 'default' === $existing_template->slug ) {
@@ -615,7 +623,6 @@ class PFBT_Format_Styles {
 		 * so single-format-aside outranked the theme's single template on
 		 * every post.
 		 */
-		$requested_slugs = isset( $query['slug__in'] ) && is_array( $query['slug__in'] ) ? $query['slug__in'] : array();
 		$for_post_editor = isset( $query['post_type'] ) && 'post' === $query['post_type'];
 
 		// Add format templates to BOTH post editor and site editor

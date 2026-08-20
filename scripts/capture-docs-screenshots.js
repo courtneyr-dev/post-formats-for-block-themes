@@ -261,7 +261,62 @@ let shuttingDown = false;
 		await page.waitForTimeout(2000);
 		await shoot('editor-gallery-format.png');
 
-		// 6. Published quote post on the frontend (Format Badge before the title).
+		// 6. Format control in the editor sidebar on the gallery draft — the
+		// mid-edit format switcher (core's Format control in Summary).
+		await page.evaluate(() => {
+			window.wp.data.dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
+		});
+		// WP 7.x renders the Format row as a popover button whose accessible
+		// name is "Change format: <value>", not the old .editor-post-format.
+		const formatButtonName = /^Change format:/;
+		const formatButton = page
+			.locator('.editor-sidebar, .interface-complementary-area')
+			.getByRole('button', { name: formatButtonName })
+			.first();
+		await formatButton.waitFor({ timeout: 30000 });
+		await formatButton.scrollIntoViewIfNeeded();
+		await formatButton.click();
+		await page.waitForTimeout(1500);
+		await shoot('editor-format-switcher.png');
+
+		// 7. Apply-once auto-detection: a quote-block draft saved with no
+		// explicit format gets Quote on first save (detection keys on the
+		// first block; core/quote maps to the quote format). Fail loudly if
+		// detection did not run — the screenshot must not fake the behavior.
+		const autodetectPost = await rest('posts', {
+			data: {
+				title: 'Notes on habit',
+				status: 'draft',
+				content:
+					`<!-- wp:quote --><blockquote class="wp-block-quote">` +
+					`<!-- wp:paragraph --><p>The chains of habit are too weak to be felt until they are too strong to be broken.</p><!-- /wp:paragraph -->` +
+					`<cite>Samuel Johnson</cite></blockquote><!-- /wp:quote -->`,
+			},
+		});
+		if (autodetectPost.format !== 'quote') {
+			throw new Error(
+				`Auto-detection did not apply the quote format (got "${autodetectPost.format}"). ` +
+					'The editor-autodetect-applied.png shot would misrepresent behavior — aborting.'
+			);
+		}
+		console.log(`autodetect applied "${autodetectPost.format}" to draft ${autodetectPost.id}`);
+		await page.goto(BASE + `/wp-admin/post.php?post=${autodetectPost.id}&action=edit`, {
+			waitUntil: 'domcontentloaded',
+		});
+		await canvas.locator('blockquote.wp-block-quote').waitFor({ timeout: 60000 });
+		await page.evaluate(() => {
+			window.wp.data.dispatch('core/edit-post').openGeneralSidebar('edit-post/document');
+		});
+		const autodetectFormatButton = page
+			.locator('.editor-sidebar, .interface-complementary-area')
+			.getByRole('button', { name: formatButtonName })
+			.first();
+		await autodetectFormatButton.waitFor({ timeout: 30000 });
+		await autodetectFormatButton.scrollIntoViewIfNeeded();
+		await page.waitForTimeout(1500);
+		await shoot('editor-autodetect-applied.png');
+
+		// 8. Published quote post on the frontend (Format Badge before the title).
 		await page.goto(BASE + `/?p=${quotePost.id}`, { waitUntil: 'networkidle' });
 		await page.waitForSelector('.pfbt-format-badge', { timeout: 30000 });
 		await shoot('frontend-format-badge.png');

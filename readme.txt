@@ -294,6 +294,7 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 6. The Post Format Repair tool under Tools, ready to scan posts for format mismatches
 7. A gallery format post in the editor with the locked gallery block in a responsive grid
 8. The Format Badge before a post title on the frontend of a quote post
+9. The Format control in the editor sidebar with all ten formats listed — switch a post's format mid-edit
 
 == Changelog ==
 

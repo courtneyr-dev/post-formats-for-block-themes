@@ -17,7 +17,7 @@ jobs:
     name: Deploy to WordPress.org SVN
     runs-on: ubuntu-latest
     permissions:
-      contents: write # upload-release-asset attaches the zip to the release
+      contents: read
 
     steps:
       - name: Checkout code
@@ -66,13 +66,6 @@ jobs:
           done
           echo "::warning::.pot generation failed (develop.svn.wordpress.org unreachable); shipping without an updated .pot"
 
-      - name: Create distribution archive
-        run: |
-          mkdir -p dist
-          rsync -av --exclude-from='.distignore' . dist/post-formats-for-block-themes/
-          cd dist
-          zip -r ../post-formats-for-block-themes.zip post-formats-for-block-themes/
-
       - name: WordPress Plugin Deploy
         id: deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
@@ -83,14 +76,8 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: post-formats-for-block-themes
           VERSION: ${{ steps.version.outputs.version }}
-
-      - name: Upload release asset
-        if: github.event_name == 'release'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ github.event.release.upload_url }}
-          asset_path: ./post-formats-for-block-themes.zip
-          asset_name: post-formats-for-block-themes-${{ github.event.release.tag_name }}.zip
-          asset_content_type: application/zip
+      # No release-asset upload: GitHub releases are immutable once published,
+      # so a release-triggered workflow can never attach assets to its own
+      # release (v1.1.6 run 32419509081 failed on exactly that). The canonical
+      # zip is the one wp.org builds from SVN:
+      # https://downloads.wordpress.org/plugin/post-formats-for-block-themes.{version}.zip

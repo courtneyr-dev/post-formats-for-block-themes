@@ -11,6 +11,7 @@
   "usesContext": ["postId", "postType"],
   "style": ["dashicons"],
   "supports": {
+    "autoRegister": true,
     "html": false,
     "anchor": true,
     "className": true,

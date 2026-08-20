@@ -1,5 +1,5 @@
 === Post Formats for Block Themes ===
-Contributors: courane01
+Contributors: courane01, tjcafferkey, derintolu
 Donate link: https://github.com/sponsors/courtneyr-dev
 Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9

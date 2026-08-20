@@ -3,7 +3,7 @@ Contributors: courane01
 Donate link: https://github.com/sponsors/courtneyr-dev
 Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.1.5
 License: GPLv2 or later

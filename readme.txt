@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.5
+Stable tag: 1.1.6
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -298,6 +298,17 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 
 == Changelog ==
 
+= 1.1.6 =
+
+* Fixed: format icon sprites now ship in packaged builds — every released install rendered format icons as empty boxes. Props @derintolu.
+* Fixed: the ActivityPub integration no longer emits PHP warnings when its filters receive a post ID instead of a post object. Props @derintolu.
+* Fixed: the packaged zip no longer fatals on activation due to files missing from the build.
+* Fixed: creating a post no longer triggers an "Undefined array key" warning, and the Site Editor no longer loads an empty Default template — the Default option stays where it belongs, in the editor's template list. Props @tjcafferkey.
+* Fixed: the Format Badge block registers in the editor without JavaScript on WordPress 7.0+, ending the "your site doesn't include support for this block" placeholder. Props @tjcafferkey.
+* Fixed: the get-format-stats ability declares its MCP resource URI correctly.
+* Changed: tested up to WordPress 7.1, verified against a real 7.1 install.
+* Dev: new regression tests guard the template query contract and the Format Badge supports; the abilities registry fixes from the previous cycle are covered by tests.
+
 = 1.1.5 =
 
 **Everything since 1.1.4, consolidated.** The 1.2.x and 2.x lines were GitHub-only releases that never reached WordPress.org; the plugin's public numbering continues from 1.1.4. Full per-release history lives in CHANGELOG.md on GitHub.
@@ -473,6 +484,9 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 * **Privacy:** No data collection, external API calls, cookies, or user tracking
 
 == Upgrade Notice ==
+
+= 1.1.6 =
+Recommended for all users: restores missing format icons in packaged installs, fixes an activation fatal in the zip build and editor warnings when creating posts, and registers the Format Badge in the editor on WordPress 7.0+. Tested up to WordPress 7.1.
 
 = 1.1.5 =
 Large consolidated update (the 1.2.x/2.x GitHub lines folded into one release). Breaking only for customized sites: rename `--wp--preset--color--format-*` token overrides to `--pfbt-format-*`. Uncustomized sites upgrade with no visible change.

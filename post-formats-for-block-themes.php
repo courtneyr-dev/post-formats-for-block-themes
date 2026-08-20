@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 1.1.5
+ * Version: 1.1.6
  * Requires at least: 6.9
  * Tested up to: 7.1
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '1.1.5' );
+define( 'PFBT_VERSION', '1.1.6' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );

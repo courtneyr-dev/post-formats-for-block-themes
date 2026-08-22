@@ -64,6 +64,7 @@ Download the latest release: [Releases](https://github.com/courtneyr-dev/post-fo
 - **[Bookmark Card](https://wordpress.org/plugins/bookmark-card/)** - Enhanced link previews for Link format
 - **[Podlove Podcasting Plugin](https://wordpress.org/plugins/podlove-podcasting-plugin-for-wordpress/)** - Advanced podcast features for Audio format
 - **[Able Player](https://wordpress.org/plugins/ableplayer/)** - Accessible media player for Video and Audio formats
+- **[RSS Chat](https://github.com/pfefferle/wordpress-rss-chat)** - Reads the Chat format the other way round: it syndicates chat-format posts to the rss.chat network. Nothing here integrates with it, but the two meet on that format, so a post formatted as Chat is also sent once RSS Chat is connected. See [issue #6](https://github.com/pfefferle/wordpress-rss-chat/issues/6). GitHub only.
 
 All integrations are optional with graceful fallbacks to WordPress core blocks.
 

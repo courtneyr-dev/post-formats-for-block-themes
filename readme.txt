@@ -276,6 +276,14 @@ The Video and Audio formats integrate with [Able Player](https://wordpress.org/p
 
 **You don't need a separate plugin!** Post Formats for Block Themes includes integrated Chat Log block (chatlog/conversation). Chat format works out of the box, no additional plugins required. Just select Chat format and paste conversation transcripts from Slack, Discord, Teams, WhatsApp, Signal, or Telegram.
 
+= Does the Chat format work with the RSS Chat plugin? =
+
+Yes, and it is worth knowing what that means before running both. [RSS Chat](https://github.com/pfefferle/wordpress-rss-chat) publishes posts to the rss.chat network, and it decides what to send by looking for the core **chat** post format. Once RSS Chat is connected, a post you format as Chat here is also syndicated there.
+
+Two things follow from that. Do not set the Chat format on a post just to get it syndicated, because this plugin will badge and style it as a conversation transcript, which is what the format is for. And if you leave format auto-detection on, a post that opens with a Chat Log block is given the Chat format for you, so it would be syndicated without anyone choosing that — set the format by hand on those posts, or turn detection off, if that matters to you.
+
+Whether RSS Chat could route on something other than the post format is open upstream: [issue #6](https://github.com/pfefferle/wordpress-rss-chat/issues/6). RSS Chat is distributed on GitHub, not WordPress.org.
+
 = Can I change formats after creating a post? =
 
 Absolutely! Use **Format Switcher** in post sidebar. Open post in block editor, find Format Switcher panel in right sidebar, click format dropdown, choose new format, decide to replace or keep content, click Switch Format. Format updates immediately.

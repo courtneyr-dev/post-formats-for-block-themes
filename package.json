@@ -54,7 +54,7 @@
     "@wordpress/i18n": "^4.0.0",
     "@wordpress/interactivity": "^5.0.0",
     "@wordpress/plugins": "^6.0.0",
-    "@wordpress/scripts": "^34.1.0",
+    "@wordpress/scripts": "^34.2.0",
     "axe-core": "^4.8.3",
     "axe-playwright": "^1.2.3",
     "dotenv": "^17.2.3",

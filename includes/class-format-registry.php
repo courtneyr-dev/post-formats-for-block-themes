@@ -81,6 +81,12 @@ class PFBT_Format_Registry {
 	 * @since 1.0.0
 	 */
 	private function register_formats() {
+		// Site owners choose the quote format's default block on
+		// Settings → Post Formats; the non-default block stays a
+		// detection alias so both always classify as quote.
+		$quote_block     = PFBT_Quote_Block_Setting::get_block_name();
+		$quote_alt_block = PFBT_Quote_Block_Setting::get_alternate_block_name();
+
 		$this->formats = array(
 			'standard' => array(
 				'name'          => __( 'Standard', 'post-formats-for-block-themes' ),
@@ -152,7 +158,12 @@ class PFBT_Format_Registry {
 				'icon'          => 'format-quote',
 				'title_visible' => true,
 				'meta_behavior' => 'normal',
-				'first_block'   => 'core/quote',
+				'first_block'   => $quote_block,
+				// Detection-only alias: the docs promise pullquote-first
+				// posts suggest Quote, and the v2.2.0 style variations treat
+				// quote/pullquote as one family. first_block stays a string
+				// because the Abilities API exposes it as type string.
+				'alt_blocks'    => array( $quote_alt_block ),
 				'pattern_name'  => 'pfpu/quote',
 			),
 			'status'   => array(
@@ -250,8 +261,14 @@ class PFBT_Format_Registry {
 				continue;
 			}
 
-			// Check if block matches.
-			if ( $format['first_block'] === $block_name ) {
+			// Check the primary block plus any detection-only aliases
+			// (alt_blocks), e.g. quote also detects core/pullquote.
+			$trigger_blocks = array( $format['first_block'] );
+			if ( ! empty( $format['alt_blocks'] ) ) {
+				$trigger_blocks = array_merge( $trigger_blocks, (array) $format['alt_blocks'] );
+			}
+
+			if ( in_array( $block_name, $trigger_blocks, true ) ) {
 				// Special handling for aside (needs specific class).
 				if ( 'aside' === $slug ) {
 					if ( isset( $block_attrs['className'] ) && strpos( $block_attrs['className'], 'aside-bubble' ) !== false ) {

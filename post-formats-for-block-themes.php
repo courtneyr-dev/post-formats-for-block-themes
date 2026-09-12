@@ -137,6 +137,8 @@ set_error_handler(
  * @since 1.0.0
  */
 function pfbt_include_files() {
+	// Before the registry: the quote format's first_block reads this setting.
+	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-quote-block-setting.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-registry.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-detector.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-pattern-manager.php';
@@ -293,6 +295,7 @@ function pfbt_init() {
 	// at priority 10+ continue to win. Settings page registers under
 	// Settings → Post Formats.
 	PFBT_Icon_Set::register_filter();
+	PFBT_Quote_Block_Setting::init();
 	PFBT_Settings_Page::init();
 
 	// Register patterns after WordPress is fully loaded.

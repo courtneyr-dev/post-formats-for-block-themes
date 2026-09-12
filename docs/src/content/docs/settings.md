@@ -1,6 +1,6 @@
 ---
 title: Settings
-description: "Every admin screen the plugin adds — the icon set picker, the Post Format Repair tool, and the block templates opt-in — and what each changes."
+description: "Every admin screen the plugin adds — the icon set picker, the quote block choice, the Post Format Repair tool, and the block templates opt-in — and what each changes."
 ---
 
 Every admin screen the plugin adds, what each setting does, and what you can change without code.
@@ -9,7 +9,7 @@ All three screens require the administrator capability (`manage_options`).
 
 ## Settings → Post Formats
 
-The plugin's options page. As of version 1.1.5 it holds one section, **Format icons**.
+The plugin's options page. It holds two sections: **Format icons** and **Quote format**.
 
 ### Icon set
 
@@ -20,6 +20,14 @@ The plugin's options page. As of version 1.1.5 it holds one section, **Format ic
 - **Note:** a theme that filters icons directly (via the `pfbt_format_badge_icon` filter) continues to override this picker.
 
 ![Icon set picker on the Post Formats settings page with hand-drawn and filled silhouette options](../../assets/screenshots/admin-settings-post-formats.png)
+
+### Quote format default block
+
+- **What it does:** picks which block the Quote format starts with when its pattern is inserted — the **Quote block** (`core/quote`) or the **Pullquote block** (`core/pullquote`).
+- **Choices:** Quote block (default) or Pullquote block — a radio choice.
+- **Default:** Quote block.
+- **When to change it:** if you prefer pullquote styling — larger, figure-based, with a built-in attribution field — for quote posts.
+- **What it doesn't change:** auto-detection accepts both blocks either way (a post starting with a quote *or* a pullquote is detected as a Quote post), and existing posts keep whichever block they already have.
 
 ## Tools → Post Format Repair
 
@@ -44,6 +52,7 @@ An opt-in toggle for the plugin's starter block templates. One checkbox: **"Use 
 - A post's format, per post (modal, Format Switcher, or the core Format control).
 - Whether a detected format sticks (change it manually; your choice wins).
 - The icon set (Settings → Post Formats).
+- The Quote format's default block — quote or pullquote (Settings → Post Formats).
 - Format mismatch fixes (Tools → Post Format Repair).
 - The block templates opt-in (Tools → Post Format Templates).
 - Each format's look — templates, styles, colors, typography — through the Site Editor and Global Styles. See the [Site Editor guide](https://github.com/courtneyr-dev/post-formats-for-block-themes/blob/main/SITE-EDITOR-GUIDE.md).

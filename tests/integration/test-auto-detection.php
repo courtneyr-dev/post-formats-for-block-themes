@@ -44,6 +44,22 @@ class Test_Auto_Detection extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Pullquote-first-block post also applies quote format.
+	 */
+	public function test_first_save_applies_quote_format_for_pullquote() {
+		$post_id = $this->factory->post->create(
+			array(
+				'post_content' => '<!-- wp:pullquote --><figure class="wp-block-pullquote"><blockquote><p>Test pullquote</p></blockquote></figure><!-- /wp:pullquote -->',
+			)
+		);
+
+		do_action( 'save_post', $post_id, get_post( $post_id ), false );
+
+		$this->assertSame( 'quote', get_post_format( $post_id ) );
+		$this->assertSame( 'quote', get_post_meta( $post_id, PFBT_Format_Detector::META_KEY_DETECTED, true ) );
+	}
+
+	/**
 	 * Empty content resolves to standard, sets applied flag.
 	 *
 	 * WordPress returns false from get_post_format() for the standard format.

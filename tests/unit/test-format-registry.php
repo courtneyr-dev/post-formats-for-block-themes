@@ -11,6 +11,24 @@
 class Test_Format_Registry extends WP_UnitTestCase {
 
 	/**
+	 * Reset option + registry singleton so per-test quote block choices
+	 * don't leak into other tests.
+	 */
+	public function tear_down() {
+		delete_option( PFBT_Quote_Block_Setting::OPTION_KEY );
+		$this->reset_registry_singleton();
+		parent::tear_down();
+	}
+
+	/**
+	 * Null the registry singleton so the next call re-reads options.
+	 */
+	private function reset_registry_singleton() {
+		$prop = new ReflectionProperty( 'PFBT_Format_Registry', 'instance' );
+		$prop->setValue( null, null );
+	}
+
+	/**
 	 * Test that all 10 formats are registered
 	 */
 	public function test_all_formats_registered() {
@@ -56,6 +74,24 @@ class Test_Format_Registry extends WP_UnitTestCase {
 	public function test_quote_block_detected() {
 		$format = PFBT_Format_Registry::get_format_by_block(
 			'core/quote',
+			array()
+		);
+
+		$this->assertEquals( 'quote', $format );
+	}
+
+	/**
+	 * Test pullquote block detection maps to quote
+	 *
+	 * The docs promise pullquote-first posts suggest the Quote format
+	 * (the quote docs screenshots seed pullquote content); detection
+	 * accepts it via the quote format's alt_blocks alias.
+	 *
+	 * @covers PFBT_Format_Registry::get_format_by_block
+	 */
+	public function test_pullquote_block_detected_as_quote() {
+		$format = PFBT_Format_Registry::get_format_by_block(
+			'core/pullquote',
 			array()
 		);
 
@@ -132,6 +168,61 @@ class Test_Format_Registry extends WP_UnitTestCase {
 		);
 
 		$this->assertEquals( 'standard', $format );
+	}
+
+	/**
+	 * Test the quote format's default block follows the site setting
+	 *
+	 * Default is core/quote; choosing pullquote flips first_block while
+	 * the other block stays a detection alias, so BOTH block types keep
+	 * detecting as quote under either setting.
+	 *
+	 * @covers PFBT_Format_Registry::get_format_by_block
+	 */
+	public function test_quote_default_block_follows_setting() {
+		// Default: quote is primary.
+		$quote = PFBT_Format_Registry::get_format( 'quote' );
+		$this->assertSame( 'core/quote', $quote['first_block'] );
+		$this->assertSame( array( 'core/pullquote' ), $quote['alt_blocks'] );
+
+		// Flip the setting to pullquote.
+		update_option( PFBT_Quote_Block_Setting::OPTION_KEY, 'pullquote' );
+		$this->reset_registry_singleton();
+
+		$quote = PFBT_Format_Registry::get_format( 'quote' );
+		$this->assertSame( 'core/pullquote', $quote['first_block'] );
+		$this->assertSame( array( 'core/quote' ), $quote['alt_blocks'] );
+
+		// Detection accepts both blocks regardless of the chosen default.
+		$this->assertEquals( 'quote', PFBT_Format_Registry::get_format_by_block( 'core/quote', array() ) );
+		$this->assertEquals( 'quote', PFBT_Format_Registry::get_format_by_block( 'core/pullquote', array() ) );
+	}
+
+	/**
+	 * Test the quote block setting rejects invalid values
+	 *
+	 * @covers PFBT_Quote_Block_Setting::sanitize_choice
+	 */
+	public function test_quote_block_setting_sanitizes_invalid_values() {
+		$this->assertSame( 'quote', PFBT_Quote_Block_Setting::sanitize_choice( 'not-a-choice' ) );
+		$this->assertSame( 'quote', PFBT_Quote_Block_Setting::sanitize_choice( array( 'pullquote' ) ) );
+		$this->assertSame( 'pullquote', PFBT_Quote_Block_Setting::sanitize_choice( 'pullquote' ) );
+		$this->assertSame( 'quote', PFBT_Quote_Block_Setting::sanitize_choice( 'quote' ) );
+	}
+
+	/**
+	 * Test the quote pattern inserts the chosen block
+	 *
+	 * @covers PFBT_Quote_Block_Setting::get_active_slug
+	 */
+	public function test_quote_pattern_content_follows_setting() {
+		$pattern = PFBT_Pattern_Manager::get_pattern( 'quote' );
+		$this->assertStringStartsWith( '<!-- wp:quote', trim( $pattern ) );
+
+		update_option( PFBT_Quote_Block_Setting::OPTION_KEY, 'pullquote' );
+
+		$pattern = PFBT_Pattern_Manager::get_pattern( 'quote' );
+		$this->assertStringStartsWith( '<!-- wp:pullquote', trim( $pattern ) );
 	}
 
 	/**

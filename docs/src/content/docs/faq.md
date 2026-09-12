@@ -23,7 +23,7 @@ Auto-detection assigned one from your content on first save. It applies once and
 
 ## Why is the first block in a format pattern locked?
 
-To preserve the format's structure — a quote post keeps its pullquote, a gallery post keeps its gallery. You edit the content inside the locked block and add anything you like after it.
+To preserve the format's structure — a quote post keeps its quote (or pullquote), a gallery post keeps its gallery. You edit the content inside the locked block and add anything you like after it.
 
 ## Which chat platforms does the Chat Log block understand?
 

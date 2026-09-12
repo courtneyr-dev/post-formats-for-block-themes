@@ -87,6 +87,61 @@ class PFBT_Settings_Page {
 			'pfbt_icon_section',
 			array( 'label_for' => PFBT_Icon_Set::OPTION_KEY . '_hand-drawn' )
 		);
+
+		PFBT_Quote_Block_Setting::register_setting();
+
+		add_settings_section(
+			'pfbt_quote_block_section',
+			__( 'Quote format', 'post-formats-for-block-themes' ),
+			array( __CLASS__, 'render_quote_block_section_intro' ),
+			self::PAGE_SLUG
+		);
+
+		add_settings_field(
+			PFBT_Quote_Block_Setting::OPTION_KEY,
+			__( 'Default block', 'post-formats-for-block-themes' ),
+			array( __CLASS__, 'render_quote_block_picker' ),
+			self::PAGE_SLUG,
+			'pfbt_quote_block_section',
+			array( 'label_for' => PFBT_Quote_Block_Setting::OPTION_KEY . '_quote' )
+		);
+	}
+
+	/**
+	 * Section intro paragraph — explains what the quote block choice controls.
+	 */
+	public static function render_quote_block_section_intro() {
+		echo '<p>' . esc_html__( 'Pick the block the Quote format starts with when its pattern is inserted. Auto-detection is unaffected: a post starting with either block is always detected as a Quote post. Existing posts are not changed.', 'post-formats-for-block-themes' ) . '</p>';
+	}
+
+	/**
+	 * Render the quote block picker — fieldset + radios.
+	 */
+	public static function render_quote_block_picker() {
+		$active  = PFBT_Quote_Block_Setting::get_active_slug();
+		$choices = PFBT_Quote_Block_Setting::get_available_choices();
+		?>
+		<fieldset>
+			<legend class="screen-reader-text"><?php esc_html_e( 'Select the default block for the Quote format', 'post-formats-for-block-themes' ); ?></legend>
+
+			<?php foreach ( $choices as $slug => $choice ) : ?>
+				<?php $input_id = PFBT_Quote_Block_Setting::OPTION_KEY . '_' . $slug; ?>
+				<p>
+					<label for="<?php echo esc_attr( $input_id ); ?>">
+						<input
+							type="radio"
+							id="<?php echo esc_attr( $input_id ); ?>"
+							name="<?php echo esc_attr( PFBT_Quote_Block_Setting::OPTION_KEY ); ?>"
+							value="<?php echo esc_attr( $slug ); ?>"
+							<?php checked( $slug, $active ); ?>
+						/>
+						<?php echo esc_html( $choice['label'] ); ?>
+						<code><?php echo esc_html( $choice['block'] ); ?></code>
+					</label>
+				</p>
+			<?php endforeach; ?>
+		</fieldset>
+		<?php
 	}
 
 	/**

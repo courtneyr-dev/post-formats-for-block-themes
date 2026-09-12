@@ -15,7 +15,7 @@ A post format is a label on a post — quote, video, status, chat, and so on —
 
    ![Format selection modal on a new post showing post format cards with icons and descriptions](../../assets/screenshots/editor-format-selection-modal.png)
 
-2. Choose **Quote**. Expected result: the quote pattern is inserted — a pullquote with an attribution field as a locked first block. The lock keeps the format's structure intact; you edit the text inside it.
+2. Choose **Quote**. Expected result: the quote pattern is inserted — a quote block as a locked first block (or a pullquote with an attribution field, if your site chose that default under [Settings → Post Formats](/post-formats-for-block-themes/settings/)). The lock keeps the format's structure intact; you edit the text inside it.
 
    ![Quote post in the editor with a pullquote, attribution, and the Format set to Quote in the sidebar](../../assets/screenshots/editor-quote-format.png)
 
@@ -27,7 +27,7 @@ While editing any post, open the post sidebar and find the **Format Switcher** p
 
 ## Auto-detection: formats from content
 
-The plugin analyzes the first block of a post when you save and can assign a matching format — for example, a pullquote suggests Quote, a gallery suggests Gallery. Two rules keep it predictable:
+The plugin analyzes the first block of a post when you save and can assign a matching format — for example, a quote or pullquote suggests Quote, a gallery suggests Gallery. Two rules keep it predictable:
 
 - **Apply once.** Detection assigns a format on the first save from content, then stops. Later edits don't flip the format back and forth.
 - **Manual wins.** If you picked a format yourself (modal, switcher, or the core Format control), auto-detection never overrides it.

@@ -322,7 +322,9 @@ class PFBT_MCP_Abilities {
 					),
 				),
 				'execute_callback'    => array( $this, 'execute_get_format_signals' ),
-				'permission_callback' => '__return_true',
+				'permission_callback' => function () {
+					return current_user_can( 'read' );
+				},
 			)
 		);
 	}

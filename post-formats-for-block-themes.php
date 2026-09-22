@@ -294,9 +294,6 @@ function pfbt_init() {
 	// Settings → Post Formats.
 	PFBT_Icon_Set::register_filter();
 	PFBT_Settings_Page::init();
-
-	// Register patterns after WordPress is fully loaded.
-	add_action( 'init', array( 'PFBT_Pattern_Manager', 'register_all_patterns' ) );
 }
 add_action( 'after_setup_theme', 'pfbt_init', 99 );
 
@@ -383,7 +380,6 @@ function pfbt_enqueue_editor_assets() {
 			'patterns'        => $patterns,
 			'hasBookmarkCard' => function_exists( 'bookmark_card_register_block' ) || has_block( 'bookmark-card/bookmark-card' ),
 			'hasChatLog'      => true, // Chat Log block is now integrated.
-			'nonce'           => wp_create_nonce( 'pfbt_editor_nonce' ),
 			'currentFormat'   => get_post_format() ? get_post_format() : 'standard',
 			'postKinds'       => $post_kinds_data,
 		)
@@ -480,16 +476,29 @@ function pfbt_enqueue_repair_tool_styles( $hook_suffix ) {
 add_action( 'admin_enqueue_scripts', 'pfbt_enqueue_repair_tool_styles' );
 
 /**
- * Register block patterns on init
+ * Register block patterns on activation or upgrade
  *
- * Patterns are registered dynamically through the Pattern_Manager class.
+ * Patterns are (re)created as synced wp_block posts by
+ * PFBT_Pattern_Manager::force_register_patterns() — see pfbt_activate().
+ * This just catches the upgrade case: a plugin update via wp-admin runs
+ * no activation hook, so on the first admin request after PFBT_VERSION
+ * changes, re-run pattern registration and record the new version.
  *
- * @since 1.0.0
+ * Runs on admin_init rather than every front-end 'init' request, since a
+ * DB write should not be triggered by an untrusted, unauthenticated
+ * request context.
+ *
+ * @since 1.1.7
  */
-function pfbt_register_patterns() {
-	PFBT_Pattern_Manager::register_all_patterns();
+function pfbt_maybe_upgrade() {
+	if ( get_option( 'pfbt_version' ) === PFBT_VERSION ) {
+		return;
+	}
+
+	PFBT_Pattern_Manager::force_register_patterns();
+	update_option( 'pfbt_version', PFBT_VERSION );
 }
-add_action( 'init', 'pfbt_register_patterns', 20 );
+add_action( 'admin_init', 'pfbt_maybe_upgrade' );
 
 /**
  * Activation hook
@@ -523,6 +532,11 @@ function pfbt_activate() {
 	// Set default options.
 	add_option( 'pfbt_version', PFBT_VERSION );
 	add_option( 'pfbt_activated_time', time() );
+
+	// Create the format patterns now, at activation, rather than from a
+	// generic 'init' hook that runs on every request regardless of who is
+	// asking.
+	PFBT_Pattern_Manager::force_register_patterns();
 }
 register_activation_hook( __FILE__, 'pfbt_activate' );
 

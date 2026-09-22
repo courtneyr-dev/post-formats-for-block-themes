@@ -14,6 +14,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+// Shared object-level authorization guard used by every post-bound ability's
+// execute callback. Loaded here, unconditionally, so it is available no
+// matter which ability providers a feature flag enables.
+require_once PFBT_PLUGIN_DIR . 'includes/abilities/functions-ability-guards.php';
+
 /**
  * Abilities Manager
  *

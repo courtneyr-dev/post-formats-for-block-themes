@@ -144,14 +144,10 @@ class PFBT_IndieWeb_Abilities {
 	 */
 	public function execute_mf2_markup( $args ) {
 		$post_id = absint( $args['post_id'] );
-		$post    = get_post( $post_id );
+		$post    = pfbt_ability_post_or_error( $post_id, 'read_post' );
 
-		if ( ! $post ) {
-			return new WP_Error(
-				'invalid_post',
-				__( 'Post not found.', 'post-formats-for-block-themes' ),
-				array( 'status' => 404 )
-			);
+		if ( is_wp_error( $post ) ) {
+			return $post;
 		}
 
 		$mf2    = PFBT_Format_Mf2::instance();
@@ -214,14 +210,10 @@ class PFBT_IndieWeb_Abilities {
 	 */
 	public function execute_mf2_validate( $args ) {
 		$post_id = absint( $args['post_id'] );
-		$post    = get_post( $post_id );
+		$post    = pfbt_ability_post_or_error( $post_id, 'edit_post' );
 
-		if ( ! $post ) {
-			return new WP_Error(
-				'invalid_post',
-				__( 'Post not found.', 'post-formats-for-block-themes' ),
-				array( 'status' => 404 )
-			);
+		if ( is_wp_error( $post ) ) {
+			return $post;
 		}
 
 		$mf2    = PFBT_Format_Mf2::instance();
@@ -295,14 +287,10 @@ class PFBT_IndieWeb_Abilities {
 	public function execute_posse_prepare( $args ) {
 		$post_id = absint( $args['post_id'] );
 		$targets = $args['targets'] ?? array();
-		$post    = get_post( $post_id );
+		$post    = pfbt_ability_post_or_error( $post_id, 'edit_post' );
 
-		if ( ! $post ) {
-			return new WP_Error(
-				'invalid_post',
-				__( 'Post not found.', 'post-formats-for-block-themes' ),
-				array( 'status' => 404 )
-			);
+		if ( is_wp_error( $post ) ) {
+			return $post;
 		}
 
 		$transformer = PFBT_Posse_Transformer::instance();

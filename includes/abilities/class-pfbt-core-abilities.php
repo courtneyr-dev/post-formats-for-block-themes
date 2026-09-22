@@ -588,13 +588,9 @@ class PFBT_Core_Abilities {
 	public function execute_get_post_format( $args ) {
 		$post_id = absint( $args['post_id'] );
 
-		$post = get_post( $post_id );
-		if ( ! $post ) {
-			return new WP_Error(
-				'invalid_post',
-				__( 'Post not found.', 'post-formats-for-block-themes' ),
-				array( 'status' => 404 )
-			);
+		$post = pfbt_ability_post_or_error( $post_id, 'read_post' );
+		if ( is_wp_error( $post ) ) {
+			return $post;
 		}
 
 		$format_slug = get_post_format( $post_id );

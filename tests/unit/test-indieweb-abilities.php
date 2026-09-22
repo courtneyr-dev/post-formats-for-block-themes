@@ -653,6 +653,8 @@ class Test_IndieWeb_Abilities extends WP_UnitTestCase {
 			)
 		);
 
+		wp_set_current_user( 1 );
+
 		$result = $this->abilities->execute_mf2_markup( array( 'post_id' => $post_id ) );
 
 		$this->assertIsArray( $result );
@@ -675,6 +677,8 @@ class Test_IndieWeb_Abilities extends WP_UnitTestCase {
 	public function test_execute_mf2_validate() {
 		$post_id = $this->factory->post->create();
 
+		wp_set_current_user( 1 );
+
 		$result = $this->abilities->execute_mf2_validate( array( 'post_id' => $post_id ) );
 
 		$this->assertIsArray( $result );
@@ -691,6 +695,8 @@ class Test_IndieWeb_Abilities extends WP_UnitTestCase {
 				'post_content' => 'Content for syndication.',
 			)
 		);
+
+		wp_set_current_user( 1 );
 
 		$result = $this->abilities->execute_posse_prepare( array( 'post_id' => $post_id ) );
 

@@ -5,6 +5,21 @@ All notable changes to Post Formats for Block Themes will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.7] - 2026-09-22
+
+### Security
+
+- `execute_mf2_markup()`, `execute_mf2_validate()`, `execute_posse_prepare()`, and `execute_get_post_format()` each validated a sitewide capability (`read` or `edit_posts`) in their ability's `permission_callback`, then loaded whatever `post_id` the caller supplied with a bare `get_post()` — no check that the caller could act on that specific post. A Subscriber could read a private post's content through `post-formats/mf2-markup`, and a Contributor could run `post-formats/posse-prepare` against another user's draft, by passing that post's ID. Added `pfbt_ability_post_or_error()` (`includes/abilities/functions-ability-guards.php`), a shared guard every post-bound ability now runs its `post_id` through: it 404s on a missing post or a `post_type` other than `post`, then checks `read_post`/`edit_post` against that specific post before returning it.
+- `post-formats/get-format-signals` registered with `permission_callback => '__return_true'`. Changed to require the `read` capability, matching every other ability in the plugin.
+
+### Fixed
+
+- Removed `pfbt_editor_nonce`: created with `wp_create_nonce()` on every block-editor load and localized to `pfbtData.nonce`, but never verified server-side or read by any JavaScript.
+
+### Changed
+
+- Synced-pattern creation (the `wp_block` post inserts behind `PFBT_Pattern_Manager::register_all_patterns()`) moved off the `init` hook, where it ran — and, once per version bump, wrote to the database — on every front-end request. Patterns are now (re)created in `pfbt_activate()` at activation, and on the first `admin_init` after `PFBT_VERSION` changes for in-place upgrades.
+
 ## [1.1.6] - 2026-08-20
 
 ### Fixed

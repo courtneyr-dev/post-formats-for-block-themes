@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -305,6 +305,13 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 9. The Format control in the editor sidebar with all ten formats listed — switch a post's format mid-edit
 
 == Changelog ==
+
+= 1.1.7 =
+
+* Security: `post-formats/mf2-markup`, `post-formats/mf2-validate`, `post-formats/posse-prepare`, and `post-formats/get-post-format` checked only a sitewide capability (`read` or `edit_posts`), not whether the caller could act on the specific post ID they supplied — a Subscriber could read a private post's content through mf2-markup, or a Contributor could run posse-prepare against another user's draft. All four now run their `post_id` through a shared guard that checks `read_post`/`edit_post` on that post before returning anything.
+* Security: `post-formats/get-format-signals` had its permission callback set to always allow; it now requires the `read` capability like the plugin's other abilities.
+* Fixed: removed an unused editor nonce that was generated on every editor load, localized to JavaScript, and never verified or consumed anywhere.
+* Changed: the ten format patterns are now (re)created at plugin activation and on upgrade, not from an `init` hook that ran the check — and, once per version, the database write — on every front-end request regardless of who was asking.
 
 = 1.1.6 =
 

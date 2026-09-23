@@ -430,6 +430,8 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 		$post_id = $this->factory->post->create();
 		set_post_format( $post_id, 'quote' );
 
+		wp_set_current_user( 1 );
+
 		$result = $this->abilities->execute_get_post_format(
 			array( 'post_id' => $post_id )
 		);
@@ -447,6 +449,8 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 	public function test_execute_get_post_format_standard() {
 		$post_id = $this->factory->post->create();
 
+		wp_set_current_user( 1 );
+
 		$result = $this->abilities->execute_get_post_format(
 			array( 'post_id' => $post_id )
 		);
@@ -463,7 +467,7 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 		);
 
 		$this->assertInstanceOf( 'WP_Error', $result );
-		$this->assertEquals( 'invalid_post', $result->get_error_code() );
+		$this->assertEquals( 'pfbt_not_found', $result->get_error_code() );
 	}
 
 	/**

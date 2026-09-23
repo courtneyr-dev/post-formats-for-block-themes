@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 1.1.6
+ * Version: 1.1.7
  * Requires at least: 6.9
  * Tested up to: 7.1
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '1.1.6' );
+define( 'PFBT_VERSION', '1.1.7' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -294,9 +294,6 @@ function pfbt_init() {
 	// Settings → Post Formats.
 	PFBT_Icon_Set::register_filter();
 	PFBT_Settings_Page::init();
-
-	// Register patterns after WordPress is fully loaded.
-	add_action( 'init', array( 'PFBT_Pattern_Manager', 'register_all_patterns' ) );
 }
 add_action( 'after_setup_theme', 'pfbt_init', 99 );
 
@@ -383,7 +380,6 @@ function pfbt_enqueue_editor_assets() {
 			'patterns'        => $patterns,
 			'hasBookmarkCard' => function_exists( 'bookmark_card_register_block' ) || has_block( 'bookmark-card/bookmark-card' ),
 			'hasChatLog'      => true, // Chat Log block is now integrated.
-			'nonce'           => wp_create_nonce( 'pfbt_editor_nonce' ),
 			'currentFormat'   => get_post_format() ? get_post_format() : 'standard',
 			'postKinds'       => $post_kinds_data,
 		)
@@ -480,16 +476,81 @@ function pfbt_enqueue_repair_tool_styles( $hook_suffix ) {
 add_action( 'admin_enqueue_scripts', 'pfbt_enqueue_repair_tool_styles' );
 
 /**
- * Register block patterns on init
+ * Register block patterns on activation or upgrade
  *
- * Patterns are registered dynamically through the Pattern_Manager class.
+ * This is the ONLY place patterns are (re)created as synced wp_block
+ * posts. pfbt_activate() deliberately does not call this: an activation
+ * hook runs via an include_once() of the plugin's main file at the exact
+ * moment WordPress activates it, which can happen before this same
+ * request's own 'plugins_loaded' has fired pfbt_include_files() again —
+ * so PFBT_Pattern_Manager is not guaranteed to be loaded yet at
+ * activation time. Storing pfbt_version at activation would also be
+ * wrong on its own: PFBT_Pattern_Manager::register_all_patterns() no-ops
+ * outside admin/ajax/REST context, so a WP-CLI or Playground activation
+ * would record the version without ever creating a pattern, and this
+ * function would then never retry.
+ *
+ * Runs on admin_init — by then classes are loaded via the normal
+ * 'plugins_loaded' → pfbt_include_files() path, and is_admin() is true —
+ * rather than on every front-end 'init' request, since a DB write should
+ * not be triggered by an untrusted, unauthenticated request context.
+ *
+ * The is_admin() check below is not redundant with the admin_init hook
+ * name: a third party can fire 'admin_init' outside wp-admin (WP-CLI's
+ * bootstrap does, and so does this plugin's own test suite unless a
+ * test explicitly calls set_current_screen()). PFBT_Pattern_Manager::
+ * register_all_patterns() already no-ops in that case, so without this
+ * check pfbt_version would still get recorded — stranding the site on a
+ * version number with no patterns actually created for it, and with
+ * pfbt_maybe_upgrade() then skipping every future admin_init because
+ * the version already "matches".
+ *
+ * @since 1.1.7
+ */
+function pfbt_maybe_upgrade() {
+	if ( ! is_admin() ) {
+		return;
+	}
+
+	if ( get_option( 'pfbt_version' ) === PFBT_VERSION ) {
+		return;
+	}
+
+	PFBT_Pattern_Manager::force_register_patterns();
+	update_option( 'pfbt_version', PFBT_VERSION );
+}
+add_action( 'admin_init', 'pfbt_maybe_upgrade' );
+
+/**
+ * Deprecated: pattern registration moved to pfbt_maybe_upgrade()
+ * (admin_init) and no longer runs from a named, callable trigger at
+ * activation. Kept only so a third party still calling this function by
+ * name does not fatal.
+ *
+ * Guards on class_exists() rather than assuming PFBT_Pattern_Manager is
+ * loaded: a caller invoking this function by name has no guarantee
+ * they're doing so from a point in the request where pfbt_include_files()
+ * has already run, which is the exact loading hazard this whole fix is
+ * about — this wrapper existing to prevent a fatal shouldn't itself risk
+ * one. Calls register_all_patterns(), not force_register_patterns(): the
+ * latter unconditionally deletes the pfbt_patterns_registered transient
+ * before running, so every call — regardless of whether patterns are
+ * already current — forces a full re-registration pass. That's a
+ * behavior change from this function's original, transient-gated body,
+ * not something a caller reaching for the old name would expect.
  *
  * @since 1.0.0
+ * @deprecated 1.1.7 Use PFBT_Pattern_Manager::register_all_patterns().
  */
 function pfbt_register_patterns() {
+	_deprecated_function( __FUNCTION__, '1.1.7', 'PFBT_Pattern_Manager::register_all_patterns()' );
+
+	if ( ! class_exists( 'PFBT_Pattern_Manager' ) ) {
+		return;
+	}
+
 	PFBT_Pattern_Manager::register_all_patterns();
 }
-add_action( 'init', 'pfbt_register_patterns', 20 );
 
 /**
  * Activation hook
@@ -520,8 +581,10 @@ function pfbt_activate() {
 		);
 	}
 
-	// Set default options.
-	add_option( 'pfbt_version', PFBT_VERSION );
+	// Set default options. Deliberately not pfbt_version: pattern
+	// creation and the version write both happen in pfbt_maybe_upgrade()
+	// on the first admin_init after this request — see that function's
+	// docblock for why activation itself cannot safely do either.
 	add_option( 'pfbt_activated_time', time() );
 }
 register_activation_hook( __FILE__, 'pfbt_activate' );
@@ -538,6 +601,17 @@ function pfbt_deactivate() {
 	delete_transient( 'pfbt_bookmark_card_available' );
 	delete_transient( 'pfbt_chatlog_block_available' );
 	delete_transient( 'pfbt_patterns_registered' );
+
+	// Force pfbt_maybe_upgrade() to re-register patterns on the next
+	// admin_init after reactivation, so a synced pattern the site owner
+	// hand-deleted while the plugin was off gets restored — the same
+	// outcome 1.1.6 got from clearing the (then version-agnostic)
+	// pfbt_patterns_registered transient above. Since 1.1.7 gates
+	// registration on pfbt_version rather than that transient, clearing
+	// the transient alone wouldn't trigger a re-run if the version was
+	// already current; clearing the version option is what reproduces
+	// the trigger.
+	delete_option( 'pfbt_version' );
 }
 register_deactivation_hook( __FILE__, 'pfbt_deactivate' );
 

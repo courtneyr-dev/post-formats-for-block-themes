@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.6
+Stable tag: 1.1.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -306,6 +306,15 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 
 == Changelog ==
 
+= 1.1.7 =
+
+* Security: `post-formats/mf2-markup`, `post-formats/mf2-validate`, `post-formats/posse-prepare`, and `post-formats/get-post-format` checked only a sitewide capability (`read` or `edit_posts`), not whether the caller could act on the specific post ID they supplied — a Subscriber could read a private post's content through mf2-markup, or a Contributor could run posse-prepare against another user's draft. All four now run their `post_id` through a shared guard that checks `read_post`/`edit_post` on that post before returning anything; a missing or invalid post now returns error code `pfbt_not_found` (was `invalid_post`), and a failed capability check returns `pfbt_forbidden`.
+* Security: that same guard also closes a second gap — `read_post` maps to the primitive `read` capability for any published post regardless of a post password, so any logged-in user could read a password-protected post's content through mf2-markup. The guard now denies that unless the caller can also edit the post.
+* Security: `post-formats/get-format-signals` had its permission callback set to always allow; it now requires the `read` capability like the plugin's other abilities.
+* Fixed: removed an unused editor nonce that was generated on every editor load, localized to JavaScript, and never verified or consumed anywhere.
+* Fixed: deactivating and reactivating the plugin now restores a synced pattern you hand-deleted, the same as it did in 1.1.6 — deactivation clears the stored plugin version, so the next visit to wp-admin after reactivation re-registers any pattern that's missing.
+* Changed: the ten format patterns previously ran on the `init` hook, on every admin, admin-ajax, or REST request, gated by a one-week transient rather than by the plugin version — so roughly every week they'd re-run and overwrite any pattern you'd hand-edited back to the plugin's built-in default. They're now (re)created only on the first wp-admin visit after the plugin version changes, once per version rather than once a week, so updating to 1.1.7 overwrites a hand-edited pattern once and leaves it alone afterward. Activation no longer creates patterns or records the plugin version directly, since its hook can fire before the plugin's own classes are guaranteed loaded; that recording now happens only once the patterns it corresponds to actually exist. `pfbt_register_patterns()` remains as a deprecated wrapper, guarded against a missing `PFBT_Pattern_Manager` class, so third-party code still calling it by name does not fatal.
+
 = 1.1.6 =
 
 * Fixed: format icon sprites now ship in packaged builds — every released install rendered format icons as empty boxes. Props @derintolu.
@@ -492,6 +501,9 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 * **Privacy:** No data collection, external API calls, cookies, or user tracking
 
 == Upgrade Notice ==
+
+= 1.1.7 =
+Recommended for all users, required if you use the Abilities API or MCP integration: fixes object-level authorization gaps that let a lower-privileged user read another user's private or password-protected post, or act on another user's draft, through the plugin's abilities. Also changes how often format patterns refresh — if you've hand-edited a synced pattern, expect it to be overwritten once on this upgrade (previously it happened roughly weekly; now only on a version change).
 
 = 1.1.6 =
 Recommended for all users: restores missing format icons in packaged installs, fixes an activation fatal in the zip build and editor warnings when creating posts, and registers the Format Badge in the editor on WordPress 7.0+. Tested up to WordPress 7.1.

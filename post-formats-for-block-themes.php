@@ -478,15 +478,22 @@ add_action( 'admin_enqueue_scripts', 'pfbt_enqueue_repair_tool_styles' );
 /**
  * Register block patterns on activation or upgrade
  *
- * Patterns are (re)created as synced wp_block posts by
- * PFBT_Pattern_Manager::force_register_patterns() — see pfbt_activate().
- * This just catches the upgrade case: a plugin update via wp-admin runs
- * no activation hook, so on the first admin request after PFBT_VERSION
- * changes, re-run pattern registration and record the new version.
+ * This is the ONLY place patterns are (re)created as synced wp_block
+ * posts. pfbt_activate() deliberately does not call this: an activation
+ * hook runs via an include_once() of the plugin's main file at the exact
+ * moment WordPress activates it, which can happen before this same
+ * request's own 'plugins_loaded' has fired pfbt_include_files() again —
+ * so PFBT_Pattern_Manager is not guaranteed to be loaded yet at
+ * activation time. Storing pfbt_version at activation would also be
+ * wrong on its own: PFBT_Pattern_Manager::register_all_patterns() no-ops
+ * outside admin/ajax/REST context, so a WP-CLI or Playground activation
+ * would record the version without ever creating a pattern, and this
+ * function would then never retry.
  *
- * Runs on admin_init rather than every front-end 'init' request, since a
- * DB write should not be triggered by an untrusted, unauthenticated
- * request context.
+ * Runs on admin_init — by then classes are loaded via the normal
+ * 'plugins_loaded' → pfbt_include_files() path, and is_admin() is true —
+ * rather than on every front-end 'init' request, since a DB write should
+ * not be triggered by an untrusted, unauthenticated request context.
  *
  * @since 1.1.7
  */
@@ -499,6 +506,20 @@ function pfbt_maybe_upgrade() {
 	update_option( 'pfbt_version', PFBT_VERSION );
 }
 add_action( 'admin_init', 'pfbt_maybe_upgrade' );
+
+/**
+ * Deprecated: pattern registration moved to pfbt_maybe_upgrade()
+ * (admin_init) and no longer runs from a named, callable trigger at
+ * activation. Kept only so a third party still calling this function by
+ * name does not fatal.
+ *
+ * @since 1.0.0
+ * @deprecated 1.1.7 Use PFBT_Pattern_Manager::force_register_patterns().
+ */
+function pfbt_register_patterns() {
+	_deprecated_function( __FUNCTION__, '1.1.7', 'PFBT_Pattern_Manager::force_register_patterns()' );
+	PFBT_Pattern_Manager::force_register_patterns();
+}
 
 /**
  * Activation hook
@@ -529,14 +550,11 @@ function pfbt_activate() {
 		);
 	}
 
-	// Set default options.
-	add_option( 'pfbt_version', PFBT_VERSION );
+	// Set default options. Deliberately not pfbt_version: pattern
+	// creation and the version write both happen in pfbt_maybe_upgrade()
+	// on the first admin_init after this request — see that function's
+	// docblock for why activation itself cannot safely do either.
 	add_option( 'pfbt_activated_time', time() );
-
-	// Create the format patterns now, at activation, rather than from a
-	// generic 'init' hook that runs on every request regardless of who is
-	// asking.
-	PFBT_Pattern_Manager::force_register_patterns();
 }
 register_activation_hook( __FILE__, 'pfbt_activate' );
 

@@ -32,6 +32,17 @@ if ( ! function_exists( 'pfbt_ability_post_or_error' ) ) {
 	 * @return \WP_Post|\WP_Error The post on success, WP_Error otherwise.
 	 */
 	function pfbt_ability_post_or_error( int $post_id, string $capability ) {
+		// get_post( 0 ) falls back to the global $post (e.g. the current
+		// loop post in a template context), which is not what a caller
+		// passing an invalid ID meant to resolve.
+		if ( $post_id < 1 ) {
+			return new \WP_Error(
+				'pfbt_not_found',
+				__( 'Post not found.', 'post-formats-for-block-themes' ),
+				array( 'status' => 404 )
+			);
+		}
+
 		$post = get_post( $post_id );
 
 		if ( ! $post instanceof \WP_Post || 'post' !== $post->post_type ) {
@@ -43,6 +54,25 @@ if ( ! function_exists( 'pfbt_ability_post_or_error' ) ) {
 		}
 
 		if ( ! current_user_can( $capability, $post->ID ) ) {
+			return new \WP_Error(
+				'pfbt_forbidden',
+				__( 'You cannot access this post.', 'post-formats-for-block-themes' ),
+				array( 'status' => 403 )
+			);
+		}
+
+		// current_user_can( 'read_post' ) maps to the primitive 'read'
+		// capability for any published, public post — it says nothing
+		// about a password the post itself requires. Without this, any
+		// logged-in user could read a password-protected post's content
+		// through an ability, bypassing the password wall entirely.
+		// Someone who can edit the post is exempt, same as core's own
+		// display logic (see post_password_required()).
+		if (
+			'read_post' === $capability
+			&& post_password_required( $post )
+			&& ! current_user_can( 'edit_post', $post->ID )
+		) {
 			return new \WP_Error(
 				'pfbt_forbidden',
 				__( 'You cannot access this post.', 'post-formats-for-block-themes' ),

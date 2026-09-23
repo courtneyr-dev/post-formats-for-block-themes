@@ -156,4 +156,52 @@ class Test_Pattern_Activation extends WP_UnitTestCase {
 
 		$this->assertEquals( $blocks_before->publish, $blocks_after->publish );
 	}
+
+	/**
+	 * pfbt_register_patterns() (the deprecated wrapper kept only so a
+	 * third-party caller invoking it by name doesn't fatal) must not be
+	 * hooked to 'init'. It was, in the pre-1.1.7 code this branch
+	 * replaced; a regression reintroducing that hook would bring back
+	 * the exact per-request database write this whole change removes.
+	 */
+	public function test_pfbt_register_patterns_not_hooked_to_init() {
+		$this->assertFalse( has_action( 'init', 'pfbt_register_patterns' ) );
+	}
+
+	/**
+	 * Deactivating and reactivating the plugin must restore a synced
+	 * pattern the site owner hand-deleted. pfbt_deactivate() clears
+	 * pfbt_version so the next admin_init re-registers; this confirms
+	 * both halves of that chain, not just that the option gets cleared.
+	 */
+	public function test_deactivate_clears_version_so_next_upgrade_check_reregisters() {
+		// Seed a pattern first: an unset/mismatched version is what
+		// makes pfbt_maybe_upgrade() actually run instead of bailing on
+		// its own "already current" check.
+		set_current_screen( 'edit' );
+		pfbt_maybe_upgrade();
+
+		$pattern_before = get_page_by_path( 'pfpu-status-pattern', OBJECT, 'wp_block' );
+		$this->assertNotNull( $pattern_before, 'Test setup: a pattern should exist before deletion.' );
+
+		wp_delete_post( $pattern_before->ID, true );
+		$this->assertNull(
+			get_page_by_path( 'pfpu-status-pattern', OBJECT, 'wp_block' ),
+			'Test setup: the pattern should actually be gone before deactivation.'
+		);
+
+		do_action( 'deactivate_' . PFBT_PLUGIN_BASENAME );
+
+		$this->assertFalse(
+			get_option( 'pfbt_version' ),
+			'Deactivation must clear pfbt_version so the next admin_init re-registers.'
+		);
+
+		pfbt_maybe_upgrade();
+
+		$this->assertNotNull(
+			get_page_by_path( 'pfpu-status-pattern', OBJECT, 'wp_block' ),
+			'The hand-deleted pattern should be restored after reactivation.'
+		);
+	}
 }

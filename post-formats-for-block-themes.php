@@ -495,9 +495,23 @@ add_action( 'admin_enqueue_scripts', 'pfbt_enqueue_repair_tool_styles' );
  * rather than on every front-end 'init' request, since a DB write should
  * not be triggered by an untrusted, unauthenticated request context.
  *
+ * The is_admin() check below is not redundant with the admin_init hook
+ * name: a third party can fire 'admin_init' outside wp-admin (WP-CLI's
+ * bootstrap does, and so does this plugin's own test suite unless a
+ * test explicitly calls set_current_screen()). PFBT_Pattern_Manager::
+ * register_all_patterns() already no-ops in that case, so without this
+ * check pfbt_version would still get recorded — stranding the site on a
+ * version number with no patterns actually created for it, and with
+ * pfbt_maybe_upgrade() then skipping every future admin_init because
+ * the version already "matches".
+ *
  * @since 1.1.7
  */
 function pfbt_maybe_upgrade() {
+	if ( ! is_admin() ) {
+		return;
+	}
+
 	if ( get_option( 'pfbt_version' ) === PFBT_VERSION ) {
 		return;
 	}
@@ -587,6 +601,17 @@ function pfbt_deactivate() {
 	delete_transient( 'pfbt_bookmark_card_available' );
 	delete_transient( 'pfbt_chatlog_block_available' );
 	delete_transient( 'pfbt_patterns_registered' );
+
+	// Force pfbt_maybe_upgrade() to re-register patterns on the next
+	// admin_init after reactivation, so a synced pattern the site owner
+	// hand-deleted while the plugin was off gets restored — the same
+	// outcome 1.1.6 got from clearing the (then version-agnostic)
+	// pfbt_patterns_registered transient above. Since 1.1.7 gates
+	// registration on pfbt_version rather than that transient, clearing
+	// the transient alone wouldn't trigger a re-run if the version was
+	// already current; clearing the version option is what reproduces
+	// the trigger.
+	delete_option( 'pfbt_version' );
 }
 register_deactivation_hook( __FILE__, 'pfbt_deactivate' );
 

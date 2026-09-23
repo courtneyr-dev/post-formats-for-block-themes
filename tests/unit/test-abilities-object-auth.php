@@ -257,8 +257,10 @@ class Test_Abilities_Object_Auth extends WP_UnitTestCase {
 
 	/**
 	 * The post's own author, who can edit it, is exempt from the
-	 * password check — matching core's own post_password_required()
-	 * exemption for anyone who can edit the post.
+	 * password check. post_password_required() itself has no such
+	 * exemption; this mirrors WP_REST_Posts_Controller::can_access_
+	 * password_content(), which grants password-protected content to
+	 * anyone who holds edit_post on it in the REST API's 'edit' context.
 	 */
 	public function test_author_can_read_own_password_protected_post_through_mf2_markup() {
 		$author    = self::factory()->user->create( array( 'role' => 'author' ) );
@@ -276,5 +278,131 @@ class Test_Abilities_Object_Auth extends WP_UnitTestCase {
 
 		$this->assertIsArray( $result );
 		$this->assertArrayHasKey( 'format', $result );
+	}
+
+	/**
+	 * A contributor must not be able to prepare another user's PUBLISHED
+	 * post for POSSE syndication.
+	 *
+	 * A published post matters here, not a draft: downgrading the
+	 * guard's capability check on posse-prepare from 'edit_post' to
+	 * 'read_post' would still pass every existing denial test in this
+	 * file, because those all use another user's DRAFT — a non-public,
+	 * non-'private' status, so core's own read_post mapping already
+	 * falls back to requiring edit rights regardless of which of the two
+	 * capabilities the guard asks for. A PUBLISHED post's read_post maps
+	 * to the plain 'read' capability instead, which every logged-in
+	 * role — including Contributor — holds. So only a published post
+	 * actually distinguishes "correctly checks edit_post" from "was
+	 * silently downgraded to read_post".
+	 */
+	public function test_contributor_cannot_prepare_posse_for_another_users_published_post() {
+		$published = self::factory()->post->create(
+			array(
+				'post_status' => 'publish',
+				'post_author' => 1,
+			)
+		);
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'contributor' ) ) );
+
+		$abilities = PFBT_IndieWeb_Abilities::instance();
+		$result    = $abilities->execute_posse_prepare( array( 'post_id' => $published ) );
+
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertSame( 'pfbt_forbidden', $result->get_error_code() );
+	}
+
+	/**
+	 * A contributor must not be able to validate mf2 markup for another
+	 * user's PUBLISHED post. See the docblock above on the posse-prepare
+	 * equivalent for why a published post, not a draft, is what actually
+	 * pins the edit_post (vs. read_post) capability check on this
+	 * ability.
+	 */
+	public function test_contributor_cannot_validate_mf2_for_another_users_published_post() {
+		$published = self::factory()->post->create(
+			array(
+				'post_status' => 'publish',
+				'post_author' => 1,
+			)
+		);
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'contributor' ) ) );
+
+		$abilities = PFBT_IndieWeb_Abilities::instance();
+		$result    = $abilities->execute_mf2_validate( array( 'post_id' => $published ) );
+
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertSame( 'pfbt_forbidden', $result->get_error_code() );
+	}
+
+	/**
+	 * post_id = 0 must not fall back to resolving the global $post.
+	 * get_post( 0 ) does exactly that, so the guard's own $post_id < 1
+	 * check has to run before ever calling get_post(). Uses an admin
+	 * caller deliberately: an admin CAN read the private post sitting in
+	 * the global, so this only passes if the guard's id check runs at
+	 * all — a subscriber caller would get 'pfbt_forbidden' either way
+	 * and wouldn't distinguish the two code paths.
+	 */
+	public function test_post_id_zero_does_not_fall_back_to_global_post() {
+		global $post;
+
+		$original_global_post = $post;
+
+		$private_post = self::factory()->post->create(
+			array(
+				'post_status' => 'private',
+				'post_author' => 1,
+			)
+		);
+		$post         = get_post( $private_post );
+		wp_set_current_user( 1 );
+
+		$abilities = PFBT_IndieWeb_Abilities::instance();
+		$result    = $abilities->execute_mf2_markup( array( 'post_id' => 0 ) );
+
+		$post = $original_global_post;
+
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertSame( 'pfbt_not_found', $result->get_error_code() );
+	}
+
+	/**
+	 * The full round trip through the Abilities API — wp_get_ability()
+	 * then ->execute(), rather than calling the execute_* method on the
+	 * provider class directly — must still surface this plugin's own
+	 * pfbt_forbidden error, not get swallowed into the framework's
+	 * generic ability_invalid_permissions. WP_Ability::execute() only
+	 * substitutes that generic error when check_permissions() itself
+	 * (the ability-level permission_callback) denies; a WP_Error
+	 * returned by the execute_callback — which is where this guard
+	 * runs — passes straight through unchanged.
+	 */
+	public function test_mf2_markup_ability_denies_subscriber_on_private_post_via_wp_get_ability() {
+		if ( ! function_exists( 'wp_get_ability' ) ) {
+			$this->markTestSkipped( 'Abilities API not available in this WordPress version.' );
+		}
+
+		if ( ! wp_has_ability( 'post-formats/mf2-markup' ) ) {
+			do_action( 'wp_abilities_api_init' );
+		}
+
+		$ability = wp_get_ability( 'post-formats/mf2-markup' );
+		$this->assertNotNull( $ability, 'post-formats/mf2-markup should be a registered ability.' );
+
+		$private = self::factory()->post->create(
+			array(
+				'post_status'  => 'private',
+				'post_author'  => 1,
+				'post_content' => 'secret body',
+			)
+		);
+		wp_set_current_user( self::factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		$result = $ability->execute( array( 'post_id' => $private ) );
+
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertSame( 'pfbt_forbidden', $result->get_error_code() );
+		$this->assertSame( 403, $result->get_error_data()['status'] );
 	}
 }

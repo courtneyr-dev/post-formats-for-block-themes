@@ -418,6 +418,19 @@ class Test_MCP_Abilities extends WP_UnitTestCase {
 	}
 
 	/**
+	 * get-format-signals (and every other MCP ability, since they all
+	 * share this permission_callback) must deny a logged-out caller.
+	 * Regression test for get-format-signals having previously been
+	 * registered with `permission_callback => '__return_true'`, which
+	 * would make this assertion fail.
+	 */
+	public function test_can_read_posts_denies_anonymous() {
+		wp_set_current_user( 0 );
+
+		$this->assertFalse( $this->abilities->can_read_posts() );
+	}
+
+	/**
 	 * Test get_analyzer method
 	 */
 	public function test_get_analyzer() {

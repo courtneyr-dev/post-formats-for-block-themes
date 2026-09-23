@@ -513,12 +513,29 @@ add_action( 'admin_init', 'pfbt_maybe_upgrade' );
  * activation. Kept only so a third party still calling this function by
  * name does not fatal.
  *
+ * Guards on class_exists() rather than assuming PFBT_Pattern_Manager is
+ * loaded: a caller invoking this function by name has no guarantee
+ * they're doing so from a point in the request where pfbt_include_files()
+ * has already run, which is the exact loading hazard this whole fix is
+ * about — this wrapper existing to prevent a fatal shouldn't itself risk
+ * one. Calls register_all_patterns(), not force_register_patterns(): the
+ * latter unconditionally deletes the pfbt_patterns_registered transient
+ * before running, so every call — regardless of whether patterns are
+ * already current — forces a full re-registration pass. That's a
+ * behavior change from this function's original, transient-gated body,
+ * not something a caller reaching for the old name would expect.
+ *
  * @since 1.0.0
- * @deprecated 1.1.7 Use PFBT_Pattern_Manager::force_register_patterns().
+ * @deprecated 1.1.7 Use PFBT_Pattern_Manager::register_all_patterns().
  */
 function pfbt_register_patterns() {
-	_deprecated_function( __FUNCTION__, '1.1.7', 'PFBT_Pattern_Manager::force_register_patterns()' );
-	PFBT_Pattern_Manager::force_register_patterns();
+	_deprecated_function( __FUNCTION__, '1.1.7', 'PFBT_Pattern_Manager::register_all_patterns()' );
+
+	if ( ! class_exists( 'PFBT_Pattern_Manager' ) ) {
+		return;
+	}
+
+	PFBT_Pattern_Manager::register_all_patterns();
 }
 
 /**

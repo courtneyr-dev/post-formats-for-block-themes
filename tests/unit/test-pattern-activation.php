@@ -54,18 +54,29 @@ class Test_Pattern_Activation extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Firing the activation hook must not error, and — this is the part
-	 * that would have caught the original bug — must not itself write
-	 * pfbt_version or create any pattern post. Both now happen only in
+	 * Firing the activation hook must not error, and — this is what would
+	 * have caught the original bug — must not itself write pfbt_version
+	 * or create any pattern post. Both now happen only in
 	 * pfbt_maybe_upgrade() on admin_init.
 	 *
+	 * set_current_screen( 'plugins' ) is required for the pattern-post
+	 * assertion to mean anything: PFBT_Pattern_Manager::register_all_
+	 * patterns() no-ops on its own admin/ajax/REST guard whenever
+	 * is_admin() is false, so without it the assertion would pass
+	 * whether or not pfbt_activate() still called it — a reintroduced
+	 * `PFBT_Pattern_Manager::force_register_patterns()` call would go
+	 * undetected. With is_admin() true, that regression fails this test
+	 * with "10 does not match expected 0".
+	 *
 	 * A PHPUnit run always has every plugin class loaded up front, unlike
-	 * a real activation request, so this can't reproduce the original
-	 * fatal directly. It instead pins the contract the fix establishes:
-	 * activation no longer touches PFBT_Pattern_Manager or pfbt_version
-	 * at all, which is what made the fatal possible in the first place.
+	 * a real activation request, so this still can't reproduce the
+	 * original "Class not found" fatal directly. It pins the behavioral
+	 * contract the fix establishes instead: activation creates no
+	 * patterns and writes no version, in any admin context.
 	 */
 	public function test_activation_does_not_touch_patterns_or_version() {
+		set_current_screen( 'plugins' );
+
 		$blocks_before = wp_count_posts( 'wp_block' );
 
 		do_action( 'activate_' . PFBT_PLUGIN_BASENAME );

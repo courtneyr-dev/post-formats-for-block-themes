@@ -795,7 +795,7 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 
 		$interactivity_attr = $use_interactivity ? ' data-wp-interactive="post-formats/chatlog"' : '';
 		$output            .= sprintf(
-			'<div class="chatlog chatlog--%s"%s role="log" aria-label="%s">',
+			'<div class="chatlog chatlog--%s"%s role="region" aria-label="%s">',
 			esc_attr( $options['display_style'] ),
 			$interactivity_attr,
 			esc_attr__( 'Chat conversation', 'post-formats-for-block-themes' )

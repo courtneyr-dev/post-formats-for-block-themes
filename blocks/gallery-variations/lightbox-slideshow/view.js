@@ -2,13 +2,14 @@
  * Lightbox Slideshow — Interactivity API view module.
  *
  * Activates on any .wp-block-gallery.is-style-lightbox-slideshow.
- * Each .wp-block-image inside becomes a clickable trigger that opens
- * a fullscreen dialog. The dialog supports:
+ * Each .wp-block-image gets a real <button class="pfbt-lightbox-trigger">
+ * appended to it that opens a fullscreen native <dialog> (.showModal()).
+ * The dialog supports:
  *
  *   - prev/next nav via on-screen buttons
- *   - keyboard nav: ArrowLeft/ArrowRight, Esc to close, Home/End
- *   - focus trap (Tab cycles within the dialog)
- *   - focus restored to the trigger element on close
+ *   - keyboard nav: ArrowLeft/ArrowRight, Home/End; Esc-to-close and Tab
+ *     focus cycling come from the native <dialog> for free
+ *   - focus restored to the button that opened the dialog on close
  *   - live region "image X of Y" announcement on each navigation
  *
  * Implementation note: the dialog is built via createElement (no
@@ -33,12 +34,11 @@ function ensureDialog() {
 	if (dialog) {
 		return dialog;
 	}
-	dialog = document.createElement("div");
+	dialog = document.createElement("dialog");
 	dialog.className = "pfbt-lightbox-dialog";
 	dialog.setAttribute("role", "dialog");
 	dialog.setAttribute("aria-modal", "true");
 	dialog.setAttribute("aria-label", "Image lightbox");
-	dialog.hidden = true;
 
 	const close = document.createElement("button");
 	close.type = "button";
@@ -72,6 +72,17 @@ function ensureDialog() {
 	dialog.appendChild(next);
 	dialog.appendChild(counter);
 
+	// Native <dialog> fires "close" both for explicit close() calls and for
+	// the browser's own Escape-key handling, so returning focus here covers
+	// both paths from a single place.
+	dialog.addEventListener("close", () => {
+		state.isOpen = false;
+		const returnTarget = state.triggerButton || state.trigger;
+		if (returnTarget && typeof returnTarget.focus === "function") {
+			returnTarget.focus();
+		}
+	});
+
 	document.body.appendChild(dialog);
 	return dialog;
 }
@@ -97,35 +108,33 @@ const { state } = store(NAMESPACE, {
 		isOpen: false,
 		gallery: null,
 		trigger: null,
+		triggerButton: null,
 	},
 
 	actions: {
 		open(event) {
-			const trigger = event.currentTarget.closest(".wp-block-image");
-			if (!trigger) return;
-			const gallery = trigger.closest(".is-style-lightbox-slideshow");
+			const triggerButton = event.currentTarget;
+			const item = triggerButton.closest(".wp-block-image");
+			if (!item) return;
+			const gallery = item.closest(".is-style-lightbox-slideshow");
 			if (!gallery) return;
 
 			state.images = readGalleryImages(gallery);
 			state.gallery = gallery;
-			state.trigger = trigger;
-			const triggers = Array.from(
+			state.trigger = item;
+			state.triggerButton = triggerButton;
+			const items = Array.from(
 				gallery.querySelectorAll(".wp-block-image"),
 			);
-			state.index = Math.max(0, triggers.indexOf(trigger));
+			state.index = Math.max(0, items.indexOf(item));
 			state.isOpen = true;
 			actions.render();
 		},
 
 		close() {
 			const dialog = document.querySelector(".pfbt-lightbox-dialog");
-			if (dialog) {
-				dialog.hidden = true;
-			}
-			state.isOpen = false;
-			if (state.trigger) {
-				const focusable = state.trigger.querySelector("a, button, img");
-				(focusable || state.trigger).focus();
+			if (dialog && dialog.open) {
+				dialog.close();
 			}
 		},
 
@@ -153,7 +162,9 @@ const { state } = store(NAMESPACE, {
 			img.src = cur.src;
 			img.alt = cur.alt;
 			counter.textContent = "Image " + (state.index + 1) + " of " + state.images.length;
-			dialog.hidden = false;
+			if (!dialog.open) {
+				dialog.showModal();
+			}
 
 			const close = dialog.querySelector(".pfbt-lightbox-dialog__close");
 			const prev = dialog.querySelector(".pfbt-lightbox-dialog__prev");
@@ -162,9 +173,10 @@ const { state } = store(NAMESPACE, {
 				close.addEventListener("click", actions.close);
 				prev.addEventListener("click", actions.prev);
 				next.addEventListener("click", actions.next);
+				// Escape-to-close and Tab focus cycling are handled natively
+				// by <dialog>.showModal(); only image navigation is custom.
 				document.addEventListener("keydown", (e) => {
 					if (!state.isOpen) return;
-					if (e.key === "Escape") actions.close();
 					if (e.key === "ArrowRight") actions.next();
 					if (e.key === "ArrowLeft") actions.prev();
 					if (e.key === "Home") {
@@ -189,16 +201,21 @@ document.addEventListener("DOMContentLoaded", () => {
 	const galleries = document.querySelectorAll(
 		".wp-block-gallery.is-style-lightbox-slideshow",
 	);
-	galleries.forEach((g) => {
-		g.querySelectorAll(".wp-block-image").forEach((item) => {
-			item.addEventListener("click", actions.open);
-			item.setAttribute("tabindex", "0");
-			item.addEventListener("keydown", (e) => {
-				if (e.key === "Enter" || e.key === " ") {
-					e.preventDefault();
-					actions.open(e);
-				}
-			});
+	galleries.forEach((gallery) => {
+		const items = Array.from(gallery.querySelectorAll(".wp-block-image"));
+		items.forEach((item, index) => {
+			const img = item.querySelector("img");
+			const alt = img && img.alt ? img.alt.trim() : "";
+			const label = alt
+				? "Open " + alt + " in lightbox"
+				: "Open image " + (index + 1) + " in lightbox";
+
+			const trigger = document.createElement("button");
+			trigger.type = "button";
+			trigger.className = "pfbt-lightbox-trigger";
+			trigger.setAttribute("aria-label", label);
+			trigger.addEventListener("click", actions.open);
+			item.appendChild(trigger);
 		});
 	});
 });

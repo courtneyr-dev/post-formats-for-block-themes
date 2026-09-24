@@ -24,7 +24,7 @@ $pfbt_variant = $pfbt_pattern_variant ?? 'archive';
 
 	<!-- wp:group {"className":"pfbt-format-card__head","layout":{"type":"flex","flexWrap":"nowrap"}} -->
 	<div class="wp-block-group pfbt-format-card__head">
-		<!-- wp:avatar {"size":48} /-->
+		<!-- wp:avatar {"size":48,"className":"pfbt-status-avatar"} /-->
 		<!-- wp:post-formats/format-icon {"lock":{"move":false,"remove":true}} /-->
 	</div>
 	<!-- /wp:group -->

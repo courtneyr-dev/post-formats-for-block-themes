@@ -53,6 +53,7 @@ class PFBT_A11y_Output {
 	 */
 	private function __construct() {
 		add_filter( 'render_block_core/paragraph', array( $this, 'drop_empty_paragraph' ) );
+		add_filter( 'render_block_core/avatar', array( $this, 'decorative_status_avatar' ), 10, 2 );
 	}
 
 	/**
@@ -75,5 +76,38 @@ class PFBT_A11y_Output {
 			return $content;
 		}
 		return preg_match( '#^\s*<p\b[^>]*>(?:\s|&nbsp;|\xC2\xA0)*</p>\s*$#u', $content ) ? '' : $content;
+	}
+
+	/**
+	 * The Status archive/single display pattern (patterns/display/status.php)
+	 * places an Avatar block next to the author name, which is already a
+	 * link that names the author. The avatar there is purely decorative, so
+	 * mark it alt="" + role="presentation" for screen readers.
+	 *
+	 * Scoped to that one pattern via the "pfbt-status-avatar" className the
+	 * pattern sets on the block — not a global avatar filter — so avatars
+	 * rendered anywhere else (comments, other patterns, theme templates)
+	 * are unaffected.
+	 *
+	 * @since 1.1.8
+	 *
+	 * @param string $content Rendered block.
+	 * @param array  $block   Parsed block.
+	 * @return string
+	 */
+	public function decorative_status_avatar( $content, $block ) {
+		if ( is_admin() ) {
+			return $content;
+		}
+		$class_name = (string) ( $block['attrs']['className'] ?? '' );
+		if ( false === strpos( $class_name, 'pfbt-status-avatar' ) ) {
+			return $content;
+		}
+		$tags = new WP_HTML_Tag_Processor( $content );
+		if ( $tags->next_tag( 'img' ) ) {
+			$tags->set_attribute( 'alt', '' );
+			$tags->set_attribute( 'role', 'presentation' );
+		}
+		return $tags->get_updated_html();
 	}
 }

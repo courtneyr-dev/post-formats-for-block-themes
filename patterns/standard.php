@@ -21,9 +21,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // No locked blocks for standard format - full freedom.
 echo '<!-- wp:group {"layout":{"type":"constrained"}} -->
-<div class="wp-block-group">
-	<!-- wp:paragraph -->
-	<p></p>
-	<!-- /wp:paragraph -->
-</div>
+<div class="wp-block-group"></div>
 <!-- /wp:group -->';

@@ -18,7 +18,3 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package PostFormatsBlockThemes
  * @since 1.0.0
  */
-?>
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->

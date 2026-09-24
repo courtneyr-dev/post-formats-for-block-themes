@@ -74,6 +74,7 @@
 		--pfbt-format-status-fg:       inherit;
 		--pfbt-format-status-accent:   currentColor;
 		--pfbt-format-status-font:     inherit;
+		--pfbt-format-status-font-size: inherit;
 
 		/* Quote */
 		--pfbt-format-quote-bg:        transparent;
@@ -204,6 +205,13 @@
 		background:  var(--pfbt-format-status-bg, transparent);
 		color:       var(--pfbt-format-status-fg, inherit);
 		font-family: var(--pfbt-format-status-font, inherit);
+	}
+
+	/* Status paragraph sizing used to be a hardcoded "fontSize":"large"
+	   block attribute in patterns/status.php — moved here so themes can
+	   repaint it via the token instead of the pattern forcing a size. */
+	.pfbt-format-status .status-paragraph {
+		font-size: var(--pfbt-format-status-font-size, inherit);
 	}
 
 	.pfbt-format-quote {

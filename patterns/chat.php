@@ -22,7 +22,3 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 ?>
 <!-- wp:chatlog/conversation /-->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->

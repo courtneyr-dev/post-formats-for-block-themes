@@ -22,7 +22,3 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- wp:image {"sizeSlug":"large","className":"is-style-caption-card"} -->
 <figure class="wp-block-image size-large is-style-caption-card"><img alt=""/></figure>
 <!-- /wp:image -->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->

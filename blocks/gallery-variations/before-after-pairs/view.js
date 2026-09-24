@@ -48,13 +48,16 @@ document.addEventListener("DOMContentLoaded", () => {
 			const afterImg = after.querySelector("img");
 			if (!beforeImg || !afterImg) continue;
 
+			// Clone the whole figure (image + figcaption), not just the
+			// <img>, so a caption on either side isn't silently dropped
+			// from the DOM.
 			const beforeWrap = document.createElement("div");
 			beforeWrap.className = "pfbt-ba-before";
-			beforeWrap.appendChild(beforeImg.cloneNode(true));
+			beforeWrap.appendChild(before.cloneNode(true));
 
 			const afterWrap = document.createElement("div");
 			afterWrap.className = "pfbt-ba-after";
-			afterWrap.appendChild(afterImg.cloneNode(true));
+			afterWrap.appendChild(after.cloneNode(true));
 
 			const range = document.createElement("input");
 			range.type = "range";

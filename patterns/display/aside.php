@@ -34,6 +34,8 @@ $pfbt_variant = $pfbt_pattern_variant ?? 'archive';
 <!-- wp:group {"tagName":"article","className":"pfbt-format-card pfbt-format-card--aside pfbt-format-aside","layout":{"type":"constrained"}} -->
 <article class="wp-block-group pfbt-format-card pfbt-format-card--aside pfbt-format-aside">
 
+	<!-- wp:post-title {"level":2,"isLink":true,"className":"pfbt-format-title-sr"} /-->
+
 	<!-- wp:post-formats/format-icon {"lock":{"move":false,"remove":true}} /-->
 
 	<!-- wp:group {"className":"pfbt-format-card__body","layout":{"type":"constrained"}} -->

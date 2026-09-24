@@ -143,7 +143,8 @@
 
 	.format-aside .wp-block-post-title:not(.is-style-show-format-title),
 	.format-status .wp-block-post-title:not(.is-style-show-format-title),
-	.format-quote .wp-block-post-title:not(.is-style-show-format-title) {
+	.format-quote .wp-block-post-title:not(.is-style-show-format-title),
+	.pfbt-format-title-sr {
 		position: absolute;
 		width: 1px;
 		height: 1px;

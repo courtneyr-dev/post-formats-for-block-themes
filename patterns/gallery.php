@@ -21,7 +21,3 @@ if ( ! defined( 'ABSPATH' ) ) {
 <!-- wp:gallery {"linkTo":"none","className":"is-style-justified-rows"} -->
 <figure class="wp-block-gallery has-nested-images columns-default is-cropped is-style-justified-rows"></figure>
 <!-- /wp:gallery -->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->

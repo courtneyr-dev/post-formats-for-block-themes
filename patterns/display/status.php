@@ -20,9 +20,11 @@ $pfbt_variant = $pfbt_pattern_variant ?? 'archive';
 <!-- wp:group {"tagName":"article","className":"pfbt-format-card pfbt-format-card--status pfbt-format-status","layout":{"type":"constrained"}} -->
 <article class="wp-block-group pfbt-format-card pfbt-format-card--status pfbt-format-status">
 
+	<!-- wp:post-title {"level":2,"isLink":true,"className":"pfbt-format-title-sr"} /-->
+
 	<!-- wp:group {"className":"pfbt-format-card__head","layout":{"type":"flex","flexWrap":"nowrap"}} -->
 	<div class="wp-block-group pfbt-format-card__head">
-		<!-- wp:avatar {"size":48} /-->
+		<!-- wp:avatar {"size":48,"className":"pfbt-status-avatar"} /-->
 		<!-- wp:post-formats/format-icon {"lock":{"move":false,"remove":true}} /-->
 	</div>
 	<!-- /wp:group -->

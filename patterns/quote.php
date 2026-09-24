@@ -28,12 +28,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <!-- wp:quote {"className":"is-style-side-rule-editorial"} -->
 <blockquote class="wp-block-quote is-style-side-rule-editorial">
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->
 </blockquote>
 <!-- /wp:quote -->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->

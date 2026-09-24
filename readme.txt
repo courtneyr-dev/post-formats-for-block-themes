@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.7
+Stable tag: 1.1.8
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -305,6 +305,19 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 9. The Format control in the editor sidebar with all ten formats listed — switch a post's format mid-edit
 
 == Changelog ==
+
+= 1.1.8 =
+
+* Changed: Lightbox Slideshow gallery variation now injects a real `<button class="pfbt-lightbox-trigger">` per image (instead of a tabindex-focusable figure) and opens a native `<dialog>` via `.showModal()`, so Escape-to-close and Tab focus cycling come from the browser and focus returns to the button that opened it.
+* Changed: removed the hardcoded large font size from the Status format pattern's paragraph; size now comes from a theme-paintable `--pfbt-format-status-font-size` CSS custom property.
+* Changed: removed leftover empty placeholder paragraphs from the Aside, Audio, Chat, Gallery, Image, Link, Quote, Standard, and Video format patterns, and added a front-end-only filter that strips any future empty paragraph so it never reaches visitors or screen readers as a blank line.
+* Changed: the Link format's fallback markup no longer includes an empty, non-functional anchor element.
+* Changed: Aside, Quote, and Status (title-less formats) now include a visually-hidden heading so every post has a real `h1`/`h2` for screen readers and document outline.
+* Changed: Chat Log block's Discord device-frame timestamp color now meets WCAG AA contrast (was 2.54:1, now roughly 6:1), and its container's ARIA role changed from `log` to `region`.
+* Changed: the Status archive/single author avatar is now marked decorative for screen readers, since the adjacent author name link already conveys the same information.
+* Changed: the Filter Tags gallery variation's chip bar role changed from `toolbar` to `group`, matching its actual (non-roving) keyboard behavior.
+* Fixed: pressing Escape now dismisses an open Lookbook Hotspots popover.
+* Fixed: pairing images in the Before/After Pairs gallery variation no longer drops a caption's text from the DOM.
 
 = 1.1.7 =
 

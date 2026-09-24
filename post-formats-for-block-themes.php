@@ -3,7 +3,7 @@
  * Plugin Name: Post Formats for Block Themes
  * Plugin URI: https://wordpress.org/plugins/post-formats-for-block-themes/
  * Description: Modernizes WordPress post formats for block themes with format-specific patterns, auto-detection, and enhanced editor experience.
- * Version: 1.1.7
+ * Version: 1.1.8
  * Requires at least: 6.9
  * Tested up to: 7.1
  * Requires PHP: 7.4
@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Plugin constants
  */
-define( 'PFBT_VERSION', '1.1.7' );
+define( 'PFBT_VERSION', '1.1.8' );
 define( 'PFBT_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PFBT_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'PFBT_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
@@ -149,6 +149,7 @@ function pfbt_include_files() {
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-helpers.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-block-templates.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-admin-columns.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-a11y-output.php';
 
 	// Feature flags and Abilities API (v1.2.0+).
 	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-feature-flags.php';
@@ -237,6 +238,9 @@ function pfbt_init() {
 	PFBT_Pattern_Manager::instance();
 	PFBT_Block_Locker::instance();
 	PFBT_Admin_Columns::instance();
+
+	// 1.1.8: front-end-only accessibility output filters.
+	PFBT_A11y_Output::instance();
 
 	// 2.0: post + body class additions (replaces the body_class filter
 	// in PFBT_Format_Styles::init(), which is now a deprecated stub).

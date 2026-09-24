@@ -559,7 +559,9 @@
 		}
 
 		.chatlog-timestamp {
-			color: #72767d;
+			/* #72767d on #36393f is 2.54:1, failing WCAG AA (4.5:1 minimum).
+			   #b9bbbe keeps the Discord identity while meeting contrast. */
+			color: #b9bbbe;
 		}
 
 		.chatlog-body {

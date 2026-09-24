@@ -19,6 +19,25 @@
 
 .wp-block-gallery.is-style-lightbox-slideshow.is-layout-flex .wp-block-image {
 	cursor: zoom-in;
+	position: relative;
+}
+
+/* Real button injected by view.js, sized to cover the figure it belongs to. */
+.wp-block-gallery.is-style-lightbox-slideshow .pfbt-lightbox-trigger {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	cursor: zoom-in;
+}
+
+.wp-block-gallery.is-style-lightbox-slideshow .pfbt-lightbox-trigger:focus-visible {
+	outline: 2px solid var(--pfbt-lightbox-focus, #e8f0fa);
+	outline-offset: -2px;
 }
 
 /* Lightbox dialog — appended to body by view.js when an item opens */
@@ -29,6 +48,11 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	margin: 0;
+	border: 0;
+	max-width: none;
+	max-height: none;
+	color: inherit;
 	/* Overlay is fixed dark by convention; controls stay light on any palette. */
 	background: var(--pfbt-lightbox-overlay, rgba(0, 0, 0, 0.92));
 	padding: var(--wp--preset--spacing--medium, 1.5rem);

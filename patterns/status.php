@@ -27,15 +27,15 @@ if ( $pfbt_has_mood_card ) {
 	?>
 <!-- wp:post-kinds-indieweb/mood-card /-->
 
-<!-- wp:paragraph {"className":"status-paragraph","fontSize":"large"} -->
-<p class="status-paragraph has-large-font-size"></p>
+<!-- wp:paragraph {"className":"status-paragraph"} -->
+<p class="status-paragraph"></p>
 <!-- /wp:paragraph -->
 	<?php
 } else {
 	// Single paragraph with status-paragraph class for character counter.
 	?>
-<!-- wp:paragraph {"className":"status-paragraph","fontSize":"large"} -->
-<p class="status-paragraph has-large-font-size"></p>
+<!-- wp:paragraph {"className":"status-paragraph"} -->
+<p class="status-paragraph"></p>
 <!-- /wp:paragraph -->
 	<?php
 }

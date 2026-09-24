@@ -19,6 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @since 1.0.0
  */
 ?>
-<!-- wp:paragraph -->
+<!-- wp:paragraph {"placeholder":"A short note, no title needed…"} -->
 <p></p>
 <!-- /wp:paragraph -->

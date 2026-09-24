@@ -69,9 +69,15 @@ document.addEventListener("DOMContentLoaded", () => {
 		});
 		if (tagSet.size === 0) return;
 
+		// role="group" (not "toolbar") here: the chips are plain <button>
+		// elements with no roving-tabindex/arrow-key navigation implemented,
+		// so labeling the container a toolbar promised an APG toolbar
+		// keyboard pattern the code never delivered. Native Tab-per-button
+		// plus aria-pressed is a complete, correct pattern on its own;
+		// "group" keeps the aria-label meaningful without that promise.
 		const bar = document.createElement("div");
 		bar.className = "pfbt-filter-tags-bar";
-		bar.setAttribute("role", "toolbar");
+		bar.setAttribute("role", "group");
 		bar.setAttribute("aria-label", "Gallery filters");
 
 		const allChip = document.createElement("button");

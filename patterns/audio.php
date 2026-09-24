@@ -24,20 +24,12 @@ $pfbt_has_listen_card = \WP_Block_Type_Registry::get_instance()->is_registered( 
 if ( $pfbt_has_listen_card ) {
 	?>
 <!-- wp:post-kinds-indieweb/listen-card /-->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->
 	<?php
 } else {
 	?>
 <!-- wp:audio -->
 <figure class="wp-block-audio"><audio controls></audio></figure>
 <!-- /wp:audio -->
-
-<!-- wp:paragraph -->
-<p></p>
-<!-- /wp:paragraph -->
 	<?php
 }
 ?>

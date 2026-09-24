@@ -51,6 +51,16 @@ document.addEventListener("DOMContentLoaded", () => {
 					typeof spot.label === "string" ? spot.label : "";
 				button.appendChild(popover);
 
+				// The popover's visibility is driven entirely by CSS
+				// (:hover / :focus / :focus-within on the button), so
+				// dismissing it on Escape means moving focus off the
+				// button rather than toggling a class.
+				button.addEventListener("keydown", (e) => {
+					if (e.key === "Escape") {
+						button.blur();
+					}
+				});
+
 				item.appendChild(button);
 			});
 		});

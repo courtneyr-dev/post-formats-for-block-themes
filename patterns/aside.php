@@ -18,3 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * @package PostFormatsBlockThemes
  * @since 1.0.0
  */
+?>
+<!-- wp:paragraph {"placeholder":"A short note, no title needed…"} -->
+<p></p>
+<!-- /wp:paragraph -->

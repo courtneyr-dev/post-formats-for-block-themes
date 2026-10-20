@@ -45,17 +45,30 @@
 	position: fixed;
 	inset: 0;
 	z-index: 9999;
-	display: flex;
 	align-items: center;
 	justify-content: center;
 	margin: 0;
 	border: 0;
+
+	/* A native <dialog> keeps the UA's width: fit-content; size it. */
+	box-sizing: border-box;
+	width: 100%;
+	height: 100%;
 	max-width: none;
 	max-height: none;
 	color: inherit;
 	/* Overlay is fixed dark by convention; controls stay light on any palette. */
 	background: var(--pfbt-lightbox-overlay, rgba(0, 0, 0, 0.92));
 	padding: var(--wp--preset--spacing--medium, 1.5rem);
+}
+
+/* Only while open, so a closed <dialog> keeps the UA's display: none. */
+.pfbt-lightbox-dialog[open] {
+	display: flex;
+}
+
+.pfbt-lightbox-dialog::backdrop {
+	background: var(--pfbt-lightbox-overlay, rgba(0, 0, 0, 0.92));
 }
 
 .pfbt-lightbox-dialog__image {

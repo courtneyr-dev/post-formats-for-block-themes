@@ -5,6 +5,14 @@ All notable changes to Post Formats for Block Themes will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Lightbox Slideshow gallery variation: the open dialog now fills the viewport. Since 1.1.8 made it a native `<dialog>`, it kept the browser's `width: fit-content` and opened as a small box in the top-left corner; it now sets `width` and `height` to 100% with `box-sizing: border-box`, and dims the page through `::backdrop` with the same `--pfbt-lightbox-overlay` token.
+- Lightbox Slideshow gallery variation: a closed dialog no longer stays on the page. The stylesheet's `display: flex` outranked the browser's `display: none` for a closed `<dialog>`, so after the first open and close the dialog stayed painted over the content; `display: flex` now applies only while the dialog is `[open]`.
+- New Playwright spec `tests/e2e/lightbox-dialog.spec.js` checks the open dialog's box against the viewport, the `::backdrop` opacity, that Escape hides it, and that focus returns to the trigger. CI turns on the `image_gallery_styles` flag for it.
+
 ## [1.1.8] - 2026-09-24
 
 ### Changed (Accessibility)

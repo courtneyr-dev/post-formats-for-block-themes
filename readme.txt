@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.8
+Stable tag: 1.1.9
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -306,6 +306,11 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 
 == Changelog ==
 
+= 1.1.9 =
+
+* Fixed: the Lightbox Slideshow gallery variation's dialog now fills the screen. Since 1.1.8 it opened as a small box in the top-left corner, because a native dialog keeps the browser's fit-content width; the page behind it is dimmed again.
+* Fixed: a closed Lightbox Slideshow dialog no longer stays painted on the page after the first open and close.
+
 = 1.1.8 =
 
 * Changed: Lightbox Slideshow gallery variation now injects a real `<button class="pfbt-lightbox-trigger">` per image (instead of a tabindex-focusable figure) and opens a native `<dialog>` via `.showModal()`, so Escape-to-close and Tab focus cycling come from the browser and focus returns to the button that opened it.
@@ -514,6 +519,9 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 * **Privacy:** No data collection, external API calls, cookies, or user tracking
 
 == Upgrade Notice ==
+
+= 1.1.9 =
+Recommended if you use the Lightbox Slideshow gallery style: the slideshow fills the screen again and disappears when closed.
 
 = 1.1.7 =
 Recommended for all users, required if you use the Abilities API or MCP integration: fixes object-level authorization gaps that let a lower-privileged user read another user's private or password-protected post, or act on another user's draft, through the plugin's abilities. Also changes how often format patterns refresh — if you've hand-edited a synced pattern, expect it to be overwritten once on this upgrade (previously it happened roughly weekly; now only on a version change).

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 - `post-formats/switch-format` and `post-formats/repair-formats` now register with `mcp.public: false`, so MCP clients can't call them through the default server. Both registered with `public: true` before. REST and PHP callers are unaffected; permission callbacks are unchanged.
+- `post-formats/detect-format` and `post-formats/get-format-stats` carry `readonly`, non-destructive and idempotent annotations, so MCP clients can tell them from the writes.
 
 ## [1.1.9] - 2026-10-20
 

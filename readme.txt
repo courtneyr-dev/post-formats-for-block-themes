@@ -310,6 +310,7 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 
 * Changed: fourteen read abilities (list-formats, get-post-format, suggest-format, mf2-markup and others) are now available to MCP clients through the MCP Adapter's default server.
 * Security: the switch-format and repair-formats abilities are no longer exposed over MCP. They still work through the REST API and PHP with the same permission checks.
+* Changed: detect-format and get-format-stats are annotated as read-only.
 
 = 1.1.9 =
 

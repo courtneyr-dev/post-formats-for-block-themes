@@ -139,6 +139,11 @@ class PFBT_Abilities_Formats {
 				},
 				'meta'                => array(
 					'show_in_rest' => true,
+					'annotations'  => array(
+						'readonly'    => true,
+						'destructive' => false,
+						'idempotent'  => true,
+					),
 					'mcp'          => array(
 						'public' => true,
 						'type'   => 'tool',
@@ -580,6 +585,11 @@ class PFBT_Abilities_Formats {
 				},
 				'meta'                => array(
 					'show_in_rest' => true,
+					'annotations'  => array(
+						'readonly'    => true,
+						'destructive' => false,
+						'idempotent'  => true,
+					),
 					'mcp'          => array(
 						'public' => true,
 						'type'   => 'resource',

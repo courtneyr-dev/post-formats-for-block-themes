@@ -173,4 +173,28 @@ class Test_MCP_Exposure extends WP_UnitTestCase {
 			$this->assertFalse( $meta['mcp']['public'], sprintf( '%s should not be public on MCP.', $name ) );
 		}
 	}
+
+	/**
+	 * End to end: the two reads that declare their own exposure say they're reads.
+	 *
+	 * detect-format and get-format-stats aren't on MCP_PUBLIC_ABILITIES because
+	 * they register public themselves; the readonly annotation lets an MCP
+	 * client, or a site that closes writes, tell them from the writes.
+	 */
+	public function test_self_exposed_reads_are_annotated_readonly() {
+		if ( ! function_exists( 'wp_get_ability' ) ) {
+			$this->markTestSkipped( 'Abilities API not available on this WordPress version (needs 6.9+).' );
+		}
+
+		$this->reset_abilities_registry();
+		wp_get_abilities();
+
+		foreach ( array( 'post-formats/detect-format', 'post-formats/get-format-stats' ) as $name ) {
+			$ability = wp_get_ability( $name );
+			$this->assertNotNull( $ability, sprintf( '%s should be registered.', $name ) );
+			$meta = $ability->get_meta();
+			$this->assertTrue( $meta['annotations']['readonly'] ?? false, sprintf( '%s should be annotated readonly.', $name ) );
+			$this->assertTrue( $meta['mcp']['public'] ?? false, sprintf( '%s should stay public on MCP.', $name ) );
+		}
+	}
 }

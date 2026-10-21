@@ -7,9 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.10] - 2026-10-21
+
 ### Changed
 
 - The fourteen read abilities are now public on the MCP Adapter's default server when the `mcp_integration` flag is on (the default): `list-formats`, `get-format-template`, `validate-format`, `get-post-format`, `score-format`, `suggest-format`, `analyze-content`, `validate-format-content`, `get-format-signals`, `mf2-markup`, `mf2-validate`, `posse-prepare`, `posse-targets`, `webmention-context`. Before, only `detect-format`, `switch-format`, `repair-formats` and `get-format-stats` were. Write abilities keep the exposure their own registration declares; permission callbacks still apply.
+
+### Security
+
+- `post-formats/switch-format` and `post-formats/repair-formats` now register with `mcp.public: false`, so MCP clients can't call them through the default server. Both registered with `public: true` before. REST and PHP callers are unaffected; permission callbacks are unchanged.
+- `post-formats/detect-format` and `post-formats/get-format-stats` carry `readonly`, non-destructive and idempotent annotations, so MCP clients can tell them from the writes.
 
 ## [1.1.9] - 2026-10-20
 

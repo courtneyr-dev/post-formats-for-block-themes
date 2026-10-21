@@ -105,7 +105,7 @@ class Test_MCP_Exposure extends WP_UnitTestCase {
 		$args = array(
 			'meta' => array(
 				'mcp' => array(
-					'public' => true,
+					'public' => false,
 					'type'   => 'tool',
 				),
 			),
@@ -149,5 +149,28 @@ class Test_MCP_Exposure extends WP_UnitTestCase {
 		$set = wp_get_ability( 'post-formats/set-post-format' );
 		$this->assertNotNull( $set );
 		$this->assertFalse( $set->get_meta()['mcp']['public'] ?? false );
+	}
+
+	/**
+	 * End to end: the two writes that change posts stay off MCP.
+	 *
+	 * switch-format edits one post and repair-formats can edit many, so
+	 * neither is exposed on the default server (F-2, 2026-10-21).
+	 */
+	public function test_write_abilities_are_not_public() {
+		if ( ! function_exists( 'wp_get_ability' ) ) {
+			$this->markTestSkipped( 'Abilities API not available on this WordPress version (needs 6.9+).' );
+		}
+
+		$this->reset_abilities_registry();
+		wp_get_abilities();
+
+		foreach ( array( 'post-formats/switch-format', 'post-formats/repair-formats' ) as $name ) {
+			$ability = wp_get_ability( $name );
+			$this->assertNotNull( $ability, sprintf( '%s should be registered.', $name ) );
+			$meta = $ability->get_meta();
+			$this->assertArrayHasKey( 'public', $meta['mcp'] ?? array(), sprintf( '%s should declare its exposure.', $name ) );
+			$this->assertFalse( $meta['mcp']['public'], sprintf( '%s should not be public on MCP.', $name ) );
+		}
 	}
 }

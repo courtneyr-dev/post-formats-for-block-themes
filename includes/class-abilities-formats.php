@@ -267,7 +267,7 @@ class PFBT_Abilities_Formats {
 				'meta'                => array(
 					'show_in_rest' => true,
 					'mcp'          => array(
-						'public' => true,
+						'public' => false,
 						'type'   => 'tool',
 					),
 				),
@@ -412,7 +412,7 @@ class PFBT_Abilities_Formats {
 				'meta'                => array(
 					'show_in_rest' => true,
 					'mcp'          => array(
-						'public' => true,
+						'public' => false,
 						'type'   => 'tool',
 					),
 				),

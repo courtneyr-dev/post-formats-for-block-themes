@@ -51,6 +51,32 @@ class PFBT_Abilities_Manager {
 	const CATEGORY_SLUG = 'post-formats';
 
 	/**
+	 * Read abilities exposed on the MCP Adapter's default server.
+	 *
+	 * None of these writes posts or meta or makes an outbound request;
+	 * set-post-format is the one core write and stays off the list.
+	 *
+	 * @since 1.1.10
+	 * @var string[]
+	 */
+	const MCP_PUBLIC_ABILITIES = array(
+		'post-formats/list-formats',
+		'post-formats/get-format-template',
+		'post-formats/validate-format',
+		'post-formats/get-post-format',
+		'post-formats/score-format',
+		'post-formats/suggest-format',
+		'post-formats/analyze-content',
+		'post-formats/validate-format-content',
+		'post-formats/get-format-signals',
+		'post-formats/mf2-markup',
+		'post-formats/mf2-validate',
+		'post-formats/posse-prepare',
+		'post-formats/posse-targets',
+		'post-formats/webmention-context',
+	);
+
+	/**
 	 * Get singleton instance
 	 *
 	 * @since 1.2.0
@@ -89,6 +115,39 @@ class PFBT_Abilities_Manager {
 
 		// Register abilities after category.
 		add_action( 'wp_abilities_api_init', array( $this, 'register_abilities' ) );
+
+		if ( PFBT_Feature_Flags::has_mcp() ) {
+			add_filter( 'wp_register_ability_args', array( __CLASS__, 'filter_ability_args' ), 10, 2 );
+		}
+	}
+
+	/**
+	 * Mark the read abilities public on the MCP Adapter's default server.
+	 *
+	 * Only names in MCP_PUBLIC_ABILITIES are touched. Every other ability,
+	 * the writes included, keeps the exposure its own registration declares.
+	 * Permission callbacks still apply to every call.
+	 *
+	 * @since 1.1.10
+	 *
+	 * @param array  $args Ability registration arguments.
+	 * @param string $name Ability name.
+	 * @return array Modified arguments.
+	 */
+	public static function filter_ability_args( $args, $name ) {
+		if ( ! is_array( $args ) || ! in_array( $name, self::MCP_PUBLIC_ABILITIES, true ) ) {
+			return $args;
+		}
+
+		if ( ! isset( $args['meta'] ) || ! is_array( $args['meta'] ) ) {
+			$args['meta'] = array();
+		}
+		if ( ! isset( $args['meta']['mcp'] ) || ! is_array( $args['meta']['mcp'] ) ) {
+			$args['meta']['mcp'] = array();
+		}
+		$args['meta']['mcp']['public'] = true;
+
+		return $args;
 	}
 
 	/**

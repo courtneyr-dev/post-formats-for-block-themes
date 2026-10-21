@@ -5,6 +5,12 @@ All notable changes to Post Formats for Block Themes will be documented in this 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The fourteen read abilities are now public on the MCP Adapter's default server when the `mcp_integration` flag is on (the default): `list-formats`, `get-format-template`, `validate-format`, `get-post-format`, `score-format`, `suggest-format`, `analyze-content`, `validate-format-content`, `get-format-signals`, `mf2-markup`, `mf2-validate`, `posse-prepare`, `posse-targets`, `webmention-context`. Before, only `detect-format`, `switch-format`, `repair-formats` and `get-format-stats` were. Write abilities keep the exposure their own registration declares; permission callbacks still apply.
+
 ## [1.1.9] - 2026-10-20
 
 ### Fixed

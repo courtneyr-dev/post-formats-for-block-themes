@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.9
+Stable tag: 1.1.10
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -306,6 +306,11 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 
 == Changelog ==
 
+= 1.1.10 =
+
+* Changed: fourteen read abilities (list-formats, get-post-format, suggest-format, mf2-markup and others) are now available to MCP clients through the MCP Adapter's default server.
+* Security: the switch-format and repair-formats abilities are no longer exposed over MCP. They still work through the REST API and PHP with the same permission checks.
+
 = 1.1.9 =
 
 * Fixed: the Lightbox Slideshow gallery variation's dialog now fills the screen. Since 1.1.8 it opened as a small box in the top-left corner, because a native dialog keeps the browser's fit-content width; the page behind it is dimmed again.
@@ -519,6 +524,9 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 * **Privacy:** No data collection, external API calls, cookies, or user tracking
 
 == Upgrade Notice ==
+
+= 1.1.10 =
+MCP clients get the read abilities, and lose access to the two abilities that change posts' formats.
 
 = 1.1.9 =
 Recommended if you use the Lightbox Slideshow gallery style: the slideshow fills the screen again and disappears when closed.

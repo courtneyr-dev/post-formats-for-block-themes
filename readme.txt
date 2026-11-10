@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.10
+Stable tag: 1.1.11
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,24 +27,24 @@ WordPress post formats have been a powerful feature since WordPress 3.1, allowin
 - **Content creators** who publish different types of content (articles, quotes, galleries, status updates)
 - **News sites** migrating from classic themes and want to preserve post format functionality
 - **Designers and developers** building block themes who need format support built-in
-- **Accessibility-minded editors** — the modal, format switcher, and Chat Log block are built with keyboard support and screen reader announcements
+- **Accessibility-minded editors** — the format modal and Chat Log block use WordPress's accessible components and announce changes to screen readers
 - **Anyone moving from classic themes** who misses the post format features they relied on
 
 = Key Features =
 
 **10 Format-Specific Block Patterns**
 
-Each WordPress post format gets a professionally-designed block pattern optimized for its content type. Patterns include locked first blocks to maintain format consistency while giving you complete creative freedom for additional content:
+Each WordPress post format gets a block pattern for its content type. Choosing a format inserts its pattern into the post, and you can edit every block in it:
 
 - **Standard** – Traditional blog post with full title, featured image, and content blocks
 - **Aside** – Short note or update displayed in a styled bubble container without title requirement
-- **Status** – Twitter-style status update with 280-character validation and real-time counter
+- **Status** – Short status update with a 280-character soft limit and a live counter
 - **Link** – Link sharing with automatic [Bookmark Card](https://wordpress.org/plugins/bookmark-card/) integration when available, with graceful fallback to standard linked paragraphs
-- **Gallery** – Photo gallery starting with a locked gallery block for image collections
+- **Gallery** – Photo gallery starting with a Gallery block for image collections
 - **Image** – Single image post with prominent image display and caption support
-- **Quote** – Quotation or citation with enhanced pullquote styling and attribution
-- **Video** – Video content using native video blocks or popular embed services. Integrates with [Able Player](https://wordpress.org/plugins/ableplayer/) for enhanced accessible playback when available.
-- **Audio** – Audio file or podcast embed with native player styling. Integrates with [Podlove Podcasting Plugin](https://wordpress.org/plugins/podlove-podcasting-plugin-for-wordpress/) for podcasts and [Able Player](https://wordpress.org/plugins/ableplayer/) for accessible playback when available.
+- **Quote** – Quotation or citation using the Quote block
+- **Video** – Video content using native video blocks or popular embed services. Adds layout styles for [Able Player](https://wordpress.org/plugins/ableplayer/) when it's active.
+- **Audio** – Audio file or podcast embed with native player styling. Adds layout styles for the [Podlove Podcasting Plugin](https://wordpress.org/plugins/podlove-podcasting-plugin-for-wordpress/) player and [Able Player](https://wordpress.org/plugins/ableplayer/) when either is active.
 - **Chat** – Conversation transcript using the integrated Chat Log block
 
 **Integrated Chat Log Block**
@@ -53,31 +53,39 @@ Each WordPress post format gets a professionally-designed block pattern optimize
 
 Supported platforms: Slack, Discord, Microsoft Teams, WhatsApp, Telegram, Signal, and generic chat transcripts. Additional text format support: SRT subtitles, VTT captions, and plain text exports from any chat application.
 
-Chat Log features: automatic platform detection, avatar display, timestamp formatting (relative, absolute, time-only), multiple display styles (bubbles, IRC, transcript, timeline), thread collapsing, participant lists, device frames, full accessibility, and RTL support.
+Chat Log features: automatic platform detection, avatars (Gravatar with an initials fallback), timestamp formatting (relative, absolute, time-only), multiple display styles (bubbles, IRC, transcript, timeline), thread collapsing, participant lists, device frames, full accessibility, and RTL support.
 
 **Automatic Format Detection**
 
-Save time with intelligent format detection. The plugin analyzes your post's first block and automatically assigns the appropriate format. Gallery block becomes Gallery format, video block becomes Video format, quote block becomes Quote format, and so on. Detection runs on post save and respects manual format selections.
+Save time with intelligent format detection. The plugin analyzes your post's first block and automatically assigns the appropriate format. Gallery, Image, Video, Audio, Quote, Chat Log, and Bookmark Card blocks map to their formats; an Aside or Status paragraph maps when it carries the pattern's class. A Pullquote doesn't count as a Quote. Detection runs once, on a post's first save, and never changes a format you set.
 
 **Format Selection Modal**
 
-When creating a new post, a visual format selection modal appears with all 10 formats displayed as cards showing icons, names, descriptions, and use cases. Fully keyboard accessible and screen reader friendly.
+When creating a new post, a visual format selection modal appears with all 10 formats displayed as cards showing an icon, name, and description. It's built on the WordPress Modal component and announces your choice to screen readers.
 
-**Format Switcher Sidebar Panel**
+**Change Format Mid-Edit**
 
-Change formats mid-edit with the Format Switcher in the post sidebar. View current format, see auto-detection suggestions, choose to replace content or keep existing blocks. Perfect for when you change your mind about post type.
+Use the Format row in the post sidebar (WordPress core's control). Picking a new format inserts that format's pattern at the top of the post and keeps your existing blocks. If the post is empty, the pattern replaces the empty block.
 
 **Status Format Validation**
 
-The Status format includes Twitter-style character validation with real-time counter, 280-character soft limit, visual feedback, accessibility announcements, and mobile-friendly composition.
+The Status format shows a live "N characters remaining" counter with a 280-character soft limit, warning and over-limit styling, and screen reader announcements. It never blocks publishing.
 
 **Post Format Repair Tool**
 
-Scan existing posts and fix format mismatches with the built-in repair tool (Tools → Post Format Repair). Detects content/format mismatches, bulk or individual repairs, preview suggestions, one-click fixes. Perfect for migrating from classic themes.
+The repair tool (Tools → Post Format Repair) scans your posts when you open it and lists posts whose format doesn't match their first block. Use "Apply All Suggestions" or the per-row "Apply". Dry run is on by default, and each change saves a revision first. Useful when migrating from classic themes.
 
 **Theme-Agnostic Styling**
 
-Format styles integrate seamlessly with any block theme using CSS custom properties from your theme.json. Respects your theme's colors, typography, spacing. No styling conflicts. Works with Global Styles.
+Format styles use `--pfbt-*` CSS custom properties that resolve through your theme.json, so they follow your theme's colors, typography, and spacing and work with Global Styles.
+
+**Also Included**
+
+* Settings → Post Formats picks the icon set for the Format Icon block.
+* Tools → Post Format Templates turns on single-post templates per format.
+* The Format Badge and Format Icon blocks show a post's format. Block Hooks can place the badge before the post title.
+* Opt-in block style variations for Image, Gallery, and Quote blocks. Both feature flags (`image_gallery_styles`, `quote_styles`) are off by default.
+* Abilities API support, including read abilities for MCP clients on WordPress 6.9+ (see the 1.1.10 changelog).
 
 = How to Use Post Formats in Block Themes =
 
@@ -85,16 +93,15 @@ Format styles integrate seamlessly with any block theme using CSS custom propert
 1. Navigate to Posts → Add New
 2. Format selection modal appears automatically
 3. Click your desired format (e.g., "Quote")
-4. Pattern is inserted with locked first block
+4. The format's pattern is inserted
 5. Add content within the pattern
 6. Publish your formatted post
 
 **Mid-Edit Format Switching:**
-1. Open the right sidebar while editing
-2. Find the "Format Switcher" panel
-3. Choose a new format from dropdown
-4. Decide to replace or keep content
-5. Format updates instantly
+1. Open the Post tab in the right sidebar
+2. Select the Format row
+3. Choose a new format
+4. The new pattern is inserted at the top; your existing blocks stay
 
 **Using Auto-Detection:**
 1. Start a new post without selecting a format
@@ -108,14 +115,12 @@ Format styles integrate seamlessly with any block theme using CSS custom propert
 Showcase quotations and citations beautifully:
 
 1. Select Quote format from the modal
-2. The pullquote pattern loads with locked Quote block
+2. The Quote pattern loads with a Quote block
 3. Type or paste your quote
-4. Add attribution in citation field
+4. Add the source or attribution below the quote
 5. Optional: Add commentary below the quote
 6. Customize styling via Global Styles
-7. Publish your enhanced quote post
-
-The locked pullquote maintains format integrity while allowing unlimited additional content blocks.
+7. Publish your quote post
 
 = How to Display Chat Conversations =
 
@@ -129,7 +134,7 @@ Turn conversation transcripts into readable, attractive content:
 6. Preview the formatted conversation
 7. Publish your beautiful chat transcript
 
-Platform-specific features: Slack preserves channels, threads, reactions; Discord maintains server structure and roles; Teams retains meeting context; WhatsApp shows message status and reply chains; Telegram preserves stickers; Signal maintains message indicators.
+Threaded replies are grouped and can be collapsed. Reaction counts and reply indicators in pasted text are skipped.
 
 = How to Automatically Detect Post Formats =
 
@@ -138,23 +143,23 @@ Let the plugin handle format assignment:
 1. Create new post without selecting format
 2. Add content normally (gallery, video, quote, etc.)
 3. Save draft or publish—detection runs on save
-4. Check Format Switcher panel for detected format
-5. Accept or manually override
+4. Check the Format row in the sidebar for the detected format
+5. Change it there if you want a different one
 
-Detection rules: first block determines format. Gallery block = Gallery format, Video block = Video format, Quote block = Quote format, and so on. Detection only runs on posts without manual format selection.
+Detection rules: the first block decides. Gallery block = Gallery format, Video = Video, Quote block = Quote (a Pullquote doesn't count). Detection runs once per post.
 
 = How to Repair Mismatched Formats =
 
 Fix format assignments across your entire site:
 
 1. Navigate to Tools → Post Format Repair
-2. Click "Scan All Posts"—analyzes content vs. formats
-3. Review mismatch report
-4. Preview suggestions for each post
-5. Bulk repair all or fix individually
-6. Verify changes
+2. The page scans your posts on load
+3. Review the Detected Mismatches table
+4. Leave "Dry run" checked to preview, or uncheck it to apply
+5. Click "Apply All Suggestions", or "Apply" on one row
+6. Verify the changes
 
-Common scenarios: migrating from classic themes, imported content, incorrect manual assignments, exploring your format distribution. The repair tool is safe—changes only format meta, never modifies post content.
+Common scenarios: migrating from classic themes, imported content, incorrect manual assignments, exploring your format distribution. The repair tool saves a revision before each change and edits the post's format, not its content. (The separate Template Assignments section on that screen also updates page templates.)
 
 = Migrating from Classic Theme Post Formats =
 
@@ -163,16 +168,16 @@ Preserve post format styling when switching to block themes:
 **Before Migration:**
 1. Install plugin on classic theme site
 2. Leave classic theme active
-3. Test repair tool with scan (don't apply yet)
-4. Review the report
+3. Open the repair tool (dry run stays on, so nothing is applied)
+4. Review the mismatches
 
 **During Migration:**
 1. Switch to block theme
 2. Activate Post Formats for Block Themes
 3. Visit Tools → Post Format Repair
-4. Run full scan
-5. Review suggestions
-6. Apply bulk repair
+4. The page scans your posts on load
+5. Review the mismatches
+6. Uncheck Dry run, then click Apply All Suggestions
 
 **After Migration:**
 1. Check frontend display
@@ -242,7 +247,7 @@ No, this plugin requires block themes with Full Site Editing. Classic themes use
 
 = Will this work with my existing posts? =
 
-Yes! Use **Post Format Repair Tool** (Tools → Post Format Repair) to scan existing posts and automatically detect appropriate formats based on content. Tool analyzes first block and suggests matching format. Review before applying repairs. Tool only changes format assignments—never modifies actual content.
+Yes! Use **Post Format Repair Tool** (Tools → Post Format Repair) to scan existing posts and automatically detect appropriate formats based on content. Tool analyzes first block and suggests matching format. Review before applying repairs. Tool saves a revision and changes the format assignment, not the post content.
 
 = What happens if I deactivate the plugin? =
 
@@ -253,7 +258,7 @@ Content remains safe: format assignments stay in database, pattern blocks remain
 Yes, multiple ways:
 - Use filters in functions.php to modify pattern HTML
 - Register custom patterns to override defaults
-- Edit blocks after insertion (locked first block maintains consistency)
+- Edit the blocks after insertion
 - Use Global Styles to change colors, typography, spacing
 
 = Does the Status format prevent publishing over 280 characters? =
@@ -266,11 +271,11 @@ Link format checks if the [Bookmark Card plugin](https://wordpress.org/plugins/b
 
 = Does this work with podcasting plugins? =
 
-Yes! The Audio format integrates with the [Podlove Podcasting Plugin for WordPress](https://wordpress.org/plugins/podlove-podcasting-plugin-for-wordpress/) when installed. If Podlove is active, Audio format patterns can utilize Podlove's enhanced audio player and podcast metadata. Without Podlove, the plugin uses WordPress core audio blocks which work perfectly for standard audio content.
+Partly. If the [Podlove Podcasting Plugin for WordPress](https://wordpress.org/plugins/podlove-podcasting-plugin-for-wordpress/) is active, the plugin adds styles so its web player fits the Audio format layout. It doesn't read Podlove's podcast metadata. The patterns themselves use WordPress core audio blocks.
 
 = What about accessible media players? =
 
-The Video and Audio formats integrate with [Able Player](https://wordpress.org/plugins/ableplayer/) when installed. Able Player provides an accessible HTML5 media player with captions, audio descriptions, interactive transcripts, and full keyboard support. When Able Player is active, format patterns can utilize its enhanced accessible playback features. Without Able Player, the plugin uses WordPress core media blocks.
+When [Able Player](https://wordpress.org/plugins/ableplayer/) is active, the plugin adds styles so its player fits the Video and Audio format layouts. The patterns themselves use WordPress core media blocks.
 
 = How do I use the Chat format? =
 
@@ -286,25 +291,29 @@ Whether RSS Chat could route on something other than the post format is open ups
 
 = Can I change formats after creating a post? =
 
-Absolutely! Use **Format Switcher** in post sidebar. Open post in block editor, find Format Switcher panel in right sidebar, click format dropdown, choose new format, decide to replace or keep content, click Switch Format. Format updates immediately.
+Yes. Open the post, select the Format row in the Post tab of the sidebar, and pick a format. The new format's pattern is inserted at the top of the post and your existing blocks stay.
 
 = How does auto-detection know when NOT to change my format? =
 
-Auto-detection respects manual choices. Detection WILL run on: new posts without format selection, posts never explicitly formatted, programmatically created posts. Detection WON'T run on: manually selected formats, Format Switcher changes, posts with internal user-selected flag, Quick Edit manual formats. Once you choose manually, auto-detection defers to you.
+Detection applies once, on a post's first save, and only when you haven't chosen a format. After that it never reclassifies the post, so a format you change later stays. It also runs on posts created programmatically, such as through Micropub or WP-CLI.
 
 == Screenshots ==
 
 1. Format selection modal with post format cards shown when creating a new post
 2. Chat Log block in the editor with a pasted conversation transcript
-3. A published chat post on the frontend with usernames, timestamps, and bubble-style messages
+3. A published chat post on the frontend with avatars, usernames, and timestamps
 4. A quote format post in the editor
 5. A status format post in the editor with the character counter
-6. The Post Format Repair tool under Tools, ready to scan posts for format mismatches
-7. A gallery format post in the editor with the locked gallery block in a responsive grid
+6. The Post Format Repair tool under Tools, listing posts whose format doesn't match their content
+7. A gallery format post in the editor with the gallery block in a responsive grid
 8. The Format Badge before a post title on the frontend of a quote post
-9. The Format control in the editor sidebar with all ten formats listed — switch a post's format mid-edit
+9. The Format control in the editor sidebar with all ten formats listed, to switch a post's format mid-edit
 
 == Changelog ==
+
+= 1.1.11 =
+
+* Changed: readme and screenshots refreshed to match the plugin. Removed claims about a custom Format Switcher panel, locked first blocks, a "Scan All Posts" button, and a Pullquote-based Quote pattern, none of which exist; corrected the descriptions of auto-detection, the repair tool, and Podlove and Able Player support; added the settings page, format templates, Format Badge and Icon blocks, and style variations. New screenshots 1 to 5.
 
 = 1.1.10 =
 
@@ -319,7 +328,7 @@ Auto-detection respects manual choices. Detection WILL run on: new posts without
 
 = 1.1.8 =
 
-* Changed: Lightbox Slideshow gallery variation now injects a real `<button class="pfbt-lightbox-trigger">` per image (instead of a tabindex-focusable figure) and opens a native `<dialog>` via `.showModal()`, so Escape-to-close and Tab focus cycling come from the browser and focus returns to the button that opened it.
+* Changed: Lightbox Slideshow gallery variation (opt-in through the `image_gallery_styles` flag) now injects a real `<button class="pfbt-lightbox-trigger">` per image (instead of a tabindex-focusable figure) and opens a native `<dialog>` via `.showModal()`, so Escape-to-close and Tab focus cycling come from the browser and focus returns to the button that opened it.
 * Changed: removed the hardcoded large font size from the Status format pattern's paragraph; size now comes from a theme-paintable `--pfbt-format-status-font-size` CSS custom property.
 * Changed: removed leftover empty placeholder paragraphs from the Aside, Audio, Chat, Gallery, Image, Link, Quote, Standard, and Video format patterns, and added a front-end-only filter that strips any future empty paragraph so it never reaches visitors or screen readers as a blank line.
 * Changed: the Link format's fallback markup no longer includes an empty, non-functional anchor element.

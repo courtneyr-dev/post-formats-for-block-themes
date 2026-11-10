@@ -7,7 +7,7 @@
 
 A modern WordPress plugin that brings post format functionality to block themes with intelligent patterns, automatic detection, and an enhanced editor experience.
 
-Includes an integrated Chat Log block for displaying conversation transcripts from Slack, Discord, Teams, WhatsApp, Telegram, Signal, and more. Supports SRT subtitles, VTT captions, .docx documents, and .html files. No separate plugin needed.
+Includes an integrated Chat Log block for displaying conversation transcripts from Slack, Discord, Teams, WhatsApp, Telegram, Signal, and more. Supports SRT subtitles, VTT captions, and plain-text exports. No separate plugin needed.
 
 ---
 
@@ -48,13 +48,13 @@ Download the latest release: [Releases](https://github.com/courtneyr-dev/post-fo
 
 ### Core Functionality
 
-- **10 Format-Specific Block Patterns** with locked first blocks for consistency
+- **10 Format-Specific Block Patterns** inserted when you choose a format
 - **Integrated Chat Log Block** for conversation transcripts (chatlog/conversation block)
   - Platforms: Slack, Discord, Microsoft Teams, WhatsApp, Telegram, Signal
-  - File formats: SRT subtitles, VTT captions, .docx documents, .html files
+  - Text formats: SRT subtitles, VTT captions, plain-text exports pasted into the block
 - **Automatic Format Detection** based on content structure
 - **Format Selection Modal** on new post creation with visual format cards
-- **Format Switcher Panel** for mid-edit format changes with content preservation
+- **Mid-edit format changes** through the core Format row in the sidebar; the new format's pattern is inserted at the top and existing blocks stay
 - **Status Format Validation** with Twitter-style 280-character limit and real-time counter
 - **Post Format Repair Tool** to scan and fix format mismatches across all posts
 - **Block Theme Integration** with CSS custom properties from theme.json
@@ -221,7 +221,7 @@ post-formats-for-block-themes/
 
 ![Format selection modal on a new post showing post format cards with icons and descriptions](docs/src/assets/screenshots/editor-format-selection-modal.png)
 
-![Gallery format pattern in the editor with a locked gallery block in a responsive grid](docs/src/assets/screenshots/editor-gallery-format.png)
+![Gallery format pattern in the editor with a gallery block in a responsive grid](docs/src/assets/screenshots/editor-gallery-format.png)
 
 ![Format badge displayed before a post title on the frontend](docs/src/assets/screenshots/frontend-format-badge.png)
 
@@ -235,8 +235,8 @@ More screens — the Chat Log block, the Status counter, the Repair Tool, and th
 
 1. **Create a New Post** - Format selection modal appears automatically
 2. **Choose Your Format** - Select from 10 format options with descriptions
-3. **Start Writing** - Pattern is inserted with locked first block for consistency
-4. **Change Formats** - Use the Format Switcher in the sidebar at any time
+3. **Start Writing** - The format's pattern is inserted
+4. **Change Formats** - Use the Format row in the sidebar at any time
 5. **Fix Old Posts** - Run **Tools > Post Format Repair** to scan existing posts
 
 ### For Developers
@@ -401,7 +401,6 @@ add_action( 'pfbt_format_repaired', function( $post_id, $format ) {
 #### JavaScript Modules
 
 - **`format-modal/`** - Modal UI for format selection on new posts
-- **`format-switcher/`** - Sidebar panel for changing formats mid-edit
 - **Status paragraph validation** - Real-time character counter for Status format
 
 #### Block Patterns
@@ -411,7 +410,7 @@ Each format has a dedicated pattern file in `/patterns/`:
 - `standard.php`, `aside.php`, `status.php`, `link.php`
 - `gallery.php`, `image.php`, `quote.php`, `video.php`, `audio.php`, `chat.php`
 
-Patterns use block locking to maintain format consistency while allowing content flexibility.
+Patterns in `/patterns/display/` (used for templates) lock some blocks; the patterns inserted by the format modal don't.
 
 ---
 

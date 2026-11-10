@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.11] - 2026-11-10
+
+### Changed
+
+- readme and screenshots refreshed to match the plugin. Removed claims about a custom Format Switcher panel, locked first blocks in the format modal's patterns, a "Scan All Posts" button, and a Pullquote-based Quote pattern, none of which exist. Corrected the descriptions of auto-detection, the repair tool, the Status counter, and Podlove and Able Player support. Added the Settings and Format Templates pages, the Format Badge and Icon blocks, and the opt-in style variations. New screenshots 1 to 5; captions 3, 6, and 7 reworded. README.md no longer lists `.docx` and `.html` Chat Log file support.
+
 ## [1.1.10] - 2026-10-21
 
 ### Changed

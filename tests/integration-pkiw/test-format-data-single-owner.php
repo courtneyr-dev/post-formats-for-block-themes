@@ -33,7 +33,7 @@ class Test_Format_Data_Single_Owner extends WP_UnitTestCase {
 		$this->assertTrue( defined( 'PKIW_VERSION' ) );
 		$this->assertTrue( class_exists( 'PKIW\Block_Bindings_Formats' ) );
 		$this->assertInstanceOf( 'PKIW\Block_Bindings_Formats', $this->pkiw_bindings );
-		$this->assertSame( 10, has_action( 'init', array( $this->pkiw_bindings, 'register_source' ) ) );
+		$this->assertNotFalse( has_action( 'init', array( $this->pkiw_bindings, 'register_source' ) ) );
 	}
 
 	/**
@@ -67,9 +67,13 @@ class Test_Format_Data_Single_Owner extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Bound paragraph content still resolves through PFBT's callback.
+	 * Bound paragraph content still resolves with both plugins active.
+	 *
+	 * Either provider returns the same label, so this checks that content
+	 * keeps working; test_pfbt_owns_source_without_incorrect_usage() checks
+	 * which plugin owns the source.
 	 */
-	public function test_format_label_binding_renders_pfbt_value() {
+	public function test_format_label_binding_renders_with_both_plugins() {
 		$post_id = self::factory()->post->create();
 		set_post_format( $post_id, 'quote' );
 

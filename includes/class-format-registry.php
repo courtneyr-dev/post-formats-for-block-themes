@@ -111,7 +111,7 @@ class PFBT_Format_Registry {
 			),
 			'chat'     => array(
 				'name'          => __( 'Chat', 'post-formats-for-block-themes' ),
-				'description'   => __( 'Chat transcript or conversation log. Supports Slack, Discord, Teams, WhatsApp, and transcript formats (VTT, SRT, TXT, MD, DOC, HTML, RTF).', 'post-formats-for-block-themes' ),
+				'description'   => __( 'Chat transcript or conversation log. Paste text from Slack, Discord, Teams, Telegram, WhatsApp or Signal, or a WebVTT, SubRip or plain-text transcript.', 'post-formats-for-block-themes' ),
 				'icon'          => 'format-chat',
 				'title_visible' => true,
 				'meta_behavior' => 'normal',

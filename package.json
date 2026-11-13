@@ -21,7 +21,9 @@
   "license": "GPL-2.0-or-later",
   "main": "build/editor.js",
   "scripts": {
-    "build": "wp-scripts build src/editor/index.js format-archive-variations=src/format-archive-variations/index.js --output-path=build",
+    "build": "npm run build:editor && npm run build:chatlog",
+    "build:editor": "wp-scripts build src/editor/index.js format-archive-variations=src/format-archive-variations/index.js --output-path=build",
+    "build:chatlog": "wp-scripts build blocks/chatlog/index.js --experimental-modules --config webpack.chatlog.config.js --output-path=blocks/chatlog/build",
     "start": "wp-scripts start src/editor/index.js --output-path=build",
     "format": "wp-scripts format",
     "lint:css": "wp-scripts lint-style",

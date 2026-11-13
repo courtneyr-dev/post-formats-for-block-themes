@@ -26,6 +26,7 @@ composer.lock
 package.json
 package-lock.json
 webpack.config.js
+webpack.chatlog.config.js
 Gruntfile.js
 gulpfile.js
 

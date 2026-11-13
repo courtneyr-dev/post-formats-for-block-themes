@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added Quote, Link, and Status Query Loop variations for building post format archives in any block editor.
 
+### Fixed
+
+- Chat Log now loads its Interactivity API store as a script module, processes thread state server-side, and toggles thread replies on the front end.
+
 ## [1.1.11] - 2026-11-10
 
 ### Changed

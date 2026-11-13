@@ -21,7 +21,7 @@
   "license": "GPL-2.0-or-later",
   "main": "build/editor.js",
   "scripts": {
-    "build": "wp-scripts build src/editor/index.js --output-path=build",
+    "build": "wp-scripts build src/editor/index.js format-archive-variations=src/format-archive-variations/index.js --output-path=build",
     "start": "wp-scripts start src/editor/index.js --output-path=build",
     "format": "wp-scripts format",
     "lint:css": "wp-scripts lint-style",
@@ -48,6 +48,7 @@
     "@wordpress/components": "^40.1.0",
     "@wordpress/compose": "^8.8.0",
     "@wordpress/data": "^10.55.0",
+    "@wordpress/dom-ready": "^4.55.0",
     "@wordpress/edit-post": "^8.55.0",
     "@wordpress/element": "^8.7.0",
     "@wordpress/hooks": "^4.55.0",

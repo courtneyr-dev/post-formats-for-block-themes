@@ -148,6 +148,7 @@ function pfbt_include_files() {
 	require_once PFBT_PLUGIN_DIR . 'includes/class-link-meta.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-format-helpers.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-block-templates.php';
+	require_once PFBT_PLUGIN_DIR . 'includes/class-format-archive-variations.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-admin-columns.php';
 	require_once PFBT_PLUGIN_DIR . 'includes/class-pfbt-a11y-output.php';
 
@@ -237,6 +238,7 @@ function pfbt_init() {
 	PFBT_Format_Detector::instance();
 	PFBT_Pattern_Manager::instance();
 	PFBT_Block_Locker::instance();
+	PFBT_Format_Archive_Variations::instance();
 	PFBT_Admin_Columns::instance();
 
 	// 1.1.8: front-end-only accessibility output filters.

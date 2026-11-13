@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a PHPUnit integration suite and CI job that load Post Formats and Post Kinds together and verify PFBT retains the shared `post-formats/format-data` block bindings source without duplicate-registration notices.
 
+- Added Quote, Link, and Status Query Loop variations for building post format archives in any block editor.
+
 ## [1.1.11] - 2026-11-10
 
 ### Changed

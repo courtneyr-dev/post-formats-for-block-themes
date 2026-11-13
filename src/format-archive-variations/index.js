@@ -57,6 +57,24 @@ const getVariationCopy = ( format ) => {
 	}
 };
 
+// Bind the date to each post. A bare core/post-date gets `datetime` set to
+// the insertion time by the editor (WordPress 6.9+), which would print the
+// same date on every post. Core's own Query Loop variations bind it too.
+const POST_DATE = [
+	'core/post-date',
+	{
+		isLink: true,
+		metadata: {
+			bindings: {
+				datetime: {
+					source: 'core/post-data',
+					args: { field: 'date' },
+				},
+			},
+		},
+	},
+];
+
 const getPostTemplate = ( format ) => {
 	if ( 'link' === format ) {
 		return [
@@ -65,16 +83,12 @@ const getPostTemplate = ( format ) => {
 			[
 				[ 'core/post-title', { isLink: true, level: 2 } ],
 				[ 'core/post-excerpt' ],
-				[ 'core/post-date', { isLink: true } ],
+				POST_DATE,
 			],
 		];
 	}
 
-	return [
-		'core/post-template',
-		{},
-		[ [ 'core/post-content' ], [ 'core/post-date', { isLink: true } ] ],
-	];
+	return [ 'core/post-template', {}, [ [ 'core/post-content' ], POST_DATE ] ];
 };
 
 const getInnerBlocks = ( format, noResults ) => [
@@ -95,6 +109,20 @@ const getInnerBlocks = ( format, noResults ) => [
 	],
 ];
 
+// Active only while the block still lists exactly this variation's format.
+// An isActive path like 'query.format' can't work: core compares arrays by
+// identity, so [ 'quote' ] never equals [ 'quote' ].
+const isActive = ( blockAttributes, variationAttributes ) => {
+	const format = blockAttributes.query?.format;
+
+	return (
+		blockAttributes.namespace === variationAttributes.namespace &&
+		Array.isArray( format ) &&
+		1 === format.length &&
+		variationAttributes.query.format[ 0 ] === format[ 0 ]
+	);
+};
+
 domReady( () => {
 	variations.forEach( ( { format, namespace, icon, query } ) => {
 		const copy = getVariationCopy( format );
@@ -110,7 +138,7 @@ domReady( () => {
 			],
 			icon,
 			attributes: { namespace, query },
-			isActive: [ 'namespace' ],
+			isActive,
 			scope: [ 'inserter' ],
 			innerBlocks: getInnerBlocks( format, copy.noResults ),
 		} );

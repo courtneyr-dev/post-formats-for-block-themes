@@ -160,7 +160,7 @@ jobs:
         # core only accepts app passwords over Basic auth.
         run: |
           npx --yes @wordpress/env@latest run cli wp option update pfbt_feature_image_gallery_styles 1
-          npx --yes @wordpress/env@latest run cli wp user meta update admin wp_persisted_preferences '{"core/edit-post":{"welcomeGuide":false,"fullscreenMode":false},"core":{"welcomeGuide":false,"fullscreenMode":false}}' --format=json
+          npx --yes @wordpress/env@latest run cli wp user meta update admin wp_persisted_preferences '{"core/edit-post":{"welcomeGuide":false,"fullscreenMode":false},"core":{"welcomeGuide":false,"fullscreenMode":false,"enableChoosePatternModal":false}}' --format=json
           echo "WP_APP_PASSWORD=$(npx --yes @wordpress/env@latest run cli wp user application-password create admin e2e --porcelain)" >> "$GITHUB_ENV"
 
       - name: Run E2E tests

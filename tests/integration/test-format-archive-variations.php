@@ -53,7 +53,10 @@ class Test_Format_Archive_Variations extends WP_UnitTestCase {
 			$posts[ $format ] = get_the_title( $post_id );
 		}
 
-		foreach ( $this->get_variations() as $variation ) {
+		$variations = $this->get_variations();
+		$this->assertCount( 3, $variations );
+
+		foreach ( $variations as $variation ) {
 			$attributes = wp_json_encode(
 				array(
 					'namespace' => $variation['namespace'],

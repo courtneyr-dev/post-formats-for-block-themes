@@ -1,0 +1,59 @@
+[
+	{
+		"format": "quote",
+		"namespace": "post-formats/format-archive-quote",
+		"icon": "format-quote",
+		"query": {
+			"perPage": 10,
+			"pages": 0,
+			"offset": 0,
+			"postType": "post",
+			"order": "desc",
+			"orderBy": "date",
+			"author": "",
+			"search": "",
+			"exclude": [],
+			"sticky": "",
+			"inherit": false,
+			"format": [ "quote" ]
+		}
+	},
+	{
+		"format": "link",
+		"namespace": "post-formats/format-archive-link",
+		"icon": "admin-links",
+		"query": {
+			"perPage": 10,
+			"pages": 0,
+			"offset": 0,
+			"postType": "post",
+			"order": "desc",
+			"orderBy": "date",
+			"author": "",
+			"search": "",
+			"exclude": [],
+			"sticky": "",
+			"inherit": false,
+			"format": [ "link" ]
+		}
+	},
+	{
+		"format": "status",
+		"namespace": "post-formats/format-archive-status",
+		"icon": "format-status",
+		"query": {
+			"perPage": 10,
+			"pages": 0,
+			"offset": 0,
+			"postType": "post",
+			"order": "desc",
+			"orderBy": "date",
+			"author": "",
+			"search": "",
+			"exclude": [],
+			"sticky": "",
+			"inherit": false,
+			"format": [ "status" ]
+		}
+	}
+]

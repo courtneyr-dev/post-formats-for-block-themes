@@ -16,6 +16,7 @@
 .phpcs.xml.dist
 phpunit.xml
 phpunit.xml.dist
+phpunit-pkiw.xml.dist
 playwright.config.js
 .travis.yml
 .eslintrc

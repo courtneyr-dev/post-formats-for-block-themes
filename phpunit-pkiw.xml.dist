@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+	bootstrap="tests/bootstrap-pkiw.php"
+	backupGlobals="false"
+	colors="true"
+	failOnRisky="true"
+	failOnWarning="true"
+	>
+	<testsuites>
+		<testsuite name="integration-pkiw">
+			<directory suffix=".php">./tests/integration-pkiw</directory>
+		</testsuite>
+	</testsuites>
+
+	<groups>
+		<exclude>
+			<group>slow</group>
+			<group>stress</group>
+		</exclude>
+	</groups>
+
+	<source>
+		<include>
+			<directory suffix=".php">./includes</directory>
+			<directory suffix=".php">./blocks</directory>
+			<file>./post-formats-for-block-themes.php</file>
+		</include>
+		<exclude>
+			<directory>./tests</directory>
+			<directory>./vendor</directory>
+			<directory>./node_modules</directory>
+		</exclude>
+	</source>
+
+	<php>
+		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="vendor/yoast/phpunit-polyfills"/>
+	</php>
+</phpunit>

@@ -32,6 +32,7 @@
     "phpcbf": "phpcbf -d memory_limit=512M --extensions=php .",
     "phpstan": "phpstan analyse --memory-limit=2G",
     "phpunit": "phpunit",
+    "phpunit:pkiw": "phpunit -c phpunit-pkiw.xml.dist",
     "i18n": "wp i18n make-pot . languages/post-formats-for-block-themes.pot --exclude=node_modules,vendor,tests",
     "build": [
       "@test",

@@ -117,115 +117,115 @@ export default function Edit( { attributes, setAttributes } ) {
 	return (
 		<>
 			<InspectorControls>
-				<PanelBody title={ __( 'Display Settings', 'chatlog-block' ) }>
+				<PanelBody title={ __( 'Display Settings', 'post-formats-for-block-themes' ) }>
 					<SelectControl
-						label={ __( 'Platform', 'chatlog-block' ) }
+						label={ __( 'Platform', 'post-formats-for-block-themes' ) }
 						value={ source }
 						options={ [
-							{ label: __( 'Auto-detect', 'chatlog-block' ), value: 'auto' },
+							{ label: __( 'Auto-detect', 'post-formats-for-block-themes' ), value: 'auto' },
 							{ label: 'Slack', value: 'slack' },
 							{ label: 'Discord', value: 'discord' },
 							{ label: 'Microsoft Teams', value: 'teams' },
 							{ label: 'Telegram', value: 'telegram' },
 							{ label: 'WhatsApp', value: 'whatsapp' },
 							{ label: 'Signal', value: 'signal' },
-						{ label: __( '— Transcript Formats —', 'chatlog-block' ), value: '', disabled: true },
+						{ label: __( '— Transcript Formats —', 'post-formats-for-block-themes' ), value: '', disabled: true },
 						{ label: 'WebVTT (.vtt)', value: 'vtt' },
 						{ label: 'SubRip (.srt)', value: 'srt' },
-						{ label: 'Plain Text Transcript (.txt, .md, .doc, .html, .rtf)', value: 'transcript' },
+						{ label: __( 'Plain text transcript', 'post-formats-for-block-themes' ), value: 'transcript' },
 						] }
 						onChange={ ( value ) => setAttributes( { source: value } ) }
-						help={ __( 'Select the chat platform or transcript format. Auto-detect works for most formats.', 'chatlog-block' ) }
+						help={ __( 'Select the chat platform or transcript format. Auto-detect works for most formats.', 'post-formats-for-block-themes' ) }
 					/>
 
 
 					<SelectControl
-						label={ __( 'Display Style', 'chatlog-block' ) }
+						label={ __( 'Display Style', 'post-formats-for-block-themes' ) }
 						value={ displayStyle }
 						options={ [
-							{ label: __( 'Bubbles', 'chatlog-block' ), value: 'bubbles' },
-							{ label: __( 'IRC', 'chatlog-block' ), value: 'irc' },
-							{ label: __( 'Transcript', 'chatlog-block' ), value: 'transcript' },
-							{ label: __( 'Timeline', 'chatlog-block' ), value: 'timeline' },
+							{ label: __( 'Bubbles', 'post-formats-for-block-themes' ), value: 'bubbles' },
+							{ label: __( 'IRC', 'post-formats-for-block-themes' ), value: 'irc' },
+							{ label: __( 'Transcript', 'post-formats-for-block-themes' ), value: 'transcript' },
+							{ label: __( 'Timeline', 'post-formats-for-block-themes' ), value: 'timeline' },
 						] }
 						onChange={ ( value ) => setAttributes( { displayStyle: value } ) }
-						help={ __( 'Choose how messages are displayed visually.', 'chatlog-block' ) }
+						help={ __( 'Choose how messages are displayed visually.', 'post-formats-for-block-themes' ) }
 					/>
 
 					<ToggleControl
-						label={ __( 'Show Avatars', 'chatlog-block' ) }
+						label={ __( 'Show Avatars', 'post-formats-for-block-themes' ) }
 						checked={ showAvatars }
 						onChange={ ( value ) => setAttributes( { showAvatars: value } ) }
-						help={ __( 'Display participant avatars with Gravatar integration and initials fallback.', 'chatlog-block' ) }
+						help={ __( 'Display participant avatars with Gravatar integration and initials fallback.', 'post-formats-for-block-themes' ) }
 					/>
 
 					<ToggleControl
-						label={ __( 'Show Timestamps', 'chatlog-block' ) }
+						label={ __( 'Show Timestamps', 'post-formats-for-block-themes' ) }
 						checked={ showTimestamps }
 						onChange={ ( value ) => setAttributes( { showTimestamps: value } ) }
 					/>
 
 					{ showTimestamps && (
 						<SelectControl
-							label={ __( 'Timestamp Format', 'chatlog-block' ) }
+							label={ __( 'Timestamp Format', 'post-formats-for-block-themes' ) }
 							value={ timestampFormat }
 							options={ [
-								{ label: __( 'Time Only (10:23 AM)', 'chatlog-block' ), value: 'time-only' },
-								{ label: __( 'Absolute (Jan 15, 2025 10:23 AM)', 'chatlog-block' ), value: 'absolute' },
-								{ label: __( 'Relative (2 hours ago)', 'chatlog-block' ), value: 'relative' },
+								{ label: __( 'Time Only (10:23 AM)', 'post-formats-for-block-themes' ), value: 'time-only' },
+								{ label: __( 'Absolute (Jan 15, 2025 10:23 AM)', 'post-formats-for-block-themes' ), value: 'absolute' },
+								{ label: __( 'Relative (2 hours ago)', 'post-formats-for-block-themes' ), value: 'relative' },
 							] }
 							onChange={ ( value ) => setAttributes( { timestampFormat: value } ) }
 						/>
 					) }
 
 					<SelectControl
-						label={ __( 'Device Frame', 'chatlog-block' ) }
+						label={ __( 'Device Frame', 'post-formats-for-block-themes' ) }
 						value={ deviceFrame }
 						options={ [
-							{ label: __( 'None', 'chatlog-block' ), value: 'none' },
-							{ label: __( 'Phone', 'chatlog-block' ), value: 'phone' },
-							{ label: __( 'Desktop', 'chatlog-block' ), value: 'desktop' },
-							{ label: __( 'Slack App', 'chatlog-block' ), value: 'slack-app' },
-							{ label: __( 'Discord App', 'chatlog-block' ), value: 'discord-app' },
+							{ label: __( 'None', 'post-formats-for-block-themes' ), value: 'none' },
+							{ label: __( 'Phone', 'post-formats-for-block-themes' ), value: 'phone' },
+							{ label: __( 'Desktop', 'post-formats-for-block-themes' ), value: 'desktop' },
+							{ label: __( 'Slack App', 'post-formats-for-block-themes' ), value: 'slack-app' },
+							{ label: __( 'Discord App', 'post-formats-for-block-themes' ), value: 'discord-app' },
 						] }
 						onChange={ ( value ) => setAttributes( { deviceFrame: value } ) }
-						help={ __( 'Display the chat in a device mockup frame.', 'chatlog-block' ) }
+						help={ __( 'Display the chat in a device mockup frame.', 'post-formats-for-block-themes' ) }
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Threading', 'chatlog-block' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Threading', 'post-formats-for-block-themes' ) } initialOpen={ false }>
 					<ToggleControl
-						label={ __( 'Collapse Threads', 'chatlog-block' ) }
+						label={ __( 'Collapse Threads', 'post-formats-for-block-themes' ) }
 						checked={ collapseThreads }
 						onChange={ ( value ) => setAttributes( { collapseThreads: value } ) }
-						help={ __( 'Collapse threaded replies by default. Users can expand them.', 'chatlog-block' ) }
+						help={ __( 'Collapse threaded replies by default. Users can expand them.', 'post-formats-for-block-themes' ) }
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Participants', 'chatlog-block' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Participants', 'post-formats-for-block-themes' ) } initialOpen={ false }>
 					<ToggleControl
-						label={ __( 'Show Participant List', 'chatlog-block' ) }
+						label={ __( 'Show Participant List', 'post-formats-for-block-themes' ) }
 						checked={ showParticipantList }
 						onChange={ ( value ) => setAttributes( { showParticipantList: value } ) }
-						help={ __( 'Display a list of all participants at the top of the transcript.', 'chatlog-block' ) }
+						help={ __( 'Display a list of all participants at the top of the transcript.', 'post-formats-for-block-themes' ) }
 					/>
 
 					<TextControl
-						label={ __( 'Highlight User', 'chatlog-block' ) }
+						label={ __( 'Highlight User', 'post-formats-for-block-themes' ) }
 						value={ highlightCurrentUser }
 						onChange={ ( value ) => setAttributes( { highlightCurrentUser: value } ) }
-						help={ __( 'Enter a username to highlight (useful for "you" styling). Leave empty for no highlighting.', 'chatlog-block' ) }
-						placeholder={ __( 'e.g., Courtney Robertson', 'chatlog-block' ) }
+						help={ __( 'Enter a username to highlight (useful for "you" styling). Leave empty for no highlighting.', 'post-formats-for-block-themes' ) }
+						placeholder={ __( 'e.g., Courtney Robertson', 'post-formats-for-block-themes' ) }
 					/>
 				</PanelBody>
 
-				<PanelBody title={ __( 'Advanced', 'chatlog-block' ) } initialOpen={ false }>
+				<PanelBody title={ __( 'Advanced', 'post-formats-for-block-themes' ) } initialOpen={ false }>
 					<TextControl
-						label={ __( 'Maximum Visible Messages', 'chatlog-block' ) }
+						label={ __( 'Maximum Visible Messages', 'post-formats-for-block-themes' ) }
 						type="number"
 						value={ maxVisibleMessages }
 						onChange={ ( value ) => setAttributes( { maxVisibleMessages: parseInt( value ) || 0 } ) }
-						help={ __( 'Limit displayed messages for long transcripts. 0 = show all.', 'chatlog-block' ) }
+						help={ __( 'Limit displayed messages for long transcripts. 0 = show all.', 'post-formats-for-block-themes' ) }
 						min={ 0 }
 					/>
 				</PanelBody>
@@ -234,23 +234,23 @@ export default function Edit( { attributes, setAttributes } ) {
 			<div { ...blockProps }>
 				{ detectedPlatform && source === 'auto' && (
 					<Notice status="info" isDismissible={ false }>
-						{ __( 'Detected:', 'chatlog-block' ) } { detectedPlatform } ({ confidence }% { __( 'confidence', 'chatlog-block' ) })
+						{ __( 'Detected:', 'post-formats-for-block-themes' ) } { detectedPlatform } ({ confidence }% { __( 'confidence', 'post-formats-for-block-themes' ) })
 					</Notice>
 				) }
 
 				<TextareaControl
-					label={ __( 'Paste Your Chat Transcript', 'chatlog-block' ) }
+					label={ __( 'Paste Your Chat Transcript', 'post-formats-for-block-themes' ) }
 					value={ rawTranscript }
 					onChange={ ( value ) => setAttributes( { rawTranscript: value } ) }
 					placeholder={ __(
-						'Paste your chat transcript here.\n\nSupported formats:\n• Chat platforms: Slack, Discord, Teams, WhatsApp, Telegram, Signal\n• Transcript formats: VTT, SRT, TXT, MD, DOC, HTML, RTF\n\nAuto-detection will identify the format automatically.',
-						'chatlog-block'
+						'Paste your chat transcript here.\n\nWorks with text copied from:\n• Chat apps: Slack, Discord, Teams, WhatsApp, Telegram, Signal\n• Transcripts: WebVTT, SubRip, plain text\n\nAuto-detect identifies the format.',
+						'post-formats-for-block-themes'
 					) }
 					rows={ 15 }
 					className="chatlog-transcript-input"
 					help={ __(
 						'Copy your chat messages and paste them here. Chat Log will automatically detect the platform and format.',
-						'chatlog-block'
+						'post-formats-for-block-themes'
 					) }
 				/>
 
@@ -259,7 +259,7 @@ export default function Edit( { attributes, setAttributes } ) {
 						<Notice status="success" isDismissible={ false }>
 							{ __(
 								'Preview will appear on the frontend. The transcript will be parsed and displayed according to your settings.',
-								'chatlog-block'
+								'post-formats-for-block-themes'
 							) }
 						</Notice>
 					</div>

@@ -30,7 +30,10 @@
         "teams",
         "telegram",
         "whatsapp",
-        "signal"
+        "signal",
+        "vtt",
+        "srt",
+        "transcript"
       ],
       "default": "auto"
     },
@@ -92,6 +95,10 @@
       "fontSize": true,
       "lineHeight": true
     },
+    "interactivity": {
+      "interactive": true,
+      "clientNavigation": true
+    },
     "__experimentalBorder": {
       "color": true,
       "radius": true,
@@ -101,6 +108,5 @@
   "editorScript": "file:./index.js",
   "editorStyle": "file:./index.css",
   "style": "file:./style-index.css",
-  "viewScript": "file:./view.js",
   "viewScriptModule": "file:./view-interactivity.js"
 }

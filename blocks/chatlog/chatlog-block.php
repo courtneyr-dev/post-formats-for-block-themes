@@ -718,7 +718,7 @@ if ( ! function_exists( 'chatlog_parse_transcript' ) ) {
  * Converts an array of parsed message objects into formatted HTML output.
  * Supports multiple display styles, avatars, timestamps, threading, and
  * various customization options. The output is server-side rendered for
- * performance and works without JavaScript.
+ * performance.
  *
  * @since 1.0.0
  *
@@ -783,9 +783,6 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 
 		$options = wp_parse_args( $options, $defaults );
 
-		// Check for Interactivity API support (WP 6.5+).
-		$use_interactivity = function_exists( 'wp_interactivity_state' );
-
 		// Start device frame if needed.
 		$output = '';
 		if ( 'none' !== $options['device_frame'] ) {
@@ -793,11 +790,9 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 			$output     .= sprintf( '<div class="%s">', $frame_class );
 		}
 
-		$interactivity_attr = $use_interactivity ? ' data-wp-interactive="post-formats/chatlog"' : '';
-		$output            .= sprintf(
-			'<div class="chatlog chatlog--%s"%s role="region" aria-label="%s">',
+		$output .= sprintf(
+			'<div class="chatlog chatlog--%s" data-wp-interactive="post-formats/chatlog" role="region" aria-label="%s">',
 			esc_attr( $options['display_style'] ),
-			$interactivity_attr,
 			esc_attr__( 'Chat conversation', 'post-formats-for-block-themes' )
 		);
 
@@ -831,8 +826,7 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 
 			// Open thread group wrapper when entering a thread sequence.
 			if ( $is_thread && ! $in_thread_group ) {
-				$in_thread_group  = true;
-				$initial_expanded = ! $options['collapse_threads'];
+				$in_thread_group = true;
 
 				// Count consecutive thread messages for the toggle label.
 				$thread_count = 0;
@@ -840,32 +834,22 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 					++$thread_count;
 				}
 
-				if ( $use_interactivity ) {
-					$context_attr = wp_interactivity_data_wp_context( array( 'isThreadExpanded' => $initial_expanded ) );
-					$output      .= sprintf( '<li class="chatlog-thread-group" %s>', $context_attr );
-					$output      .= sprintf(
-						'<button class="chatlog-thread-toggle" data-wp-on--click="actions.toggleThread" data-wp-bind--aria-expanded="context.isThreadExpanded">%s</button>',
-						sprintf(
-							/* translators: %d: Number of thread replies */
-							esc_html__( 'Thread replies (%d)', 'post-formats-for-block-themes' ),
-							$thread_count
-						)
-					);
-					$output .= '<ol class="chatlog-thread" data-wp-bind--hidden="!context.isThreadExpanded">';
-				} else {
-					$collapsed_class = $options['collapse_threads'] ? ' chatlog-thread--collapsed' : '';
-					$output         .= '<li class="chatlog-thread-group">';
-					$output         .= sprintf(
-						'<button class="chatlog-thread-toggle" aria-expanded="%s">%s</button>',
-						$initial_expanded ? 'true' : 'false',
-						sprintf(
-							/* translators: %d: Number of thread replies */
-							esc_html__( 'Thread replies (%d)', 'post-formats-for-block-themes' ),
-							$thread_count
-						)
-					);
-					$output .= sprintf( '<ol class="chatlog-thread%s">', esc_attr( $collapsed_class ) );
-				}
+				$context_attr = wp_interactivity_data_wp_context(
+					array(
+						'isThreadExpanded' => true,
+						'collapseOnInit'   => (bool) $options['collapse_threads'],
+					)
+				);
+				$output      .= sprintf( '<li class="chatlog-thread-group" data-wp-init="callbacks.collapseThreadOnInit" %s>', $context_attr );
+				$output      .= sprintf(
+					'<button type="button" class="chatlog-thread-toggle" data-wp-on--click="actions.toggleThread" data-wp-bind--aria-expanded="context.isThreadExpanded">%s</button>',
+					sprintf(
+						/* translators: %d: Number of thread replies */
+						esc_html__( 'Thread replies (%d)', 'post-formats-for-block-themes' ),
+						$thread_count
+					)
+				);
+				$output .= '<ol class="chatlog-thread" data-wp-bind--hidden="!context.isThreadExpanded">';
 			}
 
 			// Render individual message.

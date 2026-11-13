@@ -826,8 +826,7 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 
 			// Open thread group wrapper when entering a thread sequence.
 			if ( $is_thread && ! $in_thread_group ) {
-				$in_thread_group  = true;
-				$initial_expanded = ! $options['collapse_threads'];
+				$in_thread_group = true;
 
 				// Count consecutive thread messages for the toggle label.
 				$thread_count = 0;
@@ -835,10 +834,15 @@ if ( ! function_exists( 'chatlog_render_messages' ) ) {
 					++$thread_count;
 				}
 
-				$context_attr = wp_interactivity_data_wp_context( array( 'isThreadExpanded' => $initial_expanded ) );
-				$output      .= sprintf( '<li class="chatlog-thread-group" %s>', $context_attr );
+				$context_attr = wp_interactivity_data_wp_context(
+					array(
+						'isThreadExpanded' => true,
+						'collapseOnInit'   => (bool) $options['collapse_threads'],
+					)
+				);
+				$output      .= sprintf( '<li class="chatlog-thread-group" data-wp-init="callbacks.collapseThreadOnInit" %s>', $context_attr );
 				$output      .= sprintf(
-					'<button class="chatlog-thread-toggle" data-wp-on--click="actions.toggleThread" data-wp-bind--aria-expanded="context.isThreadExpanded">%s</button>',
+					'<button type="button" class="chatlog-thread-toggle" data-wp-on--click="actions.toggleThread" data-wp-bind--aria-expanded="context.isThreadExpanded">%s</button>',
 					sprintf(
 						/* translators: %d: Number of thread replies */
 						esc_html__( 'Thread replies (%d)', 'post-formats-for-block-themes' ),

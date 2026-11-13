@@ -34,7 +34,7 @@ includes/
   activitypub/                      # ActivityPub transformer
   post-kinds/                       # Post Kinds plugin integration
 blocks/
-  chatlog/                          # Chat Log block (edit.js, view.js, block.json)
+  chatlog/                          # Chat Log block (edit.js, view-interactivity.js, block.json)
   post-format-block/                # Post Format display block
 patterns/                           # 10 format patterns (standard, aside, audio, chat, gallery, image, link, quote, status, video)
 src/editor/index.js                 # Editor JS entry point (modal, switcher, sidebar)

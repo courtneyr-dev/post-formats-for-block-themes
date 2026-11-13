@@ -12,6 +12,14 @@
 import { store, getContext } from '@wordpress/interactivity';
 
 store( 'post-formats/chatlog', {
+	callbacks: {
+		collapseThreadOnInit() {
+			const ctx = getContext();
+			if ( ctx.collapseOnInit ) {
+				ctx.isThreadExpanded = false;
+			}
+		},
+	},
 	actions: {
 		toggleThread() {
 			const ctx = getContext();

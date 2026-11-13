@@ -30,7 +30,10 @@
         "teams",
         "telegram",
         "whatsapp",
-        "signal"
+        "signal",
+        "vtt",
+        "srt",
+        "transcript"
       ],
       "default": "auto"
     },
@@ -93,7 +96,8 @@
       "lineHeight": true
     },
     "interactivity": {
-      "interactive": true
+      "interactive": true,
+      "clientNavigation": true
     },
     "__experimentalBorder": {
       "color": true,

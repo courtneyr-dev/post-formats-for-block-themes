@@ -295,6 +295,10 @@
 }
 
 /* Thread replies */
+.chatlog-thread-toggle {
+	min-block-size: 24px;
+}
+
 .chatlog-thread {
 	list-style: none;
 	padding: 0;

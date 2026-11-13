@@ -24,6 +24,19 @@ class Test_Chatlog_Interactivity extends WP_UnitTestCase {
 		$this->assertEmpty( $block_type->view_script_handles );
 		$this->assertNotEmpty( $block_type->view_script_module_ids );
 		$this->assertTrue( $block_type->supports['interactivity']['interactive'] ?? false );
+		$this->assertTrue( $block_type->supports['interactivity']['clientNavigation'] ?? false );
+	}
+
+	/**
+	 * Core must preserve every source format offered by the editor.
+	 */
+	public function test_transcript_source_attributes_survive_render_preparation() {
+		$block_type = WP_Block_Type_Registry::get_instance()->get_registered( 'chatlog/conversation' );
+
+		foreach ( array( 'srt', 'vtt', 'transcript' ) as $source ) {
+			$prepared = $block_type->prepare_attributes_for_render( array( 'source' => $source ) );
+			$this->assertSame( $source, $prepared['source'] );
+		}
 	}
 
 	/**
@@ -42,16 +55,24 @@ class Test_Chatlog_Interactivity extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Core must process initial expanded and collapsed directive state.
+	 * Server rendering must keep replies readable before hydration.
 	 */
 	public function test_rendered_thread_state_is_processed_server_side() {
 		$expanded = $this->render_chatlog();
 		$this->assertSame( 'true', $this->get_thread_toggle_attribute( $expanded, 'aria-expanded' ) );
+		$this->assertSame( 'button', $this->get_thread_toggle_attribute( $expanded, 'type' ) );
 		$this->assertNull( $this->get_thread_list_attribute( $expanded, 'hidden' ) );
 
 		$collapsed = $this->render_chatlog( true );
-		$this->assertSame( 'false', $this->get_thread_toggle_attribute( $collapsed, 'aria-expanded' ) );
-		$this->assertTrue( $this->get_thread_list_attribute( $collapsed, 'hidden' ) );
+		$this->assertSame( 'true', $this->get_thread_toggle_attribute( $collapsed, 'aria-expanded' ) );
+		$this->assertNull( $this->get_thread_list_attribute( $collapsed, 'hidden' ) );
+		$this->assertSame(
+			array(
+				'isThreadExpanded' => true,
+				'collapseOnInit'    => true,
+			),
+			$this->get_thread_context( $collapsed )
+		);
 	}
 
 	/**
@@ -100,5 +121,18 @@ class Test_Chatlog_Interactivity extends WP_UnitTestCase {
 		$this->assertTrue( $processor->next_tag( array( 'class_name' => 'chatlog-thread' ) ) );
 
 		return $processor->get_attribute( $attribute );
+	}
+
+	/**
+	 * Read the thread group's Interactivity API context.
+	 *
+	 * @param string $html Rendered block markup.
+	 * @return array<string, bool>
+	 */
+	private function get_thread_context( $html ) {
+		$processor = new WP_HTML_Tag_Processor( $html );
+		$this->assertTrue( $processor->next_tag( array( 'class_name' => 'chatlog-thread-group' ) ) );
+
+		return json_decode( $processor->get_attribute( 'data-wp-context' ), true );
 	}
 }

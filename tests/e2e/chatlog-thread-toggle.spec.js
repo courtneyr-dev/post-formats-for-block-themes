@@ -40,10 +40,17 @@ test.describe( 'Chat Log thread toggle', () => {
 		} );
 
 		const attributes = JSON.stringify( { rawTranscript: TRANSCRIPT } );
+		const collapsedAttributes = JSON.stringify( {
+			rawTranscript: TRANSCRIPT,
+			collapseThreads: true,
+		} );
 		const response = await apiContext.post( '/wp-json/wp/v2/posts', {
 			data: {
 				title: 'E2E Chat Log thread toggle',
-				content: `<!-- wp:chatlog/conversation ${ attributes } /-->`,
+				content: [
+					`<!-- wp:chatlog/conversation ${ attributes } /-->`,
+					`<!-- wp:chatlog/conversation ${ collapsedAttributes } /-->`,
+				].join( '\n' ),
 				status: 'publish',
 				format: 'chat',
 			},
@@ -91,8 +98,8 @@ test.describe( 'Chat Log thread toggle', () => {
 			page.locator( 'script[src*="/blocks/chatlog/build/view.js"]' )
 		).toHaveCount( 0 );
 
-		const toggle = page.locator( '.chatlog-thread-toggle' );
-		const thread = page.locator( '.chatlog-thread' );
+		const toggle = page.locator( '.chatlog-thread-toggle' ).first();
+		const thread = page.locator( '.chatlog-thread' ).first();
 
 		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
 		await expect( thread ).toBeVisible();
@@ -105,5 +112,40 @@ test.describe( 'Chat Log thread toggle', () => {
 		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
 		await expect( thread ).toBeVisible();
 		expect( pageErrors ).toEqual( [] );
+	} );
+
+	test( 'collapses configured threads on hydration and expands on click', async ( {
+		page,
+	} ) => {
+		await page.goto( postUrl );
+
+		const toggle = page.locator( '.chatlog-thread-toggle' ).nth( 1 );
+		const thread = page.locator( '.chatlog-thread' ).nth( 1 );
+
+		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'false' );
+		await expect( thread ).toBeHidden();
+
+		await toggle.click();
+		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
+		await expect( thread ).toBeVisible();
+	} );
+
+	test( 'keeps configured thread replies visible without JavaScript', async ( {
+		browser,
+	} ) => {
+		const context = await browser.newContext( {
+			javaScriptEnabled: false,
+		} );
+		const page = await context.newPage();
+
+		await page.goto( postUrl );
+
+		const toggle = page.locator( '.chatlog-thread-toggle' ).nth( 1 );
+		const thread = page.locator( '.chatlog-thread' ).nth( 1 );
+
+		await expect( toggle ).toHaveAttribute( 'aria-expanded', 'true' );
+		await expect( thread ).toBeVisible();
+
+		await context.close();
 	} );
 } );

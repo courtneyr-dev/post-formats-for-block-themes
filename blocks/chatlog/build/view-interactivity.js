@@ -1,1 +1,1 @@
-import{getContext as s,store as t}from"@wordpress/interactivity";t("post-formats/chatlog",{actions:{toggleThread(){const t=s();t.isThreadExpanded=!t.isThreadExpanded},toggleTimestamps(){const t=s();t.showTimestamps=!t.showTimestamps}}});
+import{getContext as s,store as t}from"@wordpress/interactivity";t("post-formats/chatlog",{callbacks:{collapseThreadOnInit(){const t=s();t.collapseOnInit&&(t.isThreadExpanded=!1)}},actions:{toggleThread(){const t=s();t.isThreadExpanded=!t.isThreadExpanded},toggleTimestamps(){const t=s();t.showTimestamps=!t.showTimestamps}}});

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a PHPUnit integration suite and CI job that load Post Formats and Post Kinds together and verify PFBT retains the shared `post-formats/format-data` block bindings source without duplicate-registration notices.
+
 ## [1.1.11] - 2026-11-10
 
 ### Changed

@@ -80,6 +80,55 @@ jobs:
       - name: Run PHPUnit
         run: composer phpunit
 
+  phpunit-pkiw:
+    name: PHPUnit with Post Kinds (PHP 8.3 / WP latest)
+    runs-on: ubuntu-latest
+    needs: lint
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          # No MYSQL_DATABASE here: install-wp-tests.sh runs mysqladmin
+          # create itself and hard-fails if the database already exists.
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout Post Kinds
+        uses: actions/checkout@v4
+        with:
+          repository: courtneyr-dev/post-kinds-for-indieweb
+          ref: pkiw-1.9.1
+          path: post-kinds-for-indieweb
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mysqli, zip
+          coverage: xdebug
+          tools: composer
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Install Subversion
+        # install-wp-tests.sh checks out the WP test library via svn,
+        # which GitHub removed from ubuntu runners in 2024.
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: Install WordPress test suite
+        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1:3306 latest
+
+      - name: Run PHPUnit with Post Kinds
+        run: PKIW_PLUGIN_DIR=$GITHUB_WORKSPACE/post-kinds-for-indieweb composer phpunit:pkiw
+
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -179,7 +228,7 @@ jobs:
   build:
     name: Build Distribution
     runs-on: ubuntu-latest
-    needs: [phpunit, e2e, security]
+    needs: [phpunit, phpunit-pkiw, e2e, security]
     if: github.ref == 'refs/heads/main'
 
     steps:

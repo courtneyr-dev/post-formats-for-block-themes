@@ -7,16 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-
-- Added a PHPUnit integration suite and CI job that load Post Formats and Post Kinds together and verify PFBT retains the shared `post-formats/format-data` block bindings source without duplicate-registration notices.
-
-- Added Quote, Link, and Status Query Loop variations for building post format archives in any block editor.
+## [1.1.12] - 2026-11-13
 
 ### Fixed
 
-- Chat Log now loads its Interactivity API store as a script module, processes thread state server-side, and toggles thread replies on the front end.
-- Chat Log thread replies now stay visible in feeds and without JavaScript, then honor the block's collapse setting after hydration; transcript source validation, client navigation, and toggle button markup were also corrected.
+- Chat Log thread toggles work again. The Interactivity API store in `blocks/chatlog/view-interactivity.js` was compiled as a classic script but declared as `viewScriptModule`, so it never loaded; the block also lacked `supports.interactivity`, so core skipped server-side directive processing, and the classic `view.js` stood down whenever `data-wp-interactive` was present. The store now builds as a real script module, the block declares `supports.interactivity` (`interactive`, `clientNavigation`), and `view.js` plus the render callback's non-Interactivity fallback are removed (WordPress 6.9 is the minimum). (#55)
+- Collapsed threads render expanded on the server and collapse on hydration (`data-wp-init`), so feeds and readers without JavaScript get every reply. The toggle is `type="button"` with a 24px minimum block size. (#55)
+- The Chat format card, the Chat Log source option and the transcript placeholder no longer claim DOC, HTML or RTF support (#51). `vtt`, `srt` and `transcript` are now in the `source` attribute enum, so core no longer coerces them to `auto`. The 42 Chat Log editor strings that used the text domain `chatlog-block` now use `post-formats-for-block-themes`. (#55)
+- `blocks/chatlog/build/` is rebuilt from source by `npm run build` (`build:editor` plus `build:chatlog`), which ships the Discord frame timestamp color (`#b9bbbe`) from the 1.1.8 contrast fix that the compiled CSS had missed. (#55)
+
+### Added
+
+- Query Loop variations "Format archive: Quote / Link / Status" (`post-formats/format-archive-<slug>` namespaces), loaded in every block editor from `build/format-archive-variations.js`. Each post's date is bound to `core/post-data`. (#54)
+- An `integration-pkiw` PHPUnit suite (`composer phpunit:pkiw`) and CI job that load Post Kinds for IndieWeb (tag `pkiw-1.9.1`) with this plugin and check that `post-formats/format-data` has one owner and no duplicate-registration notice. (#53)
 
 ## [1.1.11] - 2026-11-10
 

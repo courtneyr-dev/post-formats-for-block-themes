@@ -5,7 +5,7 @@ Tags: post-formats, block-theme, patterns, block-editor, chat-log
 Requires at least: 6.9
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.1.11
+Stable tag: 1.1.12
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -85,6 +85,7 @@ Format styles use `--pfbt-*` CSS custom properties that resolve through your the
 * Tools → Post Format Templates turns on single-post templates per format.
 * The Format Badge and Format Icon blocks show a post's format. Block Hooks can place the badge before the post title.
 * Opt-in block style variations for Image, Gallery, and Quote blocks. Both feature flags (`image_gallery_styles`, `quote_styles`) are off by default.
+* Query Loop variations "Format archive: Quote", "Link" and "Status" list one format's posts on any page or template.
 * Abilities API support, including read abilities for MCP clients on WordPress 6.9+ (see the 1.1.10 changelog).
 
 = How to Use Post Formats in Block Themes =
@@ -311,6 +312,15 @@ Detection applies once, on a post's first save, and only when you haven't chosen
 
 == Changelog ==
 
+= 1.1.12 =
+
+* Fixed: Chat Log "Thread replies" buttons expand and collapse threads again. The block's script now loads as a script module, and the thread state renders on the server. The old fallback script (`view.js`) is removed; WordPress 6.9 is the minimum.
+* Fixed: collapsed Chat Log threads stay readable in feeds and without JavaScript, then collapse once the page loads.
+* Fixed: the Chat format card and the Chat Log block no longer claim DOC, HTML or RTF support. Paste the text instead (#51). The WebVTT, SubRip and plain-text source choices are kept when you save. Chat Log editor strings are now translatable under the plugin's text domain.
+* Fixed: Discord frame timestamps use the higher-contrast color from 1.1.8, which the compiled stylesheet had missed. The thread button meets the 24px target size.
+* Added: three Query Loop variations, "Format archive: Quote", "Format archive: Link" and "Format archive: Status", for listing one format's posts on any page or template. Each post shows its own date.
+* Developers: a CI job loads Post Kinds for IndieWeb with this plugin and checks that the `post-formats/format-data` block bindings source has one owner.
+
 = 1.1.11 =
 
 * Changed: readme and screenshots refreshed to match the plugin. Removed claims about a custom Format Switcher panel, locked first blocks, a "Scan All Posts" button, and a Pullquote-based Quote pattern, none of which exist; corrected the descriptions of auto-detection, the repair tool, and Podlove and Able Player support; added the settings page, format templates, Format Badge and Icon blocks, and style variations. New screenshots 1 to 5.
@@ -534,6 +544,9 @@ Detection applies once, on a post's first save, and only when you haven't chosen
 * **Privacy:** No data collection, external API calls, cookies, or user tracking
 
 == Upgrade Notice ==
+
+= 1.1.12 =
+Recommended if you use the Chat Log block's thread replies: the toggle works again. Adds Query Loop presets for Quote, Link and Status archives.
 
 = 1.1.10 =
 MCP clients get the read abilities, and lose access to the two abilities that change posts' formats.

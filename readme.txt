@@ -555,7 +555,7 @@ MCP clients get the read abilities, and lose access to the two abilities that ch
 Recommended if you use the Lightbox Slideshow gallery style: the slideshow fills the screen again and disappears when closed.
 
 = 1.1.7 =
-Recommended for all users, required if you use the Abilities API or MCP integration: fixes object-level authorization gaps that let a lower-privileged user read another user's private or password-protected post, or act on another user's draft, through the plugin's abilities. Also changes how often format patterns refresh — if you've hand-edited a synced pattern, expect it to be overwritten once on this upgrade (previously it happened roughly weekly; now only on a version change).
+Required if you use the Abilities API or MCP: fixes gaps that let a lower-privileged user read another user's private or password-protected post, or act on another user's draft. A hand-edited synced format pattern is overwritten once on this upgrade.
 
 = 1.1.6 =
 Recommended for all users: restores missing format icons in packaged installs, fixes an activation fatal in the zip build and editor warnings when creating posts, and registers the Format Badge in the editor on WordPress 7.0+. Tested up to WordPress 7.1.

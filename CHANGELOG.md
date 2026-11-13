@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The Chat format card, the Chat Log source option and the transcript placeholder no longer claim DOC, HTML or RTF support (#51). `vtt`, `srt` and `transcript` are now in the `source` attribute enum, so core no longer coerces them to `auto`. The 42 Chat Log editor strings that used the text domain `chatlog-block` now use `post-formats-for-block-themes`. (#55)
 - `blocks/chatlog/build/` is rebuilt from source by `npm run build` (`build:editor` plus `build:chatlog`), which ships the Discord frame timestamp color (`#b9bbbe`) from the 1.1.8 contrast fix that the compiled CSS had missed. (#55)
 
+### Changed
+
+- Plugin Check 2.2.0 findings: `Tested up to` now lives only in readme.txt (removed from the plugin header), and the 1.1.7 upgrade notice is trimmed to the 300-character limit.
+
 ### Added
 
 - Query Loop variations "Format archive: Quote / Link / Status" (`post-formats/format-archive-<slug>` namespaces), loaded in every block editor from `build/format-archive-variations.js`. Each post's date is bound to `core/post-data`. (#54)

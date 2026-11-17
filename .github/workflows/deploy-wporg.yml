@@ -12,6 +12,11 @@ on:
         description: 'Plugin version to deploy (must match readme.txt Stable tag, e.g. 2.3.0)'
         required: true
 
+# Shared with readme-sync.yml so a release and a readme sync never overlap.
+concurrency:
+  group: wordpress-org-post-formats-for-block-themes
+  cancel-in-progress: false
+
 jobs:
   deploy:
     name: Deploy to WordPress.org SVN

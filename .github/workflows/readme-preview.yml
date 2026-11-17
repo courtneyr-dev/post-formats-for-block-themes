@@ -1,0 +1,37 @@
+name: Plugin readme preview
+
+# Comments on each pull request with a WordPress.org listing preview and
+# preflight checks for readme.txt, PHP headers and listing assets.
+# https://github.com/jdevalk/plugin-page-preview
+#
+# pull_request_target lets this comment on pull requests from forks. It is
+# safe only because no step checks out or runs pull-request code: the action
+# reads the files as data. Don't add steps to this job that do.
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "**/readme.txt"
+      - "**/README.txt"
+      - "**/readme.md"
+      - "**/README.md"
+      - "**/*.php"
+      - "**/.wordpress-org/**"
+      - "**/assets/**"
+
+permissions: {}
+
+concurrency:
+  group: readme-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      # Pinned to the commit reviewed on 2026-11-17 (v1).
+      - uses: jdevalk/plugin-page-preview@2200faaecd4ec148bd4e861a68bd8f3ab0619bac # v1

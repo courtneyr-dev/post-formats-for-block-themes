@@ -104,7 +104,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           repository: courtneyr-dev/post-kinds-for-indieweb
-          ref: pkiw-1.9.1
+          ref: v1.9.1
           path: post-kinds-for-indieweb
 
       - name: Setup PHP

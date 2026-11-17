@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Query Loop variations "Format archive: Quote / Link / Status" (`post-formats/format-archive-<slug>` namespaces), loaded in every block editor from `build/format-archive-variations.js`. Each post's date is bound to `core/post-data`. (#54)
-- An `integration-pkiw` PHPUnit suite (`composer phpunit:pkiw`) and CI job that load Post Kinds for IndieWeb (tag `pkiw-1.9.1`) with this plugin and check that `post-formats/format-data` has one owner and no duplicate-registration notice. (#53)
+- An `integration-pkiw` PHPUnit suite (`composer phpunit:pkiw`) and CI job that load Post Kinds for IndieWeb (tag `v1.9.1`, then named `pkiw-1.9.1`) with this plugin and check that `post-formats/format-data` has one owner and no duplicate-registration notice. (#53)
 
 ## [1.1.11] - 2026-11-10
 

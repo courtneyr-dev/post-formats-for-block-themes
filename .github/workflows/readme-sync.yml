@@ -1,0 +1,44 @@
+name: Sync readme.txt to WordPress.org
+
+# WordPress.org reads plugin metadata (Tested up to, description, FAQ) from the
+# readme in the stable tag, not trunk. This copies readme.txt from main to SVN
+# trunk and the current stable tag in one commit, without publishing any code.
+# Start it by hand from the Actions tab. Adapted from
+# https://github.com/ProgressPlanner/pdf-xml-sitemap (Joost de Valk).
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: Show the SVN diff without committing
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+# Shared with the deploy workflow so a sync and a release never overlap.
+concurrency:
+  group: wordpress-org-post-formats-for-block-themes
+  cancel-in-progress: false
+
+jobs:
+  sync-readme:
+    name: Sync readme.txt to SVN trunk and stable tag
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    environment: wordpress-org
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: Sync published readmes
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: bash .github/scripts/sync-readme.sh

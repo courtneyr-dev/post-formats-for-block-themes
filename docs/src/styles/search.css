@@ -1,0 +1,25 @@
+/*
+ * axe-core 4.14 (label-content-name-mismatch, WCAG 2.5.3) requires the search
+ * button's visible text to be part of its accessible name, "Search". Starlight
+ * renders the Ctrl K hint as a <kbd> inside the button, so the hint is drawn
+ * with generated content instead. aria-keyshortcuts still announces it.
+ * Starlight's script sets aria-keyshortcuts to Meta+K on Apple devices, which
+ * selects the ⌘ hint. !important beats the inline display that script sets on
+ * the <kbd>.
+ */
+site-search button[data-open-modal] > kbd {
+	display: none !important;
+}
+
+@media (min-width: 50rem) {
+	site-search button[data-open-modal]::after {
+		content: 'Ctrl K';
+		margin-inline-start: auto;
+		font-size: var(--sl-text-xs);
+		color: var(--sl-color-gray-2);
+	}
+
+	site-search button[data-open-modal][aria-keyshortcuts='Meta+K']::after {
+		content: '⌘ K';
+	}
+}

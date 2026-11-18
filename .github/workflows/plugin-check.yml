@@ -1,0 +1,34 @@
+name: Plugin Check
+
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Stage the shipped plugin
+        # build/ is committed, so no JS build runs here. The rsync applies
+        # .distignore the same way the wp.org deploy does, so Plugin Check
+        # sees the package that ships rather than the repo's dev files.
+        run: |
+          mkdir -p dist
+          rsync -a --exclude-from='.distignore' . dist/post-formats-for-block-themes/
+
+      - name: Run Plugin Check
+        uses: WordPress/plugin-check-action@10857da14b6c2246d15402b3e69f777edcf8c12e # v1.1.9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          build-dir: dist/post-formats-for-block-themes
+          exclude-directories: docs,tests,bin,scripts,node_modules,vendor,src

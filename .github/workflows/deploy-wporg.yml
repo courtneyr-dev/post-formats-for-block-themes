@@ -1,5 +1,9 @@
 name: Deploy to WordPress.org
 
+# Publishing a GitHub release vX.Y.Z deploys that tag to WordPress.org SVN.
+# The job waits in the wordpress-org environment for approval, refuses a
+# version that doesn't match readme.txt's Stable tag, and isn't done until the
+# WordPress.org API serves the new version.
 on:
   release:
     types: [published]
@@ -9,32 +13,52 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Plugin version to deploy (must match readme.txt Stable tag, e.g. 2.3.0)'
+        description: 'Version to deploy (must match readme.txt Stable tag, e.g. 1.2.3)'
         required: true
 
-# Shared with readme-sync.yml so a release and a readme sync never overlap.
+permissions: {}
+
+# Shared with asset-update.yml and readme-sync.yml so SVN writes never overlap.
 concurrency:
   group: wordpress-org-post-formats-for-block-themes
   cancel-in-progress: false
 
+env:
+  SLUG: post-formats-for-block-themes
+
 jobs:
   deploy:
     name: Deploy to WordPress.org SVN
-    runs-on: ubuntu-latest
+    if: >
+      github.repository == 'courtneyr-dev/post-formats-for-block-themes' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (!github.event.release.prerelease && !github.event.release.draft))
+    runs-on: ubuntu-24.04
+    environment: wordpress-org
     permissions:
       contents: read
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event_name == 'release' && github.event.release.tag_name || format('v{0}', github.event.inputs.version) }}
+          persist-credentials: false
 
-      - name: Resolve version
+      - name: Resolve and check the version
         id: version
         # Strip a leading "v" so the SVN tag matches readme.txt's Stable tag.
         env:
           RAW: ${{ github.event_name == 'release' && github.event.release.tag_name || github.event.inputs.version }}
         run: |
-          echo "version=${RAW#v}" >> "$GITHUB_OUTPUT"
+          read_stable_tag() { sed -nE 's/^[Ss]table [Tt]ag:[[:space:]]*([^[:space:]]+)[[:space:]]*$/\1/p' "$1" | head -n 1; }
+          version="${RAW#v}"
+          if [[ ! "$version" =~ ^[0-9]+(\.[0-9]+)*$ ]]; then
+            echo "::error::'$RAW' isn't a release version."; exit 1
+          fi
+          stable=$(read_stable_tag readme.txt)
+          if [ "$version" != "$stable" ]; then
+            echo "::error::Release $version doesn't match readme.txt Stable tag $stable."; exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -71,8 +95,32 @@ jobs:
           done
           echo "::warning::.pot generation failed (develop.svn.wordpress.org unreachable); shipping without an updated .pot"
 
-      - name: WordPress Plugin Deploy
-        id: deploy
+      - name: Keep only listing assets in .wordpress-org
+        # assets/ on SVN is for banners, icons, screenshots and the preview
+        # Blueprint. Notes and .gitkeep files would be published there too.
+        run: |
+          mkdir -p .wordpress-org
+          find .wordpress-org -maxdepth 1 -type f \
+            ! -iname '*.png' ! -iname '*.jpg' ! -iname '*.jpeg' ! -iname '*.gif' ! -iname '*.svg' \
+            -print -delete
+
+      - name: Keep the live preview Blueprint when the repo has none
+        # The action syncs .wordpress-org/ with --delete, which would remove
+        # assets/blueprints/ from SVN and the Live Preview button with it.
+        run: |
+          if [ ! -f .wordpress-org/blueprints/blueprint.json ]; then
+            url="https://plugins.svn.wordpress.org/$SLUG/assets/blueprints/blueprint.json"
+            if curl -fsSL "$url" -o /tmp/blueprint.json; then
+              mkdir -p .wordpress-org/blueprints
+              mv /tmp/blueprint.json .wordpress-org/blueprints/blueprint.json
+              echo "Kept the live Blueprint from $url"
+            fi
+          fi
+
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: WordPress plugin deploy
         uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0
         with:
           generate-zip: false
@@ -81,8 +129,21 @@ jobs:
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SLUG: post-formats-for-block-themes
           VERSION: ${{ steps.version.outputs.version }}
-      # No release-asset upload: GitHub releases are immutable once published,
-      # so a release-triggered workflow can never attach assets to its own
-      # release (v1.1.6 run 32419509081 failed on exactly that). The canonical
-      # zip is the one wp.org builds from SVN:
+      # No release-asset upload: a release-triggered run can't attach files to
+      # an immutable release. The canonical zip is the one WordPress.org builds:
       # https://downloads.wordpress.org/plugin/post-formats-for-block-themes.{version}.zip
+
+      - name: Prove the deploy landed
+        # A green deploy step has shipped nothing before (Outpost). Done means
+        # the plugin API serves the new version.
+        env:
+          V: ${{ steps.version.outputs.version }}
+        run: |
+          for _ in $(seq 1 10); do
+            live=$(curl -fsS "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&slug=$SLUG&fields=version" | jq -r '.version // empty')
+            [ "$live" = "$V" ] && { echo "WordPress.org serves $live"; exit 0; }
+            echo "WordPress.org serves ${live:-nothing} (want $V); waiting 60s"
+            sleep 60
+          done
+          echo "::error::WordPress.org never served $V. Check https://plugins.trac.wordpress.org/browser/$SLUG/tags/$V"
+          exit 1

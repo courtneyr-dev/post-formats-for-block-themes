@@ -20,7 +20,7 @@
     "phpstan/phpstan": "^2.0",
     "szepeviktor/phpstan-wordpress": "^2.0",
     "phpunit/phpunit": "^9.6",
-    "yoast/phpunit-polyfills": "^3.0"
+    "yoast/phpunit-polyfills": "^4.0"
   },
   "scripts": {
     "test": [

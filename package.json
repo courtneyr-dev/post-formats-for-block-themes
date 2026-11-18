@@ -77,6 +77,10 @@
     "micromark-extension-math": {
       "katex": "0.18.9"
     },
-    "minimatch@>=7.0.0 <11.0.1": "11.0.5"
+    "minimatch@>=7.0.0 <11.0.1": "11.0.5",
+    "markdownlint-cli": {
+      "js-yaml": "^5.4.1",
+      "smol-toml": "^1.9.0"
+    }
   }
 }

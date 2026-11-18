@@ -42,8 +42,8 @@
     "screenshots:docs": "node scripts/capture-docs-screenshots.js"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.12.1",
-    "@playwright/test": "^1.61.1",
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
     "@wordpress/a11y": "^4.55.0",
     "@wordpress/block-editor": "^17.1.0",
     "@wordpress/blocks": "^16.0.0",

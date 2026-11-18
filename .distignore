@@ -10,6 +10,7 @@
 
 # Config files
 .gitignore
+.gitattributes
 .distignore
 .env
 .env.example

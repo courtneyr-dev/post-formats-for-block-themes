@@ -1,0 +1,81 @@
+name: Update WordPress.org assets
+
+# Copies .wordpress-org/ (banners, icons, screenshots, the preview Blueprint)
+# and readme.txt to WordPress.org SVN without a release. Runs when assets change
+# on main, or by hand from the Actions tab. readme-only edits go through
+# readme-sync.yml. 10up's action copies readme.txt to trunk unconditionally, so
+# the first step refuses when the local Stable tag isn't the released one:
+# trunk would otherwise claim a version SVN doesn't have.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.wordpress-org/**'
+  workflow_dispatch:
+
+permissions: {}
+
+# Shared with deploy-wporg.yml and readme-sync.yml so SVN writes never overlap.
+concurrency:
+  group: wordpress-org-post-formats-for-block-themes
+  cancel-in-progress: false
+
+env:
+  SLUG: post-formats-for-block-themes
+
+jobs:
+  assets:
+    name: Sync assets and readme to SVN
+    if: github.repository == 'courtneyr-dev/post-formats-for-block-themes'
+    runs-on: ubuntu-24.04
+    environment: wordpress-org
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Refuse when readme.txt is ahead of the release
+        run: |
+          read_stable_tag() { sed -nE 's/^[Ss]table [Tt]ag:[[:space:]]*([^[:space:]]+)[[:space:]]*$/\1/p' "$1" | head -n 1; }
+          local_tag=$(read_stable_tag readme.txt)
+          curl -fsSL "https://plugins.svn.wordpress.org/$SLUG/trunk/readme.txt" -o /tmp/svn-readme.txt
+          live_tag=$(read_stable_tag /tmp/svn-readme.txt)
+          if [ -z "$local_tag" ] || [ "$local_tag" != "$live_tag" ]; then
+            echo "::error::readme.txt says Stable tag ${local_tag:-(none)}, SVN trunk says ${live_tag:-(none)}. Release the new version instead."
+            exit 1
+          fi
+
+      - name: Keep only listing assets in .wordpress-org
+        # assets/ on SVN is for banners, icons, screenshots and the preview
+        # Blueprint. Notes and .gitkeep files would be published there too.
+        run: |
+          mkdir -p .wordpress-org
+          find .wordpress-org -maxdepth 1 -type f \
+            ! -iname '*.png' ! -iname '*.jpg' ! -iname '*.jpeg' ! -iname '*.gif' ! -iname '*.svg' \
+            -print -delete
+
+      - name: Keep the live preview Blueprint when the repo has none
+        # The action syncs .wordpress-org/ with --delete, which would remove
+        # assets/blueprints/ from SVN and the Live Preview button with it.
+        run: |
+          if [ ! -f .wordpress-org/blueprints/blueprint.json ]; then
+            url="https://plugins.svn.wordpress.org/$SLUG/assets/blueprints/blueprint.json"
+            if curl -fsSL "$url" -o /tmp/blueprint.json; then
+              mkdir -p .wordpress-org/blueprints
+              mv /tmp/blueprint.json .wordpress-org/blueprints/blueprint.json
+              echo "Kept the live Blueprint from $url"
+            fi
+          fi
+
+      - name: Install Subversion
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: Update readme and assets
+        uses: 10up/action-wordpress-plugin-asset-update@2480306f6f693672726d08b5917ea114cb2825f7 # 2.2.0
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: post-formats-for-block-themes
+          IGNORE_OTHER_FILES: true

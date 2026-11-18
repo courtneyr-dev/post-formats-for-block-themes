@@ -1,6 +1,62 @@
+# Dependabot keeps the pinned workflow actions and the dev toolchain current.
+# Patch and minor bumps arrive as one grouped PR per ecosystem each week;
+# majors stay separate because they're the ones that break builds.
 version: 2
+
 updates:
+  - package-ecosystem: composer
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      composer-minor-patch:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      npm-minor-patch:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      github-actions-minor-patch:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+
+  # Documentation site under docs/, built to static HTML.
+  - package-ecosystem: npm
+    directory: /docs
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 3
+    groups:
+      docs-minor-patch:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch

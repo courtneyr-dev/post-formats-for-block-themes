@@ -1,0 +1,30 @@
+name: Playground preview
+
+# Adds a "Preview in Playground" button to each pull request's description.
+# Playground loads the plugin from the PR branch through git, so this needs the
+# committed build/ to be current (CI checks that) and no Composer packages at
+# runtime. Fork and Dependabot PRs get a read-only token and are skipped.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions: {}
+
+concurrency:
+  group: playground-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: Add the Playground preview button
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: WordPress/action-wp-playground-pr-preview@1b15093d61b5e98cdfeb31466f34ade495762cd7 # v4.0.0
+        with:
+          plugin-path: .
+          mode: append-to-description
+          github-token: ${{ secrets.GITHUB_TOKEN }}

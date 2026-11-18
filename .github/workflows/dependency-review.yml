@@ -1,0 +1,23 @@
+name: Dependency review
+
+# Lists every package a pull request adds, removes or changes, from
+# package-lock.json, composer.lock and the workflow files, and fails when a
+# change brings in a known high or critical vulnerability. It takes the place
+# of the unmaintained npm-lockfile-changes action (last release 2022, node16).
+on:
+  pull_request:
+
+permissions: {}
+
+jobs:
+  review:
+    name: Dependency review
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: ${{ (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') && 'always' || 'never' }}

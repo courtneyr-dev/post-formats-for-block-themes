@@ -118,7 +118,15 @@ jobs:
           fi
 
       - name: Install Subversion
-        run: sudo apt-get update && sudo apt-get install -y subversion
+        timeout-minutes: 5
+        shell: bash
+        run: |
+          if ! command -v svn >/dev/null; then
+            apt_options=(-o Acquire::Retries=2 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30)
+            sudo apt-get "${apt_options[@]}" update
+            sudo apt-get "${apt_options[@]}" install -y --no-install-recommends subversion
+          fi
+          svn --version --quiet
 
       - name: WordPress plugin deploy
         uses: 10up/action-wordpress-plugin-deploy@54bd289b8525fd23a5c365ec369185f2966529c2 # 2.3.0

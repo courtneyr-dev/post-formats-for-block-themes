@@ -1,7 +1,7 @@
 name: Playground preview
 
 # Adds a "Preview in Playground" button to each pull request's description.
-# Playground loads the plugin from the PR branch through git, so this needs the
+# Playground loads the plugin at the PR head commit, so this needs the
 # committed build/ to be current (CI checks that) and no Composer packages at
 # runtime. Fork and Dependabot PRs get a read-only token and are skipped.
 on:
@@ -25,6 +25,28 @@ jobs:
     steps:
       - uses: WordPress/action-wp-playground-pr-preview@1b15093d61b5e98cdfeb31466f34ade495762cd7 # v4.0.0
         with:
-          plugin-path: .
           mode: append-to-description
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          blueprint: |
+            {
+              "$schema": "https://playground.wordpress.net/blueprint-schema.json",
+              "preferredVersions": {
+                "php": "8.2",
+                "wp": "latest"
+              },
+              "steps": [
+                {
+                  "step": "installPlugin",
+                  "pluginData": {
+                    "resource": "git:directory",
+                    "url": "https://github.com/${{ github.repository }}.git",
+                    "ref": "${{ github.event.pull_request.head.sha }}",
+                    "refType": "commit",
+                    "path": "/"
+                  },
+                  "options": {
+                    "activate": true
+                  }
+                }
+              ]
+            }

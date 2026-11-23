@@ -59,7 +59,7 @@
     "@wordpress/edit-post": "^9.1.0",
     "@wordpress/element": "^8.7.0",
     "@wordpress/hooks": "^4.55.0",
-    "@wordpress/i18n": "^6.28.0",
+    "@wordpress/i18n": "^7.2.0",
     "@wordpress/interactivity": "^6.55.0",
     "@wordpress/plugins": "^7.55.0",
     "@wordpress/scripts": "^37.1.0",

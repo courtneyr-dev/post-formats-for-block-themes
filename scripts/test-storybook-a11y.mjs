@@ -2,13 +2,17 @@
 import { createServer } from 'node:http';
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
-import { extname, join, normalize } from 'node:path';
+import { extname, join, normalize, resolve as resolvePath } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright';
 import { AxeBuilder } from '@axe-core/playwright';
 import { WCAG_TAGS } from '../.storybook/a11y-rules.js';
 
-const ROOT = fileURLToPath( new URL( '../storybook-static', import.meta.url ) );
+// Defaults to `npm run build-storybook` output. The Docs workflow passes the
+// copy it publishes, docs/dist/storybook.
+const ROOT = process.argv[ 2 ]
+	? resolvePath( process.argv[ 2 ] )
+	: fileURLToPath( new URL( '../storybook-static', import.meta.url ) );
 const TYPES = {
 	'.html': 'text/html',
 	'.js': 'text/javascript',
@@ -33,6 +37,19 @@ const KNOWN = [
 		story: `${ COUNTER }--over-limit`,
 		rule: 'color-contrast',
 		target: /^\.pfpu-char-counter > span$/,
+	},
+];
+
+// Violations in Storybook 10.6.6's own manager page, not in this repo's code.
+// Each entry must still occur, so a Storybook fix forces its removal here.
+const KNOWN_IN_STORYBOOK_UI = [
+	{
+		rule: 'label-content-name-mismatch',
+		// With one sidebar root axe names the button by its class alone. With
+		// more roots it prefixes the root id and adds the attributes.
+		target: /^(#[a-z0-9-]+ > )?\.css-[a-z0-9]+(\[aria-label="Collapse"\]\[data-action="collapse-root"\])?$/,
+		html: /^<button aria-label="Collapse" data-action="collapse-root"/,
+		why: 'the sidebar section button shows its name and is labeled "Collapse"',
 	},
 ];
 
@@ -75,7 +92,7 @@ function serve() {
 
 if ( ! existsSync( join( ROOT, 'index.json' ) ) ) {
 	throw new Error(
-		'storybook-static/index.json is missing. Run `npm run build-storybook` first.'
+		`${ ROOT }/index.json is missing. Run \`npm run build-storybook\` first.`
 	);
 }
 
@@ -173,6 +190,67 @@ try {
 			);
 		}
 	}
+
+	// The manager page, with every story listed in the sidebar. The preview
+	// iframe is excluded: the loop above checks each story on its own.
+	const manager = await context.newPage();
+	await manager.goto( `${ url }/` );
+	await manager.waitForSelector( '[data-nodetype="component"]' );
+	for ( const button of await manager
+		.locator( '[data-action="expand-all"]' )
+		.all() ) {
+		await button.click();
+	}
+	const listed = await manager.locator( '[data-nodetype="story"]' ).count();
+	if ( listed !== stories.length ) {
+		failures += 1;
+		console.log(
+			`FAIL  manager sidebar lists ${ listed } stories, index.json has ${ stories.length }`
+		);
+	}
+	const { violations: managerViolations } = await new AxeBuilder( {
+		page: manager,
+	} )
+		.exclude( 'iframe' )
+		.withTags( WCAG_TAGS )
+		.analyze();
+	await manager.close();
+	const seenUi = new Set();
+	let freshUi = 0;
+	for ( const v of managerViolations ) {
+		for ( const node of v.nodes ) {
+			const target = node.target.join( ' ' );
+			const match = KNOWN_IN_STORYBOOK_UI.find(
+				( k ) =>
+					k.rule === v.id &&
+					k.target.test( target ) &&
+					k.html.test( node.html )
+			);
+			if ( match ) {
+				seenUi.add( match );
+			} else {
+				freshUi += 1;
+				console.log(
+					`FAIL  manager ${ v.id }: ${ target }  ${ v.help }`
+				);
+			}
+		}
+	}
+	failures += freshUi;
+	for ( const k of KNOWN_IN_STORYBOOK_UI ) {
+		if ( seenUi.has( k ) ) {
+			console.log( `known manager ${ k.rule } (${ k.why })` );
+		} else {
+			failures += 1;
+			console.log(
+				`FAIL  known manager violation no longer occurs, remove it from KNOWN_IN_STORYBOOK_UI: ${ k.rule }`
+			);
+		}
+	}
+	console.log(
+		`${ freshUi ? 'FAIL' : 'pass' }  manager page, ${ listed } stories listed, ${ freshUi } new violations`
+	);
+
 	console.log(
 		`\n${ stories.length } stories, ${ failures } failures, ${
 			seenKnown.size

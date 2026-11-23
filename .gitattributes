@@ -5,6 +5,8 @@
 /.github export-ignore
 /.claude export-ignore
 /node_modules export-ignore
+/.storybook export-ignore
+/stories export-ignore
 /vendor export-ignore
 /tests export-ignore
 /bin export-ignore

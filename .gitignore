@@ -82,3 +82,6 @@ languages/*.mo
 # Docs site build output (docs/ is an Astro Starlight project)
 docs/dist/
 docs/.astro/
+
+# Storybook build output
+/storybook-static/

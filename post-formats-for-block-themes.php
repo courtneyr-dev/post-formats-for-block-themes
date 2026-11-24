@@ -305,7 +305,7 @@ add_action( 'after_setup_theme', 'pfbt_init', 99 );
 /**
  * Enqueue editor assets
  *
- * Loads JavaScript and CSS for the block editor, including:
+ * Loads JavaScript for the block editor, including:
  * - Format selection modal
  * - Format switcher sidebar
  * - Status paragraph validation
@@ -389,11 +389,36 @@ function pfbt_enqueue_editor_assets() {
 			'postKinds'       => $post_kinds_data,
 		)
 	);
-
-	// Note: Editor styles are inline in the JavaScript components.
-	// Frontend styles are loaded via pfbt_enqueue_frontend_styles().
 }
 add_action( 'enqueue_block_editor_assets', 'pfbt_enqueue_editor_assets' );
+
+/**
+ * Enqueue the status counter stylesheet in the post editor canvas.
+ */
+function pfbt_enqueue_status_counter_styles() {
+	if ( ! is_admin() ) {
+		return;
+	}
+
+	$screen = get_current_screen();
+	if ( ! $screen || 'post' !== $screen->base || ! $screen->is_block_editor() ) {
+		return;
+	}
+
+	$stylesheet = 'styles/status-counter-editor.css';
+	$path       = PFBT_PLUGIN_DIR . $stylesheet;
+	if ( ! is_file( $path ) ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'pfbt-status-counter-editor',
+		PFBT_PLUGIN_URL . $stylesheet,
+		array(),
+		(string) filemtime( $path )
+	);
+}
+add_action( 'enqueue_block_assets', 'pfbt_enqueue_status_counter_styles' );
 
 /**
  * Enqueue frontend styles

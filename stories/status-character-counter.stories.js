@@ -1,6 +1,7 @@
 import { createBlock, registerBlockType } from '@wordpress/blocks';
 import { RichText, useBlockProps } from '@wordpress/block-editor';
 import '../src/editor/index.js';
+import '../styles/status-counter-editor.css';
 import { BlockEditorFrame, EditorContext } from './editor-context.js';
 
 function StatusParagraphEdit( { attributes, setAttributes } ) {

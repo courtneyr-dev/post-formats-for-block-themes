@@ -1,0 +1,23 @@
+.pfpu-status-paragraph-wrapper {
+	position: relative;
+	margin-bottom: 30px;
+}
+
+.pfpu-char-counter {
+	position: absolute;
+	inset-block-end: -25px;
+	inset-inline-end: 0;
+	font-size: 0.875rem;
+	color: var(--pfbt-format-status-fg, inherit);
+	background-color: var(--pfbt-format-status-bg, transparent);
+	padding: 2px 8px;
+	border-radius: 3px;
+}
+
+.pfpu-char-counter.is-warning {
+	font-weight: 600;
+}
+
+.pfpu-char-counter.is-over-limit {
+	border: 1px solid currentcolor;
+}

@@ -412,9 +412,7 @@ addFilter(
 );
 
 /**
- * Editor Styles
- *
- * Inline styles for editor components (will be extracted to editor.css in build)
+ * Styles for the editor shell.
  */
 const editorStyles = `
 	.pfpu-format-modal {
@@ -476,33 +474,6 @@ const editorStyles = `
 		margin-top: 1rem;
 	}
 
-	.pfpu-status-paragraph-wrapper {
-		position: relative;
-		margin-bottom: 30px;
-	}
-
-	.pfpu-char-counter {
-		position: absolute;
-		bottom: -25px;
-		right: 0;
-		font-size: 0.875rem;
-		color: #757575;
-		background: #fff;
-		padding: 2px 8px;
-		border-radius: 3px;
-		box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-	}
-
-	.pfpu-char-counter.is-warning {
-		color: #f0b849;
-		font-weight: 600;
-	}
-
-	.pfpu-char-counter.is-over-limit {
-		color: #d63638;
-		font-weight: 600;
-		background: #fcf0f1;
-	}
 `;
 
 // Inject editor styles

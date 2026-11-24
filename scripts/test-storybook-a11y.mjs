@@ -24,21 +24,7 @@ const TYPES = {
 
 // Pre-existing violations in shipped components. Each entry must still occur,
 // so a fix forces its removal here.
-const COUNTER = 'editor-status-character-counter';
-const KNOWN = [
-	// .pfpu-char-counter.is-warning in src/editor/index.js: #f0b849 on #fff, 1.8:1.
-	{
-		story: `${ COUNTER }--near-limit`,
-		rule: 'color-contrast',
-		target: /^\.pfpu-char-counter > span$/,
-	},
-	// .pfpu-char-counter.is-over-limit in src/editor/index.js: #d63638 on #fcf0f1, 4.24:1.
-	{
-		story: `${ COUNTER }--over-limit`,
-		rule: 'color-contrast',
-		target: /^\.pfpu-char-counter > span$/,
-	},
-];
+const KNOWN = [];
 
 // Violations in Storybook 10.6.6's own manager page, not in this repo's code.
 // Each entry must still occur, so a Storybook fix forces its removal here.

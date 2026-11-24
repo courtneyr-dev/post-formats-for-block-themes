@@ -8,20 +8,16 @@
 	inset-block-end: -25px;
 	inset-inline-end: 0;
 	font-size: 0.875rem;
-	color: #757575;
-	background-color: #fff;
+	color: var(--pfbt-format-status-fg, inherit);
+	background-color: var(--pfbt-format-status-bg, transparent);
 	padding: 2px 8px;
 	border-radius: 3px;
-	box-shadow: 0 1px 3px rgb(0 0 0 / 10%);
 }
 
 .pfpu-char-counter.is-warning {
-	color: #8a4b00;
 	font-weight: 600;
 }
 
 .pfpu-char-counter.is-over-limit {
-	color: #b32d2e;
-	font-weight: 600;
-	background-color: #fcf0f1;
+	border: 1px solid currentcolor;
 }

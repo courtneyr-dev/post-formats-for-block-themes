@@ -243,17 +243,6 @@ class PFBT_Format_Registry {
 	 * @return string|false Format slug or false if no match.
 	 */
 	public static function get_format_by_block( $block_name, $block_attrs = array(), $inner_blocks = array() ) {
-		if ( 'core/playlist' === $block_name ) {
-			foreach ( $inner_blocks as $track ) {
-				$src = $track['attrs']['src'] ?? '';
-				if ( 'core/playlist-track' === $track['blockName'] && is_string( $src ) && '' !== esc_url_raw( $src ) ) {
-					return 'audio';
-				}
-			}
-
-			return false;
-		}
-
 		$instance = self::instance();
 
 		foreach ( $instance->formats as $slug => $format ) {
@@ -321,6 +310,15 @@ class PFBT_Format_Registry {
 
 		if ( isset( $kind_card_map[ $block_name ] ) ) {
 			return $kind_card_map[ $block_name ];
+		}
+
+		if ( 'core/playlist' === $block_name ) {
+			foreach ( $inner_blocks as $track ) {
+				$src = $track['attrs']['src'] ?? '';
+				if ( 'core/playlist-track' === $track['blockName'] && is_string( $src ) && '' !== esc_url_raw( $src ) ) {
+					return 'audio';
+				}
+			}
 		}
 
 		// Fallback to standard.

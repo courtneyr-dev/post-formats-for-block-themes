@@ -37,8 +37,8 @@ class Test_Auto_Detection extends WP_UnitTestCase {
 		$playlist = '<!-- wp:playlist --><figure>' . $track . '</figure><!-- /wp:playlist -->';
 		return array(
 			'playlist with a source' => array( $playlist, 'audio', 'audio' ),
-			'empty playlist'         => array( '<!-- wp:playlist --><figure></figure><!-- /wp:playlist -->', false, '' ),
-			'track without a source' => array( '<!-- wp:playlist --><figure><!-- wp:playlist-track {"title":"Missing audio"} /--></figure><!-- /wp:playlist -->', false, '' ),
+			'empty playlist'         => array( '<!-- wp:playlist --><figure></figure><!-- /wp:playlist -->', false, 'standard' ),
+			'track without a source' => array( '<!-- wp:playlist --><figure><!-- wp:playlist-track {"title":"Missing audio"} /--></figure><!-- /wp:playlist -->', false, 'standard' ),
 			'playlist after prose'   => array( '<!-- wp:paragraph --><p>Article</p><!-- /wp:paragraph -->' . $playlist, false, 'standard' ),
 			'plain audio'            => array( '<!-- wp:audio --><figure><audio src="https://example.org/test.mp3"></audio></figure><!-- /wp:audio -->', 'audio', 'audio' ),
 		);

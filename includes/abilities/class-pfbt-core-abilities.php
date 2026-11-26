@@ -42,7 +42,7 @@ class PFBT_Core_Abilities {
 	 *
 	 * @var string
 	 */
-	const NAMESPACE = 'post-formats';
+	const ABILITY_NAMESPACE = 'post-formats';
 
 	/**
 	 * Get singleton instance
@@ -90,7 +90,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_list_formats() {
 		wp_register_ability(
-			self::NAMESPACE . '/list-formats',
+			self::ABILITY_NAMESPACE . '/list-formats',
 			array(
 				'label'               => __( 'List Post Formats', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Retrieve all available post formats with their metadata, templates, and usage statistics.', 'post-formats-for-block-themes' ),
@@ -197,7 +197,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_get_format_template() {
 		wp_register_ability(
-			self::NAMESPACE . '/get-format-template',
+			self::ABILITY_NAMESPACE . '/get-format-template',
 			array(
 				'label'               => __( 'Get Format Template', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Retrieve template and pattern information for a specific post format.', 'post-formats-for-block-themes' ),
@@ -282,7 +282,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_validate_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/validate-format',
+			self::ABILITY_NAMESPACE . '/validate-format',
 			array(
 				'label'               => __( 'Validate Format Content', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Validate that content meets the requirements for a specific post format.', 'post-formats-for-block-themes' ),
@@ -425,7 +425,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_set_post_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/set-post-format',
+			self::ABILITY_NAMESPACE . '/set-post-format',
 			array(
 				'label'               => __( 'Set Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Set the post format for a specific post.', 'post-formats-for-block-themes' ),
@@ -541,7 +541,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_get_post_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/get-post-format',
+			self::ABILITY_NAMESPACE . '/get-post-format',
 			array(
 				'label'               => __( 'Get Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Get the current format of a specific post.', 'post-formats-for-block-themes' ),
@@ -626,7 +626,7 @@ class PFBT_Core_Abilities {
 	 */
 	private function register_score_format() {
 		wp_register_ability(
-			self::NAMESPACE . '/score-format',
+			self::ABILITY_NAMESPACE . '/score-format',
 			array(
 				'label'               => __( 'Score Post Format', 'post-formats-for-block-themes' ),
 				'description'         => __( 'Analyze content and detect the most appropriate post format.', 'post-formats-for-block-themes' ),
@@ -704,7 +704,7 @@ class PFBT_Core_Abilities {
 		$block_attrs = $first_block['attrs'] ?? array();
 
 		// Detect format from first block.
-		$detected_format = PFBT_Format_Registry::get_format_by_block( $block_name, $block_attrs );
+		$detected_format = PFBT_Format_Registry::get_format_by_block( $block_name, $block_attrs, $first_block['innerBlocks'] );
 		$confidence      = 0.8;
 
 		// Build signals.

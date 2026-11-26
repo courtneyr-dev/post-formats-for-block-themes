@@ -237,11 +237,23 @@ class PFBT_Format_Registry {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param string $block_name Block name (e.g., 'core/image').
-	 * @param array  $block_attrs Block attributes (optional).
+	 * @param string $block_name   Block name (e.g., 'core/image').
+	 * @param array  $block_attrs  Block attributes (optional).
+	 * @param array  $inner_blocks Parsed child blocks (optional).
 	 * @return string|false Format slug or false if no match.
 	 */
-	public static function get_format_by_block( $block_name, $block_attrs = array() ) {
+	public static function get_format_by_block( $block_name, $block_attrs = array(), $inner_blocks = array() ) {
+		if ( 'core/playlist' === $block_name ) {
+			foreach ( $inner_blocks as $track ) {
+				$src = $track['attrs']['src'] ?? '';
+				if ( 'core/playlist-track' === $track['blockName'] && is_string( $src ) && '' !== esc_url_raw( $src ) ) {
+					return 'audio';
+				}
+			}
+
+			return false;
+		}
+
 		$instance = self::instance();
 
 		foreach ( $instance->formats as $slug => $format ) {

@@ -210,7 +210,7 @@ class Test_Core_Abilities extends WP_UnitTestCase {
 	 * /^[a-z0-9-]+\/[a-z0-9-]+$/, and the namespace is half of that name.
 	 */
 	public function test_namespace_constant() {
-		$this->assertEquals( 'post-formats', PFBT_Core_Abilities::NAMESPACE );
+		$this->assertEquals( 'post-formats', PFBT_Core_Abilities::ABILITY_NAMESPACE );
 	}
 
 	/**

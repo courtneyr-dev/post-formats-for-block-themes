@@ -215,7 +215,7 @@ class PFBT_Abilities_Formats {
 		$block_name  = $first_block['blockName'];
 		$block_attrs = $first_block['attrs'] ?? array();
 
-		$detected = PFBT_Format_Registry::get_format_by_block( $block_name, $block_attrs );
+		$detected = PFBT_Format_Registry::get_format_by_block( $block_name, $block_attrs, $first_block['innerBlocks'] );
 
 		return array(
 			'format'     => $detected ? esc_html( $detected ) : 'standard',
@@ -499,7 +499,8 @@ class PFBT_Abilities_Formats {
 			$first_block = $blocks[0];
 			$suggested   = PFBT_Format_Registry::get_format_by_block(
 				$first_block['blockName'],
-				$first_block['attrs'] ?? array()
+				$first_block['attrs'] ?? array(),
+				$first_block['innerBlocks']
 			);
 
 			if ( ! $suggested ) {

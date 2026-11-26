@@ -11,6 +11,31 @@
 class Test_Format_Registry extends WP_UnitTestCase {
 
 	/**
+	 * Explicit extension mappings take precedence over Playlist inference.
+	 */
+	public function test_playlist_respects_registered_format() {
+		$property = new ReflectionProperty( PFBT_Format_Registry::class, 'instance' );
+		$original = $property->getValue();
+		$map      = static function ( $formats ) {
+			$formats['video']['first_block'] = 'core/playlist';
+			return $formats;
+		};
+		$playlist = parse_blocks( '<!-- wp:playlist --><figure><!-- wp:playlist-track {"src":"https://example.org/track.mp3"} /--></figure><!-- /wp:playlist -->' )[0];
+		add_filter( 'pfbt_registered_formats', $map );
+		$property->setValue( null, null );
+
+		try {
+			$this->assertSame(
+				'video',
+				PFBT_Format_Registry::get_format_by_block( $playlist['blockName'], $playlist['attrs'], $playlist['innerBlocks'] )
+			);
+		} finally {
+			$property->setValue( null, $original );
+			remove_filter( 'pfbt_registered_formats', $map );
+		}
+	}
+
+	/**
 	 * Test that all 10 formats are registered
 	 */
 	public function test_all_formats_registered() {

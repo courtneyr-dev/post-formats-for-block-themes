@@ -12,6 +12,56 @@
 class Test_Auto_Detection extends WP_UnitTestCase {
 
 	/**
+	 * The first named block must be a playlist with at least one sourced track.
+	 *
+	 * @dataProvider playlist_formats
+	 *
+	 * @param string       $content Serialized blocks.
+	 * @param string|false $format  Expected format.
+	 * @param string       $detected Expected audit result.
+	 */
+	public function test_native_playlist_detection( $content, $format, $detected ) {
+		$post_id = $this->factory->post->create( array( 'post_content' => $content ) );
+
+		$this->assertSame( $format, get_post_format( $post_id ) );
+		$this->assertSame( $detected, PFBT_Format_Detector::get_detected_format( $post_id ) );
+	}
+
+	/**
+	 * Provide Playlist and plain Audio controls.
+	 *
+	 * @return array<string, array{string, string|false, string}> Test cases.
+	 */
+	public static function playlist_formats() {
+		$track    = '<!-- wp:playlist-track {"src":"https://example.org/test.mp3"} /-->';
+		$playlist = '<!-- wp:playlist --><figure>' . $track . '</figure><!-- /wp:playlist -->';
+		return array(
+			'playlist with a source' => array( $playlist, 'audio', 'audio' ),
+			'empty playlist'         => array( '<!-- wp:playlist --><figure></figure><!-- /wp:playlist -->', false, 'standard' ),
+			'track without a source' => array( '<!-- wp:playlist --><figure><!-- wp:playlist-track {"title":"Missing audio"} /--></figure><!-- /wp:playlist -->', false, 'standard' ),
+			'playlist after prose'   => array( '<!-- wp:paragraph --><p>Article</p><!-- /wp:paragraph -->' . $playlist, false, 'standard' ),
+			'plain audio'            => array( '<!-- wp:audio --><figure><audio src="https://example.org/test.mp3"></audio></figure><!-- /wp:audio -->', 'audio', 'audio' ),
+		);
+	}
+
+	/**
+	 * An explicit Standard choice stays in place when a playlist is added.
+	 */
+	public function test_playlist_preserves_manual_standard() {
+		$post_id = $this->factory->post->create();
+		PFBT_Format_Detector::mark_as_manual( $post_id );
+		wp_update_post(
+			array(
+				'ID'           => $post_id,
+				'post_content' => self::playlist_formats()['playlist with a source'][0],
+			)
+		);
+
+		$this->assertFalse( get_post_format( $post_id ) );
+		$this->assertSame( 'audio', PFBT_Format_Detector::get_detected_format( $post_id ) );
+	}
+
+	/**
 	 * First save on a gallery-first-block post applies gallery format and writes audit meta.
 	 */
 	public function test_first_save_applies_gallery_and_writes_audit() {

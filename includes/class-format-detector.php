@@ -215,7 +215,8 @@ class PFBT_Format_Detector {
 		// Get format based on block type.
 		$format = PFBT_Format_Registry::get_format_by_block(
 			$first_block['blockName'],
-			$first_block['attrs']
+			$first_block['attrs'],
+			$first_block['innerBlocks']
 		);
 
 		/**

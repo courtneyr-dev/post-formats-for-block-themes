@@ -206,6 +206,8 @@ The plugin reads color palette, typography, spacing, and border styles from your
 
 Full user documentation — installation, settings, common tasks, troubleshooting, privacy, and a Playground preview guide — lives at [courtneyr-dev.github.io/post-formats-for-block-themes](https://courtneyr-dev.github.io/post-formats-for-block-themes/). Developers extending formats, detection, or styling should start with the [hooks reference](https://courtneyr-dev.github.io/post-formats-for-block-themes/hooks-reference/).
 
+*Testing on a disposable site:* Use the [WordPress post format test cases](https://github.com/courtneyr-dev/indieweb-test-data/tree/main/cases/post-formats) to import synthetic examples.
+
 == Installation ==
 
 = Minimum Requirements =

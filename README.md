@@ -123,6 +123,8 @@ wp plugin activate post-formats-for-block-themes
 
 ## Development
 
+Use the [WordPress post format test cases](https://github.com/courtneyr-dev/indieweb-test-data/tree/main/cases/post-formats) to import synthetic examples on a disposable WordPress site.
+
 ### Prerequisites
 
 - **Node.js** 18+ (LTS recommended)

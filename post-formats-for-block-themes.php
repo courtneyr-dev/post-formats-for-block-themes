@@ -514,19 +514,14 @@ function pfbt_enqueue_repair_review_command() {
 
 	wp_add_inline_script(
 		'wp-core-commands',
-		<<<JS
-		(function (config) {
-			wp.data.dispatch(wp.commands.store).registerCommand({
-				name: 'post-formats/open-repair-review',
-				label: config.label,
-				category: 'view',
-				callback: function (options) {
-					options.close();
-					window.location.assign(config.url);
-				}
-			});
-		})($command);
-		JS
+		'(function (config) {'
+			. 'wp.data.dispatch(wp.commands.store).registerCommand({'
+			. "name: 'post-formats/open-repair-review',"
+			. 'label: config.label,'
+			. "category: 'view',"
+			. 'callback: function (options) { options.close(); window.location.assign(config.url); }'
+			. '});'
+			. '})(' . $command . ');'
 	);
 }
 add_action( 'admin_enqueue_scripts', 'pfbt_enqueue_repair_review_command', 20 );

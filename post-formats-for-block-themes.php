@@ -519,6 +519,7 @@ function pfbt_enqueue_repair_review_command() {
 			wp.data.dispatch(wp.commands.store).registerCommand({
 				name: 'post-formats/open-repair-review',
 				label: config.label,
+				category: 'view',
 				callback: function (options) {
 					options.close();
 					window.location.assign(config.url);

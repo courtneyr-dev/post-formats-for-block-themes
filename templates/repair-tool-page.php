@@ -178,8 +178,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 						<input type="hidden" name="repair_token" value="<?php echo esc_attr( $pfbt_undo['token'] ); ?>" />
 						<button type="submit" class="button" name="post_id" value="<?php echo esc_attr( $pfbt_undo['post_id'] ); ?>">
 							<?php
-							/* translators: 1: Post title. 2: Previous post format. */
-							echo esc_html( sprintf( __( 'Restore %1$s to %2$s', 'post-formats-for-block-themes' ), $pfbt_undo['post_title'] ? $pfbt_undo['post_title'] : __( '(no title)', 'post-formats-for-block-themes' ), get_post_format_string( $pfbt_undo['previous'] ) ) );
+							/* translators: 1: Post title. 2: Post ID. 3: Previous post format. */
+							echo esc_html( sprintf( __( 'Restore %1$s (ID %2$d) to %3$s', 'post-formats-for-block-themes' ), $pfbt_undo['post_title'] ? $pfbt_undo['post_title'] : __( '(no title)', 'post-formats-for-block-themes' ), $pfbt_undo['post_id'], get_post_format_string( $pfbt_undo['previous'] ) ) );
 							?>
 						</button>
 					</form>

@@ -238,6 +238,8 @@ function pfbt_init() {
 	PFBT_Pattern_Manager::instance();
 	PFBT_Block_Locker::instance();
 	PFBT_Format_Archive_Variations::instance();
+	add_action( 'added_term_relationship', array( 'PFBT_Repair_Tool', 'clear_undo_on_format_change' ), 10, 3 );
+	add_action( 'deleted_term_relationships', array( 'PFBT_Repair_Tool', 'clear_undo_on_format_change' ), 10, 3 );
 	PFBT_Admin_Columns::instance();
 
 	// 1.1.8: front-end-only accessibility output filters.
@@ -481,15 +483,52 @@ add_action( 'wp_enqueue_scripts', 'pfbt_enqueue_frontend_assets' );
  * @since 1.0.0
  */
 function pfbt_add_admin_menu() {
-	add_management_page(
+	$hook = add_management_page(
 		__( 'Post Format Repair', 'post-formats-for-block-themes' ),
 		__( 'Post Format Repair', 'post-formats-for-block-themes' ),
-		'manage_options',
-		'pfbt-repair-tool',
+		PFBT_Repair_Tool::CAPABILITY,
+		PFBT_Repair_Tool::PAGE_SLUG,
 		array( 'PFBT_Repair_Tool', 'render_page' )
 	);
+	if ( $hook ) {
+		add_action( 'load-' . $hook, array( 'PFBT_Repair_Tool', 'handle_submission' ) );
+	}
 }
 add_action( 'admin_menu', 'pfbt_add_admin_menu' );
+
+/**
+ * Register the navigation command after Core enqueues the Command Palette.
+ */
+function pfbt_enqueue_repair_review_command() {
+	if ( ! current_user_can( PFBT_Repair_Tool::CAPABILITY ) || ! wp_script_is( 'wp-core-commands', 'enqueued' ) ) {
+		return;
+	}
+
+	$command = wp_json_encode(
+		array(
+			'label' => __( 'Open Post Format Repair Review', 'post-formats-for-block-themes' ),
+			'url'   => admin_url( 'tools.php?page=' . PFBT_Repair_Tool::PAGE_SLUG ) . '#pfbt-repair-scan-results',
+		),
+		JSON_HEX_TAG
+	);
+
+	wp_add_inline_script(
+		'wp-core-commands',
+		<<<JS
+		(function (config) {
+			wp.data.dispatch(wp.commands.store).registerCommand({
+				name: 'post-formats/open-repair-review',
+				label: config.label,
+				callback: function (options) {
+					options.close();
+					window.location.assign(config.url);
+				}
+			});
+		})($command);
+		JS
+	);
+}
+add_action( 'admin_enqueue_scripts', 'pfbt_enqueue_repair_review_command', 20 );
 
 /**
  * Enqueue admin styles for repair tool page

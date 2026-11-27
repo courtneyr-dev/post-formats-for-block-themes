@@ -40,6 +40,40 @@ if ( ! defined( 'ABSPATH' ) ) {
 class PFBT_Repair_Tool {
 
 	/**
+	 * Capability required to review or apply repairs.
+	 *
+	 * @var string
+	 */
+	const CAPABILITY = 'manage_options';
+
+	/**
+	 * Tools menu page slug.
+	 *
+	 * @var string
+	 */
+	const PAGE_SLUG = 'pfbt-repair-tool';
+
+	/**
+	 * Latest usable format undo.
+	 *
+	 * @var string
+	 */
+	private const UNDO_META = '_pfbt_format_repair_undo';
+
+	/**
+	 * Discard an undo when the post's format term actually changes.
+	 *
+	 * @param int       $post_id  Post ID.
+	 * @param int|int[] $term_ids Changed term taxonomy IDs.
+	 * @param string    $taxonomy Taxonomy name.
+	 */
+	public static function clear_undo_on_format_change( $post_id, $term_ids, $taxonomy ) {
+		if ( 'post_format' === $taxonomy ) {
+			delete_post_meta( $post_id, self::UNDO_META );
+		}
+	}
+
+	/**
 	 * Enqueue admin styles for repair tool page
 	 *
 	 * @since 1.0.0
@@ -86,23 +120,12 @@ class PFBT_Repair_Tool {
 	 */
 	public static function render_page() {
 		// Check user capability.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die(
 				esc_html__( 'You do not have sufficient permissions to access this page.', 'post-formats-for-block-themes' ),
 				esc_html__( 'Permission Denied', 'post-formats-for-block-themes' ),
 				array( 'response' => 403 )
 			);
-		}
-
-		// Handle form submissions with nonce verification.
-		if ( isset( $_POST['pfbt_repair_action'] ) &&
-			isset( $_POST['pfbt_repair_nonce'] ) &&
-			wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pfbt_repair_nonce'] ) ), 'pfbt_repair_action' ) ) {
-			self::handle_repair_action();
-
-			// Redirect to prevent form resubmission (POST-Redirect-GET pattern).
-			wp_safe_redirect( admin_url( 'tools.php?page=pfbt-repair-tool' ) );
-			exit;
 		}
 
 		// Get scan results with error handling.
@@ -162,15 +185,26 @@ class PFBT_Repair_Tool {
 
 		$posts         = get_posts( $args );
 		$mismatches    = array();
+		$undo_repairs  = array();
 		$correct_count = 0;
 		$scanned_count = 0;
 
 		foreach ( $posts as $post ) {
 			++$scanned_count;
-			$current_format   = get_post_format( $post->ID ) ? get_post_format( $post->ID ) : 'standard';
+			$current_format   = self::get_format( $post->ID );
 			$blocks           = parse_blocks( $post->post_content );
 			$first_block      = self::get_first_meaningful_block( $blocks );
 			$suggested_format = 'standard';
+			$undo             = self::get_undo( $post->ID, $current_format );
+
+			if ( $undo && current_user_can( 'edit_post', $post->ID ) ) {
+				$undo_repairs[] = array(
+					'post_id'    => $post->ID,
+					'post_title' => get_the_title( $post ),
+					'previous'   => $undo['previous'],
+					'token'      => $undo['token'],
+				);
+			}
 
 			if ( $first_block ) {
 				$suggested_format = PFBT_Format_Registry::get_format_by_block(
@@ -200,6 +234,7 @@ class PFBT_Repair_Tool {
 			'correct'        => $correct_count,
 			'mismatches'     => $mismatches,
 			'mismatch_count' => count( $mismatches ),
+			'undo_repairs'   => $undo_repairs,
 		);
 	}
 
@@ -341,11 +376,13 @@ class PFBT_Repair_Tool {
 	}
 
 	/**
-	 * Handle repair action submission
-	 *
-	 * @since 1.0.0
+	 * Process a repair before WordPress renders the admin header.
 	 */
-	private static function handle_repair_action() {
+	public static function handle_submission() {
+		if ( ! isset( $_POST['pfbt_repair_action'] ) ) {
+			return;
+		}
+
 		// Verify nonce.
 		if ( ! isset( $_POST['pfbt_repair_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['pfbt_repair_nonce'] ) ), 'pfbt_repair_action' ) ) {
 			wp_die(
@@ -356,7 +393,7 @@ class PFBT_Repair_Tool {
 		}
 
 		// Check capability.
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! current_user_can( self::CAPABILITY ) ) {
 			wp_die(
 				esc_html__( 'You do not have sufficient permissions to perform this action.', 'post-formats-for-block-themes' ),
 				esc_html__( 'Permission Denied', 'post-formats-for-block-themes' ),
@@ -373,6 +410,20 @@ class PFBT_Repair_Tool {
 			$post_id = absint( $_POST['post_id'] );
 			$format  = isset( $_POST['format'] ) ? sanitize_text_field( wp_unslash( $_POST['format'] ) ) : '';
 			self::apply_single_suggestion( $post_id, $format, $dry_run );
+		} elseif ( 'undo_format' === $action && isset( $_POST['post_id'], $_POST['repair_token'] ) ) {
+			$post_id = absint( $_POST['post_id'] );
+			$token   = sanitize_text_field( wp_unslash( $_POST['repair_token'] ) );
+			$undone  = self::undo_format_change( $post_id, $token );
+			set_transient(
+				'pfbt_repair_message',
+				array(
+					'message' => $undone
+						? __( 'Restored the previous post format.', 'post-formats-for-block-themes' )
+						: __( 'Could not undo this repair. Review the current format and try again if Undo is still available.', 'post-formats-for-block-themes' ),
+					'type'    => $undone ? 'success' : 'error',
+				),
+				30
+			);
 		} elseif ( 'fix_all_templates' === $action ) {
 			self::handle_fix_all_templates();
 		} elseif ( 'fix_single_template' === $action && isset( $_POST['post_id'] ) ) {
@@ -380,6 +431,9 @@ class PFBT_Repair_Tool {
 			$format  = isset( $_POST['format'] ) ? sanitize_text_field( wp_unslash( $_POST['format'] ) ) : '';
 			self::handle_fix_single_template( $post_id, $format );
 		}
+
+		wp_safe_redirect( admin_url( 'tools.php?page=' . self::PAGE_SLUG ) );
+		exit;
 	}
 
 	/**
@@ -602,47 +656,104 @@ class PFBT_Repair_Tool {
 	 * @return bool True on success, false on failure.
 	 */
 	private static function apply_format_change( $post_id, $format, $dry_run = true ) {
-		// Validate post.
 		$post = get_post( $post_id );
-
-		if ( ! $post || 'post' !== $post->post_type ) {
+		if ( ! $post || 'post' !== $post->post_type || ! current_user_can( 'edit_post', $post_id ) ) {
 			return false;
 		}
 
-		// Validate format.
 		if ( ! PFBT_Format_Registry::format_exists( $format ) ) {
 			return false;
 		}
 
-		// If dry run, just return success.
-		if ( $dry_run ) {
+		$previous = self::get_format( $post_id );
+		if ( $dry_run || $previous === $format ) {
 			return true;
 		}
 
-		// Create revision before changing.
 		wp_save_post_revision( $post_id );
-
-		// Apply format.
 		$result = set_post_format( $post_id, $format );
-
-		if ( $result ) {
-			// Update meta to track this as auto-repaired.
-			update_post_meta( $post_id, '_pfbt_format_repaired', current_time( 'mysql' ) );
-
-			/**
-			 * Fires after format is repaired
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param int    $post_id Post ID.
-			 * @param string $format  New format.
-			 */
-			do_action( 'pfbt_format_repaired', $post_id, $format );
-
-			return true;
+		if ( false === $result || is_wp_error( $result ) ) {
+			return false;
 		}
 
-		return false;
+		update_post_meta(
+			$post_id,
+			self::UNDO_META,
+			array(
+				'previous' => $previous,
+				'applied'  => $format,
+				'token'    => wp_generate_uuid4(),
+			)
+		);
+		update_post_meta( $post_id, '_pfbt_format_repaired', current_time( 'mysql' ) );
+
+		/**
+		 * Fires after format is repaired
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param int    $post_id Post ID.
+		 * @param string $format  New format.
+		 */
+		do_action( 'pfbt_format_repaired', $post_id, $format );
+		return true;
+	}
+
+	/**
+	 * Normalize Core's Standard format to the slug used by the review.
+	 *
+	 * @param int $post_id Post ID.
+	 * @return string Current format slug.
+	 */
+	private static function get_format( $post_id ) {
+		$format = get_post_format( $post_id );
+		return false === $format ? 'standard' : $format;
+	}
+
+	/**
+	 * Read the repair record if its applied format is still current.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $format  Current format slug.
+	 * @return array|null Usable repair record, or null.
+	 */
+	private static function get_undo( $post_id, $format ) {
+		$repair = get_post_meta( $post_id, self::UNDO_META, true );
+		return is_array( $repair ) && isset( $repair['previous'], $repair['token'] ) && ( $repair['applied'] ?? null ) === $format ? $repair : null;
+	}
+
+	/**
+	 * Consume a repair record and restore its previous format.
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $token   Identifier for this specific repair.
+	 * @return bool Whether the prior format was restored.
+	 */
+	private static function undo_format_change( $post_id, $token ) {
+		if ( ! current_user_can( self::CAPABILITY ) || ! current_user_can( 'edit_post', $post_id ) || 'post' !== get_post_type( $post_id ) ) {
+			return false;
+		}
+
+		$format = self::get_format( $post_id );
+		$repair = self::get_undo( $post_id, $format );
+		if ( ! $repair || $token !== $repair['token'] || ! delete_post_meta( $post_id, self::UNDO_META, $repair ) ) {
+			return false;
+		}
+
+		clean_object_term_cache( $post_id, 'post' );
+		if ( self::get_format( $post_id ) !== $format ) {
+			return false;
+		}
+
+		$result = set_post_format( $post_id, $repair['previous'] );
+		if ( false === $result || is_wp_error( $result ) ) {
+			if ( self::get_format( $post_id ) === $format ) {
+				add_post_meta( $post_id, self::UNDO_META, $repair, true );
+			}
+			return false;
+		}
+
+		return true;
 	}
 }
 

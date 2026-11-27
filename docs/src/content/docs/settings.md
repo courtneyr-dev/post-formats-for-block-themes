@@ -9,6 +9,8 @@ All three screens require the administrator capability (`manage_options`).
 
 ## Settings → Post Formats
 
+Use the [WordPress post format test cases](https://github.com/courtneyr-dev/indieweb-test-data/tree/main/cases/post-formats) to import synthetic examples on a disposable WordPress site.
+
 The plugin's options page. As of version 1.1.5 it holds one section, **Format icons**.
 
 ### Icon set

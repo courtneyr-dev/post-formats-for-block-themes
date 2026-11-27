@@ -175,6 +175,7 @@ class PFBT_Settings_Page {
 				submit_button( __( 'Save changes', 'post-formats-for-block-themes' ) );
 				?>
 			</form>
+			<p><a href="<?php echo esc_url( 'https://github.com/courtneyr-dev/indieweb-test-data/tree/main/cases/post-formats' ); ?>"><?php esc_html_e( 'WordPress post format test cases', 'post-formats-for-block-themes' ); ?></a></p>
 		</div>
 		<?php
 	}

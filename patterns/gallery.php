@@ -1,14 +1,6 @@
 <?php
 /**
- * Gallery Post Format Pattern
- *
- * Image gallery post. Starts with a gallery block (using the
- * `justified-rows` block style variation when v2.1.0+ gallery
- * styles are enabled) followed by a paragraph.
- *
- * The variation balances mixed-aspect images into uniform-height
- * rows with no JS. The class is harmless if the image_gallery_styles
- * feature flag is off (falls back to default core gallery styling).
+ * Gallery Post Format Pattern.
  *
  * @package PostFormatsBlockThemes
  * @since 1.0.0
@@ -17,7 +9,15 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-?>
+
+$pfbt_gallery = WP_Block_Type_Registry::get_instance()->get_registered( 'core/gallery' );
+if ( $pfbt_gallery && block_has_support( $pfbt_gallery, array( 'layout', 'allowEditing' ) ) ) :
+	?>
+<!-- wp:gallery {"linkTo":"none","layout":{"type":"grid","minimumColumnWidth":"12rem"}} -->
+<figure class="wp-block-gallery has-nested-images"></figure>
+<!-- /wp:gallery -->
+<?php else : ?>
 <!-- wp:gallery {"linkTo":"none","className":"is-style-justified-rows"} -->
 <figure class="wp-block-gallery has-nested-images columns-default is-cropped is-style-justified-rows"></figure>
 <!-- /wp:gallery -->
+<?php endif; ?>

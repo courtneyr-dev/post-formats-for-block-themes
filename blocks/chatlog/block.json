@@ -19,7 +19,8 @@
   "attributes": {
     "rawTranscript": {
       "type": "string",
-      "default": ""
+      "default": "",
+      "role": "content"
     },
     "source": {
       "type": "string",

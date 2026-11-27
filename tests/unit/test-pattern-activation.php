@@ -143,6 +143,35 @@ class Test_Pattern_Activation extends WP_UnitTestCase {
 	}
 
 	/**
+	 * The starter uses native Grid only with editable Gallery layouts.
+	 */
+	public function test_gallery_starter_tracks_core_layout_support() {
+		$gallery  = WP_Block_Type_Registry::get_instance()->get_registered( 'core/gallery' );
+		$supports = $gallery->supports;
+
+		try {
+			$gallery->supports['layout']['allowEditing'] = false;
+			ob_start();
+			require PFBT_PLUGIN_DIR . 'patterns/gallery.php';
+			$fallback = parse_blocks( trim( ob_get_clean() ) )[0];
+
+			$gallery->supports['layout']['allowEditing'] = true;
+			ob_start();
+			require PFBT_PLUGIN_DIR . 'patterns/gallery.php';
+			$native = parse_blocks( trim( ob_get_clean() ) )[0];
+		} finally {
+			$gallery->supports = $supports;
+		}
+
+		$this->assertSame( 'core/gallery', $fallback['blockName'] );
+		$this->assertSame( 'is-style-justified-rows', $fallback['attrs']['className'] );
+		$this->assertSame( 'none', $fallback['attrs']['linkTo'] );
+		$this->assertSame( 'core/gallery', $native['blockName'] );
+		$this->assertSame( 'grid', $native['attrs']['layout']['type'] );
+		$this->assertSame( 'none', $native['attrs']['linkTo'] );
+	}
+
+	/**
 	 * A second run after the version is already current must not re-run
 	 * pattern registration.
 	 */

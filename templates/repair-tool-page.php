@@ -40,7 +40,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	?>
 
 	<div class="pfbt-repair-summary card">
-		<h2><?php esc_html_e( 'Scan Results', 'post-formats-for-block-themes' ); ?></h2>
+		<h2 id="pfbt-repair-scan-results" tabindex="-1"><?php esc_html_e( 'Scan Results', 'post-formats-for-block-themes' ); ?></h2>
 
 		<table class="widefat striped">
 			<tbody>
@@ -165,6 +165,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php esc_html_e( 'All your posts have the correct format based on their content structure.', 'post-formats-for-block-themes' ); ?>
 			</p>
 		</div>
+	<?php endif; ?>
+
+	<?php if ( $scan_results['undo_repairs'] ) : ?>
+		<h2><?php esc_html_e( 'Undo format repairs', 'post-formats-for-block-themes' ); ?></h2>
+		<ul>
+			<?php foreach ( $scan_results['undo_repairs'] as $pfbt_undo ) : ?>
+				<li>
+					<form method="post" action="">
+						<input type="hidden" name="pfbt_repair_nonce" value="<?php echo esc_attr( wp_create_nonce( 'pfbt_repair_action' ) ); ?>" />
+						<input type="hidden" name="pfbt_repair_action" value="undo_format" />
+						<input type="hidden" name="repair_token" value="<?php echo esc_attr( $pfbt_undo['token'] ); ?>" />
+						<button type="submit" class="button" name="post_id" value="<?php echo esc_attr( $pfbt_undo['post_id'] ); ?>">
+							<?php
+							/* translators: 1: Post title. 2: Post ID. 3: Previous post format. */
+							echo esc_html( sprintf( __( 'Restore %1$s (ID %2$d) to %3$s', 'post-formats-for-block-themes' ), $pfbt_undo['post_title'] ? $pfbt_undo['post_title'] : __( '(no title)', 'post-formats-for-block-themes' ), $pfbt_undo['post_id'], get_post_format_string( $pfbt_undo['previous'] ) ) );
+							?>
+						</button>
+					</form>
+				</li>
+			<?php endforeach; ?>
+		</ul>
 	<?php endif; ?>
 
 	<!-- Template Assignment Section -->

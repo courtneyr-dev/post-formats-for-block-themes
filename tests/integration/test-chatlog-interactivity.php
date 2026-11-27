@@ -28,6 +28,21 @@ class Test_Chatlog_Interactivity extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Content-only patterns must expose the transcript without exposing display settings.
+	 */
+	public function test_only_transcript_has_the_content_role() {
+		$block_type = WP_Block_Type_Registry::get_instance()->get_registered( 'chatlog/conversation' );
+		$content    = array_filter(
+			$block_type->get_attributes(),
+			static function ( $attribute ) {
+				return 'content' === ( $attribute['role'] ?? null );
+			}
+		);
+
+		$this->assertSame( array( 'rawTranscript' ), array_keys( $content ) );
+	}
+
+	/**
 	 * Core must preserve every source format offered by the editor.
 	 */
 	public function test_transcript_source_attributes_survive_render_preparation() {
